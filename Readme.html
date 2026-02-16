@@ -1,0 +1,214 @@
+<!-- =========================
+     Readme.html
+     ========================= -->
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Readme - 契約ナビ</title>
+  <style>
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",sans-serif;
+      margin:0;background:#f6f7f9;color:#111;font-size:16px;
+    }
+    .wrap{max-width:960px;margin:0 auto;padding:16px;}
+    .card{background:#fff;border:1px solid #e6e8eb;border-radius:14px;padding:16px;}
+    h1{font-size:20px;margin:0 0 10px;}
+    .muted{color:#555;line-height:1.6;}
+    .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;}
+    .btn2{border:1px solid #d9dde3;background:#fff;color:#111;border-radius:12px;padding:12px 14px;font-size:15px;cursor:pointer;}
+    code{background:#f0f2f5;padding:2px 6px;border-radius:6px;}
+    ul{margin:8px 0 0 18px;}
+    .faq, .changelog{
+    margin-top:14px;
+    border:1px solid #e6e8eb;
+    border-radius:14px;
+    background:#fff;
+    overflow:hidden;
+    }
+    .faq details, .changelog details{
+    border-top:1px solid #eef0f3;
+    padding:0;
+    }
+    .faq details:first-child, .changelog details:first-child{
+    border-top:none;
+    }
+    .faq summary, .changelog summary{
+    list-style:none;
+    cursor:pointer;
+    padding:12px 14px;
+    font-weight:800;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    }
+    .faq summary::-webkit-details-marker,
+    .changelog summary::-webkit-details-marker{ display:none; }
+
+    .faq .chev, .changelog .chev{
+    width:26px;height:26px;
+    border-radius:999px;
+    border:1px solid #d9dde3;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:900;
+    flex:0 0 auto;
+    }
+    .faq details[open] .chev,
+    .changelog details[open] .chev{
+    transform: rotate(45deg);
+    }
+    .faq .body, .changelog .body{
+    padding:0 14px 12px;
+    color:#555;
+    line-height:1.7;
+    }
+    
+    h2{
+    font-size:18px;
+    margin:22px 0 10px;
+    padding-top:6px;
+    }
+
+    .divider + h2{
+    margin-top:24px;
+    }
+    .plainlog{
+    margin:0 0 0 18px;
+    color:#555;
+    line-height:1.75;
+    font-size:15px;
+    }
+    .plainlog li{
+    margin:6px 0;
+    }
+    ol{
+      margin:8px 0 0 18px;
+      color:#555;
+      line-height:1.6;
+    }
+    ol li{
+      margin:6px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>【取扱説明書】契約ナビ</h1>
+      <div class="muted">
+        <h2 style="font-size:16px;margin:14px 0 6px;">使い方</h2>
+        <ol>
+          <li><code>ヒアリングシート</code> の項目をすべて埋める → <code>この条件で開始</code></li>
+          <li><code>次へ</code> / <code>戻る</code> でステップを移動</li>
+          <li><code>コンサルツール</code>からプランおよび購入方法などを設定（準備中）</li>
+          <!-- <li>【注意】リセットは入力・チェック・進捗を初期化</li> -->
+          <li><code>チェックリスト</code>を埋めながら進行</li>
+        </ol>
+        <p class="muted" style="margin-top:8px;">　　【注意】リセットは入力・チェック・進捗を初期化します</p>
+        <h2 style="font-size:16px;margin:14px 0 6px;">誤案内・ミス事例</h2>
+      </div>
+      <div class="faq">
+        <details>
+            <summary>
+            <span>分割の審査結果を確認せずに契約を完了</span>
+            <span class="chev">+</span>
+            </summary>
+            <div class="body">
+            審査の結果が否認であれば誤開通となる
+            <ul>
+                <li>審査結果が出るまでは絶対に契約の確定を行わない</li>
+                <li>顧客情報と照らし合わせて審査結果を確認する</li>
+            </ul>
+            </div>
+        </details>
+
+        <details>
+            <summary>
+            <span>旧端末の残債を確認せずに下取り</span>
+            <span class="chev">+</span>
+            </summary>
+            <div class="body">
+            ノジマに下取りに出した場合、キャリアには返却できなくなる（＝残債は免除されない）
+            <ul>
+                <li>事前に旧端末の購入方法を把握しておく</li>
+                <li>下取りを行わない場合、ポイントは付与できない旨をお伝えする</li>
+            </ul>
+            </div>
+        </details>
+
+        <details>
+            <summary>
+            <span>別の顧客への紐づけ</span>
+            <span class="chev">+</span>
+            </summary>
+            <div class="body">
+            別のお客様のQRコードを用いてお会計やポイント付与を行ってしまう
+            <ul>
+                <li>契約時の顧客情報と照らし合わせて確認</li>
+                <li>顧客自身のアプリでポイントが反映されるのを確認</li>
+            </ul>
+            </div>
+        </details>
+
+        <details>
+            <summary>
+            <span>準備中</span>
+            <span class="chev">+</span>
+            </summary>
+            <div class="body">
+            準備中
+            </div>
+        </details>
+
+        <details>
+            <summary>
+            <span>準備中</span>
+            <span class="chev">+</span>
+            </summary>
+            <div class="body">
+            準備中
+            </div>
+        </details>
+        </div>
+        <div class="divider"></div>
+
+        <h2>更新履歴</h2>
+        <ul class="plainlog">
+        <li><b>2026-01-25</b>：複数台契約に対応，部分的な追加・修正</li>
+        <li><b>2026-01-20</b>：契約サポートツール「契約ナビ」初版作成</li>
+        </ul>
+
+        <div class="divider"></div>
+
+        <h2>今後の予定</h2>
+        <ul class="plainlog">
+        <li>既設項目の追加・修正</li>
+        <li>コンサルツールの開発</li>
+        <li>光事業・電気事業統合版の開発</li>
+        </ul>
+
+      <div class="row">
+        <button class="btn2" id="backBtn">← 戻る</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+document.getElementById("backBtn").onclick = () => {
+  if (history.length > 1) history.back();
+  else window.location.href = "ContractNavigator.html";
+};
+
+document.querySelectorAll(".faq details").forEach(d => {
+  d.addEventListener("toggle", () => {
+    if (!d.open) return;
+    document.querySelectorAll(".faq details").forEach(x => {
+      if (x !== d) x.open = false;
+    });
+  });
+});
+</script>
+</body>
+</html>
