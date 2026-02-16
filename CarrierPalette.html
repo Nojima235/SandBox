@@ -357,32 +357,38 @@
       border-color:#86efac;
     }
 
-    .appSwitch{
+.appSwitch{
   position:fixed;
-  right:14px;
-  bottom:14px;
+  right:18px;
+  bottom:18px;
   display:flex;
-  gap:10px;
+  gap:14px;
   z-index:9999;
 }
+
 .appSwitch a{
-  width:44px;height:44px;
-  display:grid;place-items:center;
-  border-radius:14px;
+  width:64px;
+  height:64px;
+  display:grid;
+  place-items:center;
+  border-radius:22px;
   border:1px solid #d9dde3;
   background:#fff;
   text-decoration:none;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.10);
-  font-size:22px;
+  box-shadow: 0 10px 26px rgba(0,0,0,0.18);
+  font-size:30px;   /* ← アイコン大きく */
   user-select:none;
   -webkit-tap-highlight-color: transparent;
+  transition: all 120ms ease;
 }
+
 .appSwitch a.on{
   border-color:#111;
-  box-shadow: 0 8px 22px rgba(0,0,0,0.18);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.22);
 }
+
 .appSwitch a:active{
-  transform: translateY(1px);
+  transform: translateY(2px) scale(0.97);
 }
   </style>
 </head>
@@ -638,9 +644,6 @@
     </div>
 
     <div class="divider"></div>
-    <div class="row" style="gap:8px; flex-wrap:wrap; justify-content:flex-end;">
-      <button class="btn2" id="backToContractBtn">契約ナビに戻る</button>
-    </div>
 
     <div class="alert hidden" id="pointAlert" style="margin-top:10px;"></div>
     <div class="alert hidden" id="priceDbAlert" style="margin-top:10px;"></div>
