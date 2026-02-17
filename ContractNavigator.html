@@ -93,6 +93,20 @@
     .helpBtn:active{
       transform:scale(0.96);
     }
+
+    .carrierRow{
+  display:flex;
+  gap:10px;
+  flex-wrap:nowrap;
+}
+
+.carrierSel{
+  flex: 1 1 65%;
+}
+
+.upgradeSel{
+  flex: 1 1 35%;
+}
     .btnDanger{
       border:1px solid #ffd2d2;
       background:#fff5f5;
@@ -135,6 +149,7 @@
       width:100%;padding:14px 12px;border-radius:10px;border:1px solid #d9dde3;
       font-size:17px;background:#fff;
     }
+    .hiddenRow{ display:none !important; }
     .grid{display:grid;gap:10px;margin-top:10px;}
     @media (min-width: 760px){
       .grid{grid-template-columns: 1fr 1fr;}
@@ -179,6 +194,25 @@
         0 0 10px rgba(0,0,0,0.25);
       pointer-events: none;
     }
+
+    select{
+  transition: box-shadow 160ms ease, border-color 160ms ease, transform 120ms ease;
+}
+
+select.isSelected{
+  border-color:#9db6ff;
+  box-shadow: 0 0 0 4px rgba(157,182,255,.35);
+}
+
+@keyframes pop{
+  0%{ transform:scale(1); }
+  40%{ transform:scale(1.015); }
+  100%{ transform:scale(1); }
+}
+
+select.pop{
+  animation: pop 180ms ease;
+}
     .checklist{margin-top:10px;display:flex;flex-direction:column;gap:8px;}
     .checkitem{
       display:flex;gap:10px;align-items:flex-start;
@@ -327,7 +361,7 @@
 </header>
 
 <div class="wrap">
-   <div class="card" style="margin-top:12px;">
+  <div class="card" style="margin-top:12px;">
   <div class="state">📱回線</div>
   <div class="row" style="gap:8px; align-items:center;">
     <div class="stepbar" id="linebar" style="margin-top:0;"></div>
@@ -335,76 +369,42 @@
     <button class="btn2" id="removeLineBtn">－削除</button>
   </div>
 </div>
-  <div class="card">
-    <div class="state">📋ヒアリングシート</div>
 
-    <div class="divider"></div>
+<div class="card">
+  <div class="state">📋ヒアリングシート</div>
 
-    <div class="row" style="gap:8px;">
-      <span class="badge" id="badge_basic">基本条件</span>
+  <div class="divider"></div>
+  <div class="row" style="gap:8px;">
+    <span class="badge" id="badge_basic">基本項目</span>
+  </div>
+
+  <div class="grid">
+    <div>
+      <label>契約タイプ</label>
+      <select id="contractType">
+        <option value="" selected disabled>選択してください</option>
+        <option value="mnpDevice">MNP（端末あり）</option>
+        <option value="mnpSim">MNP（SIMのみ）</option>
+        <option value="deviceChange">機種変更</option>
+        <option value="new">純新規</option>
+      </select>
     </div>
 
-    <div class="grid">
-      <div>
-        <label>契約タイプ</label>
-        <select id="contractType">
-          <option value="" selected disabled>選択してください</option>
-          <option value="mnpDevice">MNP（端末あり）</option>
-          <option value="mnpSim">MNP（SIMのみ）</option>
-          <option value="deviceChange">機種変更</option>
-          <option value="new">純新規</option>
-        </select>
-      </div>
-
-      <div>
-        <label>契約者様（名義）</label>
-        <select id="contractHolder">
-          <option value="self" selected>ご本人</option>
-          <option value="spouse">配偶者</option>
-          <option value="child">お子様</option>
-          <option value="parent">ご両親</option>
-          <option value="other">その他</option>
-        </select>
-      </div>
-
-      <div>
-        <label>本人確認書類</label>
-        <select id="idType">
-          <option value="" selected disabled>選択してください</option>
-          <option value="license">運転免許証</option>
-          <option value="myNumber">マイナンバーカード</option>
-          <option value="passport">在留カード+外国発行パスポート</option>
-        </select>
-      </div>
-
-      <div>
-        <label>ご利用者様</label>
-        <div style="margin:8px 0 6px;">
-          <label style="display:flex; gap:10px; align-items:center; user-select:none;">
-            <input type="checkbox" id="useDifferentUser" />
-            <span>契約者様とご利用者様が異なる</span>
-          </label>
-        </div>
-
-        <select id="userRelation" disabled>
-          <option value="spouse">配偶者</option>
-          <option value="child">お子様</option>
-          <option value="parent">ご両親</option>
-          <option value="other">その他</option>
-        </select>
-      </div>
-        </div>
-
-    <div class="divider"></div>
-
-    <div class="row" style="gap:8px;">
-      <span class="badge" id="badge_credit">与信時点の確認</span>
+    <div>
+      <label>契約者様（名義）</label>
+      <select id="contractHolder">
+        <option value="self" selected>ご本人</option>
+        <option value="spouse">配偶者</option>
+        <option value="child">お子様</option>
+        <option value="parent">ご両親</option>
+        <option value="other">その他</option>
+      </select>
     </div>
 
-    <div class="grid">
-      <div>
-        <label>現在お使いのキャリア</label>
-        <select id="carrier">
+    <div>
+      <label>現在お使いのキャリア</label>
+      <div class="carrierRow">
+        <select id="carrier" class="carrierSel">
           <option value="" selected disabled>選択してください</option>
           <option value="docomo">docomo</option>
           <option value="ahamo">ahamo</option>
@@ -414,115 +414,108 @@
           <option value="ymobile">Y!mobile</option>
           <option value="other">その他</option>
         </select>
-      </div>
 
-      <div>
-        <label>ご自宅のインターネット回線</label>
-        <select id="homeNetType">
-          <option value="" selected disabled>選択してください</option>
-          <option value="fletshikari">フレッツ光</option>
-          <option value="nurohikari">NURO光</option>
-          <option value="docomohikari">ドコモ光</option>
-          <option value="niftyhikari">@nifty光</option>
-          <option value="softbankhikari">ソフトバンク光</option>
-          <option value="auhikari">auひかり</option>
-          <option value="jcom">J:COM</option>
-          <option value="home5g">ホームルーター</option>
-          <option value="unknown">その他</option>
-          <option value="none">ご利用なし</option>
+        <select id="uqUpgrade" class="upgradeSel hidden">
+          <option value="yes">アプグレ対象</option>
+          <option value="no">アプグレ対象外</option>
         </select>
-      </div>
 
-      <div>
-        <label>月のデータ使用量（目安）</label>
-        <select id="dataUsage">
-          <option value="" selected disabled>選択してください</option>
-          <option value="lte5">〜5GB</option>
-          <option value="lte30">〜30GB</option>
-          <option value="unlimited">30GB以上（無制限）</option>
-        </select>
-      </div>
-
-      <div>
-        <label>住居形態</label>
-        <select id="housingType">
-          <option value="" selected disabled>選択してください</option>
-          <option value="mansion">集合住宅（マンション・アパート）</option>
-          <option value="house">戸建て</option>
-        </select>
-      </div>
-
-      <div>
-        <label>利用年数（スマホキャリア）</label>
-        <select id="usageYears">
-          <option value="" selected disabled>選択してください</option>
-          <option value="lt6m">⚠半年未満⚠</option>
-          <option value="gt6m">半年以上</option>
-        </select>
-      </div>
-
-      <div>
-        <label>利用年数（インターネット回線）</label>
-        <select id="homeNetYears">
-          <option value="" selected disabled>選択してください</option>
-          <option value="lt12m">⚠1年未満⚠</option>
-          <option value="gt12m">1年以上</option>
+        <select id="ymUpgrade" class="upgradeSel hidden">
+          <option value="yes">アプグレ対象</option>
+          <option value="no">アプグレ対象外</option>
         </select>
       </div>
     </div>
-    <div class="divider"></div>
-    <div class="row" style="gap:8px;">
-      <span class="badge" id="badge_check">確認チェック</span>
+
+    <div>
+      <label>ご利用者様</label>
+      <select id="userRelation">
+        <option value="self" selected>ご本人</option>
+        <option value="spouse">配偶者</option>
+        <option value="child">お子様</option>
+        <option value="parent">ご両親</option>
+        <option value="other">その他</option>
+      </select>
     </div>
 
-    <div class="checklist">
-      <div class="checkitem">
-        <input type="checkbox" id="chk_id_confirmed" />
-        <div>
-          <div class="ctitle">本人確認書類を確認しました</div>
-          <div class="csub">氏名／生年月日／住所など</div>
-        </div>
-      </div>
-
-      <div class="checkitem">
-        <input type="checkbox" id="chk_homeNet_asked" />
-        <div>
-          <div class="ctitle">キャリアおよびインターネット回線の利用年数を確認しました</div>
-          <div class="csub">「半年以上お使いですか？」など、ヒアリング済み</div>
-        </div>
-      </div>
+    <div>
+      <label>月のデータ使用量（目安）</label>
+      <select id="dataUsage">
+        <option value="" selected disabled>選択してください</option>
+        <option value="lte5">〜5GB</option>
+        <option value="lte30">〜30GB</option>
+        <option value="unlimited">30GB以上（無制限）</option>
+      </select>
     </div>
 
-    <!-- 端末ありのときだけ：下取り確認 -->
-    <div class="checklist hidden" id="tradeinBlock">
-      <div class="checkitem">
-        <input type="checkbox" id="chk_tradein" />
-        <div style="flex:1;">
-          <div class="ctitle">端末下取りの可否を確認しました</div>
-          <div class="csub">分割プログラムをご利用の場合、端末の残債を確認してください</div>
-        </div>
-
-        <!-- 下取り可否 -->
-        <select id="tradeinResult" style="width:140px; padding:10px 10px; border-radius:10px;">
-          <option value="" selected>未選択</option>
-          <option value="ok">下取りOK</option>
-          <option value="ng">下取りNG</option>
-        </select>
-      </div>
+    <div>
+      <label>ご自宅のインターネット回線</label>
+      <select id="homeNetType">
+        <option value="" selected disabled>選択してください</option>
+        <option value="fletshikari">フレッツ光</option>
+        <option value="nurohikari">NURO光</option>
+        <option value="docomohikari">ドコモ光</option>
+        <option value="niftyhikari">@nifty光</option>
+        <option value="softbankhikari">ソフトバンク光</option>
+        <option value="auhikari">auひかり</option>
+        <option value="jcom">J:COM</option>
+        <option value="home5g">ホームルーター</option>
+        <option value="unknown">その他</option>
+        <option value="none">ご利用なし</option>
+      </select>
     </div>
-    <div class="alert hidden" id="preAlert"></div>
-
-    <div class="row" style="margin-top:12px; align-items:center; width:100%;">
-  <div class="row" style="gap:10px;">
-    <button class="btn" id="startBtn" disabled>この条件で開始</button>
   </div>
-  <div style="flex:1;"></div>
-  <div class="row resetGroup" style="gap:10px;">
-    <button class="btn2" id="resetBtn">この回線をリセット</button>
-    <button class="btnDanger" id="wipeAllBtn">全ての回線をリセット</button>
+
+  <div class="divider"></div>
+  <div class="row" style="gap:8px;"> <span class="badge" id="badge_check">契約前チェック</span> </div>
+  <div class="checklist">
+    <div class="checkitem">
+      <input type="checkbox" id="chk_id_confirmed" />
+      <div>
+        <div class="ctitle">本人確認書類を確認しました</div>
+        <div class="csub">氏名／生年月日／住所など</div>
+      </div>
+    </div>
+
+    <div class="checkitem">
+      <input type="checkbox" id="chk_homeNet_asked" />
+      <div>
+        <div class="ctitle">キャリアおよび光回線の利用年数を確認しました</div>
+        <div class="csub">キャリアは半年，光回線は1年未満の場合，施策が適用できない場合も</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 端末ありのときだけ：下取り確認 -->
+  <div class="checklist hidden" id="tradeinBlock">
+    <div class="checkitem">
+      <input type="checkbox" id="chk_tradein" />
+      <div style="flex:1;">
+        <div class="ctitle">端末下取りの可否を確認しました</div>
+        <div class="csub">分割プログラムをご利用の場合、端末の残債を確認してください</div>
+      </div>
+
+      <select id="tradeinResult" style="width:140px; padding:10px 10px; border-radius:10px;">
+        <option value="" selected>未選択</option>
+        <option value="ok">下取りOK</option>
+        <option value="ng">下取りNG</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="alert hidden" id="preAlert"></div>
+
+  <div class="row" style="margin-top:12px; align-items:center; width:100%;">
+    <div class="row" style="gap:10px;">
+      <button class="btn" id="startBtn" disabled>この条件で開始</button>
+    </div>
+    <div style="flex:1;"></div>
+    <div class="row resetGroup" style="gap:10px;">
+      <button class="btn2" id="resetBtn">この回線をリセット</button>
+      <button class="btnDanger" id="wipeAllBtn">全ての回線をリセット</button>
+    </div>
   </div>
 </div>
-  </div>
 
   <!-- 現在地 -->
   <div class="card">
@@ -723,8 +716,6 @@
       </div>
 
       <div style="flex:1;"></div>
-
-      <button class="btn2 hidden" id="openConsultBtn">コンサルツール ↗</button>
     </div>
   </div>
 </div>
@@ -751,9 +742,11 @@ function blankLine(){
   return {
     form: {
       contractType:"", contractHolder:"self",
-      useDifferentUser:false, userRelation:"self",
-      idType:"",
-      carrier:"", housingType:"", dataUsage:"", usageYears:"",
+      userRelation:"self",
+      carrier:"",
+      dataUsage:"",
+      uqUpgrade:"unknown",
+      ymUpgrade:"unknown",
       chk_id_confirmed:false, chk_homeNet_asked:false,
       chk_tradein:false, tradeinResult:""
     },
@@ -788,7 +781,7 @@ function ensureLines(){
   }
   // 自宅回線は基本世帯共通
   if (!shared.houseNet){
-    shared.houseNet = { homeNetType:"", homeNetYears:"", housingType:""};
+    shared.houseNet = { homeNetType:""};
   } else {
   if (shared.houseNet.housingType == null) shared.houseNet.housingType = "";
 }
@@ -817,17 +810,8 @@ function labelCarrier(v){
     new:"新規"
   })[v] || v;
 }
-function labelUsageYears(v){
-  return ({ lt6m:"半年未満", gt6m:"半年以上", new:"新規"})[v] || v;
-}
 function labelDataUsage(v){
   return ({ lte5:"〜5GB", lte30:"〜30GB", unlimited:"30GB以上（無制限）" })[v] || v;
-}
-function labelHousingType(v){
-  return ({ mansion:"マンション", house:"戸建て", unknown:"不明" })[v] || v;
-}
-function labelIdType(v){
-  return ({ license:"運転免許証", myNumber:"マイナンバーカード", passport:"在留カード+外国発行パスポート", student:"学生証"})[v] || v;
 }
 function labelUserRelation(v){
   return ({ self:"ご本人", spouse:"配偶者", child:"お子様", parent:"ご両親", other:"その他" })[v] || v;
@@ -840,9 +824,7 @@ function labelHomeNetType(v){
     mobile:"モバイルルータ", none:"なし", unknown:"不明"
   })[v] || v;
 }
-function labelHomeNetYears(v){
-  return ({ lt12m:"1年未満", gt12m:"1年以上"})[v] || v;
-}
+
 function labelPayType(v){
   return ({
     nojimaInstall:"ノジマ分割",
@@ -863,7 +845,6 @@ let idx = -1;
    ========================= */
 function buildSteps(contractType, payType) {
   const s = [];
-  s.push({ id: "S1", name: "1. ヒアリング（与信）" });
   s.push({ id: "S2", name: "2. プランのコンサル" });
 
   if (!needsDeviceFlow(contractType)) {
@@ -898,11 +879,6 @@ function buildSteps(contractType, payType) {
 /* =========================
    Business logic
    ========================= */
-function isUpgradeBlocked(tmp){
-  const mobileShort = (tmp.usageYears === "lt6m");
-  const homeShort   = (tmp.homeNetYears === "lt12m");
-  return { blocked: (mobileShort || homeShort), mobileShort, homeShort };
-}
 function needsTradeInChecklist(ct){
   return ct === "deviceChange" || ct === "mnpDevice";
 }
@@ -938,8 +914,8 @@ function setDone(id, ok){
 }
 
 function updateBadges(){
-  const basicOk  = sectionDone(["contractType","contractHolder","idType"]);
-  const creditOk = sectionDone(["carrier","usageYears","dataUsage","housingType","homeNetType","homeNetYears"]);
+  const basicOk  = sectionDone(["contractType","contractHolder"]);
+  const creditOk = sectionDone(["carrier","usageYears","dataUsage","homeNetType"]);
   setDone("badge_basic",  basicOk);
   setDone("badge_credit", creditOk);
 
@@ -954,34 +930,19 @@ function updateBadges(){
 
 function updatePreAlert(){
   const box = el("preAlert");
-  const ready = ["usageYears","homeNetYears"].every(id => (el(id).value || "").trim() !== "");
-  if (!ready){
-    box.classList.add("hidden");
-    box.textContent = "";
-    return;
-  }
-  const tmp = { usageYears: el("usageYears").value, homeNetYears: el("homeNetYears").value };
-  const r = isUpgradeBlocked(tmp);
-  if (r.blocked){
-    const parts = [];
-    if (r.mobileShort) parts.push("スマホキャリア利用が半年未満");
-    if (r.homeShort) parts.push("自宅回線利用が1年未満");
-    box.textContent = `【警告】${parts.join(" または ")}です`;
-    box.classList.remove("hidden");
-  } else {
-    box.classList.add("hidden");
-    box.textContent = "";
-  }
+  if (!box) return;
+  box.classList.add("hidden");
+  box.textContent = "";
 }
 
 function allSelected(){
   const requiredSelects = [
-  "contractType","contractHolder","idType",
-  "carrier","usageYears","dataUsage","housingType"
+  "contractType","contractHolder",
+  "carrier","dataUsage","homeNetType"
 ];
 
 if (activeLine === 0){
-    requiredSelects.push("homeNetType","homeNetYears");
+    requiredSelects.push("homeNetType");
   }
   const okSel = requiredSelects.every(id => (el(id).value || "").trim() !== "");
   if (!okSel) return false;
@@ -1080,13 +1041,9 @@ function syncNewDeviceLocks(){
 }
 
 function syncUserRelationLock(){
-  const diff = el("useDifferentUser").checked;
-
-  el("userRelation").disabled = !diff;
-
-  if (!diff){
-    el("userRelation").value = "self";
-  }
+  const ur = el("userRelation");
+  if (!ur) return;
+  ur.disabled = false;
 }
 
 function updateStartEnabled(){
@@ -1135,13 +1092,6 @@ function contentFor(stepId, ctx){
   let next = "";
 
   if (stepId === "S1"){
-    const r = isUpgradeBlocked(ctx);
-    if (r.blocked){
-      const parts = [];
-      if (r.mobileShort) parts.push("スマホキャリア利用が半年未満");
-      if (r.homeShort) parts.push("自宅回線利用が1年未満");
-      warn.push(`【警告】${parts.join(" または ")}のため、当店でのお乗り換えは不可となります`);
-    }
     warn.push("与信にはご本人確認書類が必要です");
     if (ctx.contractType === "deviceChange" || ctx.contractType === "mnpDevice"){
       warn.push("分割プログラムをご利用の場合、端末の残債を確認");
@@ -1167,7 +1117,7 @@ function contentFor(stepId, ctx){
     }
 
     if (needsDeviceFlow(ctx.contractType) && !ctx.payType){
-      next = "コンサルツールで購入方法を選択する";
+      next = "キャリアパレットでキャリアのコンサルを行う";
     } else if (!needsDeviceFlow(ctx.contractType)){
       next = "ご本人確認書類およびクレジット/キャッシュカードをお預かりし、契約へ進む";
     } else if (ctx.payType === "nojimaInstall"){
@@ -1263,7 +1213,6 @@ function render(){
     if (el("s3nChecklist")) el("s3nChecklist").classList.add("hidden");
     el("backBtn").disabled = true;
     el("nextBtn").disabled = true;
-    el("openConsultBtn").classList.add("hidden");
     return;
   }
 
@@ -1278,10 +1227,9 @@ function render(){
   });
 
   const step = steps[idx];
+  const navRow = el("navRow");
+  if (navRow) navRow.classList.toggle("hiddenRow", step.id === "S2");
   el("stepTitle").textContent = step.name;
-
-  if (step.id === "S2") el("openConsultBtn").classList.remove("hidden");
-  else el("openConsultBtn").classList.add("hidden");
 
   // S5
 if (step.id === "S5"){
@@ -1376,55 +1324,16 @@ if (step.id === "S5"){
 el("doneChecklist").classList.add("hidden");
 el("finishBox").classList.add("hidden");
 
-const c = contentFor(step.id, ctx);
+if (el("attnBox")) el("attnBox").classList.add("hidden");
+if (el("nextBox")) el("nextBox").classList.add("hidden");
 
-// ✅ 注意チェックリスト生成
-const attnBox = el("attnBox");
-const attnList = el("attnList");
-attnList.innerHTML = "";
-
-const keys = c.warn.map((_, i) => `w${i}`); // 保存用キー
-
-c.warn.forEach((text, i) => {
-  const key = `w${i}`;
-
-  const item = document.createElement("div");
-  item.className = "checkitem";
-
-  const chk = document.createElement("input");
-  chk.type = "checkbox";
-  chk.checked = !!(getAttnState(step.id).state[key]);
-  chk.addEventListener("change", () => {
-    setAttnChecked(step.id, key, chk.checked);
-    // 次へボタン更新
-    el("nextBtn").disabled = (idx === steps.length - 1) || !isAttnComplete(step.id, keys);
-  });
-
-  const body = document.createElement("div");
-  const title = document.createElement("div");
-  title.className = "ctitle";
-  title.textContent = text;
-  if (text.startsWith("【警告】")) title.classList.add("red");
-
-  body.appendChild(title);
-
-  item.appendChild(chk);
-  item.appendChild(body);
-  attnList.appendChild(item);
-});
-
-el("nextAction").textContent = c.next;
-
-attnBox.classList.remove("hidden");
-el("nextBox").classList.remove("hidden");
-
-// 旧warnBoxは使わないので隠す（残ってるなら）
-if (el("warnBox")) el("warnBox").classList.add("hidden");
+// S2 は「コンサルツールへ」ボタンだけ出す（文章は出さない）
+if (step.id === "S2") {
+  // stepTitle は既にセット済み
+}
 
 el("backBtn").disabled = (idx === 0);
-
-// ✅ 全チェック完了まで次へ不可
-el("nextBtn").disabled = (idx === steps.length - 1) || !isAttnComplete(step.id, keys);
+el("nextBtn").disabled = (idx === steps.length - 1);
 }
 
 /* =========================
@@ -1436,17 +1345,14 @@ function collectForm(){
   return {
     contractType: el("contractType").value,
     contractHolder: el("contractHolder").value,
-    useDifferentUser: el("useDifferentUser").checked,
     userRelation: el("userRelation").value,
 
-    idType: el("idType").value,
     carrier: el("carrier").value,
-    housingType: el("housingType").value,
     dataUsage: el("dataUsage").value,
-    usageYears: el("usageYears").value,
+    uqUpgrade: (el("uqUpgrade")?.value || "unknown"),
+    ymUpgrade: (el("ymUpgrade")?.value || "unknown"),
 
     homeNetType:  (shared.houseNet?.homeNetType || ""),
-    homeNetYears: (shared.houseNet?.homeNetYears || ""),
 
     chk_id_confirmed: el("chk_id_confirmed").checked,
     chk_homeNet_asked: el("chk_homeNet_asked").checked,
@@ -1460,8 +1366,6 @@ function saveDraft(){
   shared.lines[activeLine].form = { ...collectForm() };
   if (activeLine === 0){
     shared.houseNet.homeNetType  = el("homeNetType").value  || "";
-    shared.houseNet.homeNetYears = el("homeNetYears").value || "";
-    shared.houseNet.housingType  = el("housingType")?.value || "";
   }
 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(shared));
@@ -1474,23 +1378,18 @@ function loadDraft(){
 
   setVal("contractType", data.contractType);
   updateTradeInVisibility();
-  setVal("idType", data.idType);
 
   setVal("contractHolder", data.contractHolder ?? "self");
-
-if (el("useDifferentUser")) el("useDifferentUser").checked = !!data.useDifferentUser;
 
 syncUserRelationLock();
 setVal("userRelation", data.userRelation ?? "self");
 
   setVal("userRelation", data.userRelation);
   setVal("carrier", data.carrier);
-  setVal("housingType", data.housingType);
   setVal("dataUsage", data.dataUsage);
-  setVal("usageYears", data.usageYears);
+  setVal("uqUpgrade", data.uqUpgrade ?? "unknown");
+  setVal("ymUpgrade", data.ymUpgrade ?? "unknown");
   setVal("homeNetType",  shared.houseNet.homeNetType  || "");
-  setVal("homeNetYears", shared.houseNet.homeNetYears || "");
-  setVal("housingType", shared.houseNet.housingType || data.housingType || "");
 
   el("chk_id_confirmed").checked = !!data.chk_id_confirmed;
   el("chk_homeNet_asked").checked = !!data.chk_homeNet_asked;
@@ -1498,6 +1397,7 @@ setVal("userRelation", data.userRelation ?? "self");
   if (el("tradeinResult")) el("tradeinResult").value = data.tradeinResult || "";
 
   syncNewDeviceLocks();
+  syncUpgradeVisibility();
   updateStartEnabled();
 }
 
@@ -1641,6 +1541,31 @@ function renderLinebarMini(){
   });
 }
 
+function syncUpgradeVisibility(){
+  const c = el("carrier")?.value || "";
+
+  const uqSel = el("uqUpgrade");
+  const ymSel = el("ymUpgrade");
+
+  if (uqSel) uqSel.classList.toggle("hidden", c !== "uq");
+  if (ymSel) ymSel.classList.toggle("hidden", c !== "ymobile");
+
+  if (c !== "uq" && uqSel) uqSel.value = "unknown";
+  if (c !== "ymobile" && ymSel) ymSel.value = "unknown";
+}
+
+function decideS3StartId(curCtx){
+  // SIMのみ or 端末フロー不要 → S3
+  if (!needsDeviceFlow(curCtx.contractType)) return "S3";
+  if (curCtx.contractType === "mnpSim") return "S3";
+
+  // 端末ありフロー
+  if (curCtx.payType === "nojimaInstall")   return "S3N";
+  if (curCtx.payType === "carrierInstall")  return "S3C";
+  // lump / 未指定 は通常契約へ
+  return "S3";
+}
+
 /* =========================
    Sync from storage
    ========================= */
@@ -1671,6 +1596,21 @@ function syncFromStorage(){
 
   steps = buildSteps(ctx.contractType, ctx.payType);
 
+  const hasConsultDecision = (() => {
+  if (needsDeviceFlow(ctx.contractType)) return !!ctx.payType;
+  return true;
+})();
+
+if (hasConsultDecision){
+  const startId = decideS3StartId(ctx);
+  const startIdx = steps.findIndex(s => s.id === startId);
+  if (startIdx >= 0){
+    const shared = ensureLines();
+    shared.lines[activeLine].flow.stepId = startId;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(shared));
+  }
+}
+
   const savedId = (line.flow && line.flow.stepId) ? line.flow.stepId : "S1";
   let newIdx = steps.findIndex(s => s.id === savedId);
   if (newIdx < 0) newIdx = 0;
@@ -1684,11 +1624,12 @@ function syncFromStorage(){
 }
 
 const watchIds = [
-  "contractType","contractHolder","idType",
-  "useDifferentUser","userRelation",
-  "carrier","usageYears","dataUsage","housingType",
-  "homeNetType","homeNetYears"
-];
+  "contractType","contractHolder",
+  "userRelation",
+  "carrier","dataUsage",
+  "uqUpgrade","ymUpgrade",
+  "homeNetType"
+]
 
 /* =========================
    Events
@@ -1698,11 +1639,15 @@ watchIds.forEach(id => {
   if (!node) return;
   node.addEventListener("change", () => {
     if (id === "contractType") updateTradeInVisibility();
+    if (id === "carrier") syncUpgradeVisibility();
 
     syncUserRelationLock();
     syncNewDeviceLocks();
     updateStartEnabled();
     saveDraft();
+    node.classList.add("isSelected","pop");
+    setTimeout(() => node.classList.remove("pop"), 220);
+    if ((node.value || "").trim() === "") node.classList.remove("isSelected");
   });
 });
 
@@ -1808,7 +1753,7 @@ el("resetBtn").onclick = () => {
   const shared = ensureLines();
 
   shared.lines[activeLine] = blankLine();
-  shared.houseNet = { homeNetType:"", homeNetYears:"", housingType:"" };
+  shared.houseNet = { homeNetType:""};
   localStorage.setItem(STORAGE_KEY, JSON.stringify(shared));
 
   ctx = null; steps = []; idx = -1;
@@ -1839,24 +1784,6 @@ el("nextBtn").onclick = () => { if (idx < steps.length - 1)
   render();
 } };
 
-// CarrierPalette
-el("openConsultBtn").onclick = () => {
-  const shared = ensureLines();
-  const form = collectForm();
-
-  shared.lines[activeLine].form = form;
-  Object.assign(shared, form);
-  shared.activeLine = activeLine;
-  if (shared.lines[activeLine].flow) {
-    shared.lines[activeLine].flow.started = !!(ctx && idx >= 0);
-    shared.lines[activeLine].flow.stepId = (steps[idx] ? steps[idx].id : "S1");
-  }
-
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(shared));
-
-  window.location.href = "CarrierPalette.html";
-};
-
 // help
 if (el("helpBtn")){
   el("helpBtn").onclick = () => {
@@ -1875,6 +1802,7 @@ window.addEventListener("storage", (ev) => { if (ev.key === STORAGE_KEY) syncFro
 updateTradeInVisibility();
 syncUserRelationLock();
 syncNewDeviceLocks();
+syncUpgradeVisibility();
 updateStartEnabled();
 syncFromStorage();
 </script>
