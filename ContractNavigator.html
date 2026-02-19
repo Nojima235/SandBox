@@ -555,30 +555,20 @@ select.pop{
   </div>
 </div>
 
-  <!-- 現在地 -->
-  <div class="card">
-    <div class="state">📍現在地</div>
-       <div class="row" style="gap:8px; align-items:center; margin-top:8px;">
-      <div class="stepbar" id="linebarMini" style="margin-top:0;"></div>
-    </div>
-    <div class="stepbar" id="stepbar"></div>
-    <div class="muted" id="summaryText">条件を選んで開始してください</div>
-  </div>
-
   <!-- ステップ内容 -->
   <div class="card" id="stepCard">
+    <div class="row" style="gap:8px; align-items:center; margin-top:8px;">
+      <div class="stepbar" id="linebarMini" style="margin-top:0;"></div>
+    </div>
+
+    <div class="stepbar" id="stepbar"></div>
+    <div class="muted" id="summaryText">条件を選んで開始してください</div>
+
+    <div class="divider"></div>
     <div class="state" id="stepTitle">開始してください</div>
 
     <div class="donebox hidden" id="s2Box">
-
-  <b>📱 回線一覧（タップで切替）</b>
-  <div class="row" id="s2LineTabs" style="gap:8px; margin-top:8px;"></div>
-
-  <div class="divider"></div>
-
   <div id="s2LineSummary" class="muted"></div>
-
-  <div class="divider"></div>
 
   <b>🧾 端末 / データ移行 / 下取り</b>
   <div class="grid" style="margin-top:10px;">
@@ -990,20 +980,6 @@ function updateS2UI(){
   if (!onS2) return;
 
   const shared = ensureLines();
-
-  // --- 回線タブ（S2内） ---
-  const tabs = el("s2LineTabs");
-  if (tabs){
-    tabs.innerHTML = "";
-    shared.lines.forEach((_, i)=>{
-      const b = document.createElement("div");
-      const isCur = (i === activeLine);
-      b.className = "step" + (isCur ? " current" : "");
-      b.textContent = `回線 ${i+1}`;
-      b.onclick = () => gotoLine(i); // 既存の切替ロジックを流用
-      tabs.appendChild(b);
-    });
-  }
 
 const sum = el("s2LineSummary");
 if (sum){
