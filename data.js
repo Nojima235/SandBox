@@ -95,32 +95,56 @@
     any: { label:"メール持ち運び", price: 330 }
   };
 
+// 割引
   C.discounts = {
     docomo: {
-      family: { label:"みんなドコモ割（最大想定）", amount: -1100 },
-      hikari: { label:"ドコモ光セット割（想定）",  amount: -1100 }
+      family: {
+      label: "みんなドコモ割",
+      tiers: {
+        2: -550,
+        3: -1210   // 3回線以上
+      }
+    },
+      hikari: { label: "ドコモ光セット割", amount: -1210 },
+      dcard_silver: { label:"dカード割（シルバー）", amount: -220 },
+      dcard_gold:   { label:"dカード割（ゴールド）", amount: -550 },
+      denki:        { label:"ドコモでんきセット割", amount: -110 }
     },
 
     au: {
-      family: { label:"家族割プラス（最大想定）", amount: -1210 },
+      family: {
+      label:"家族割プラス",
+      tiers: {
+        2: -660,
+        3: -1210
+      }
+    },
       hikari: { label: "auスマートバリュー", amount: -1100 },
       aupay:  { label:"auPAYカード割", amount: -220 }
     },
 
     uq: {
-      family: { label:"家族セット割（想定）", amount: -550 },
-      hikari: { label: "自宅セット割（想定）", amount: -1100 },
+      family: { label:"家族割", amount: -550 },
+      hikari: { label: "光割", amount: -1100 },
       aupay: { label: "auPAYカード割", amount: -220 },
       oyako: {
         label: "親子割",
         amount: -1650,
         year1: -1650,
         after_le5: -1100,
-        after_other: 0 }
+        after_other: 0
+      },
+      support39: { label:"39割", amount: -550 }
     },
 
     softbank: {
-      family: { label:"新みんな家族割（最大想定）", amount: -1210 },
+      family: {
+      label:"新みんな家族割",
+      tiers: {
+        2: -660,
+        3: -1210
+      }
+    },
       hikari: { label:"おうち割 光セット",         amount: -1100 }
     },
 
@@ -149,10 +173,18 @@
   };
 
   // 割引
-  C.getDiscount = function(carrier, kind){
-    const d = C.discounts?.[carrier]?.[kind];
-    return d || null;
-  };
+C.getDiscount = function(carrier, kind, ctx){
+  const d = C.discounts?.[carrier]?.[kind];
+  if (!d) return null;
+
+  if (kind === "family" && d.tiers){
+    const n = Number(ctx?.discFamilyCount || 2) || 2; // 2 or 3
+    const key = (n >= 3) ? 3 : 2;
+    return { label: `${d.label}（${key === 2 ? "2回線" : "3回線以上"}）`, amount: d.tiers[key] };
+  }
+
+  return d;
+};
 
   C.getDefaultPlanKey = function(carrier, dataUsage){
     const cc = C.plans[carrier];
@@ -175,31 +207,36 @@
     return C.mailCarry.any;
   };
 
-  C.isDiscountEligible = function(carrier, kind, planKey, ctx){
-    if (carrier === "ahamo") return false;
+C.isDiscountEligible = function(carrier, kind, planKey, ctx){
+  if (carrier === "ahamo") return false;
 
-    const d = C.discounts?.[carrier]?.[kind];
-    if (!d) return false;
-
-    if (carrier === "uq"){
-    if (planKey === "komikomi_value"){
-      return false;
-    }
-    if (kind === "oyako"){
-      const isTokutoku = String(planKey || "").startsWith("tokutoku_");
-      return isTokutoku;
-      }
+  if (carrier === "docomo" && kind === "family"){
+    if (planKey === "mini_4" || planKey === "mini_10") return false;
   }
 
-    if (carrier === "uq" && ctx){
-      const fam = !!ctx.discFamily;
-      const hik = !!ctx.discHikari;
+  const d = C.discounts?.[carrier]?.[kind];
+  if (!d) return false;
 
-      // 光割がONなら家族割は適用不可
-      if (kind === "family" && hik) return false;
-    }
+  if (carrier === "uq") {
+    if (kind === "support39"){
+    return planKey === "komikomi_value";
+  }
 
-    return true;
-  };
+  if (planKey === "komikomi_value"){
+    return false;
+  }
+
+  if (kind === "oyako") {
+    return planKey === "tokutoku_gt5";
+  }
+
+  if (ctx) {
+    const hik = !!ctx.discHikari;
+    if (kind === "family" && hik) return false;
+  }
+}
+
+  return true;
+};
   window.PRICE_DB = C;
 })();

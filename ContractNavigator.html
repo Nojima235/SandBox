@@ -47,6 +47,50 @@
     padding:12px 16px 40px;
     }
 
+.appHeaderCard{
+  position:relative;
+}
+
+.appHeaderRow{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+
+.appTitle{
+  font-size:22px;
+  margin:0;
+  font-weight:1100;
+}
+
+.appSub{
+  font-size:12px;
+  color:#555;
+  font-weight:900;
+  margin-top:2px;
+}
+
+/* 中央やや右・大きめ */
+.devBadge{
+  position:absolute;
+  top:50%;
+  left:35%;
+  transform:translate(-50%, -50%);
+
+  font-size:15px;
+  font-weight:1100;
+  letter-spacing:.12em;
+
+  color:#fff;
+  background:#d40000;
+
+  padding:7px 16px;
+  border-radius:999px;
+
+  pointer-events:none;
+}
+
     .donebox{
       background:#f6fbff;
       border:1px solid #d6e8ff;
@@ -107,6 +151,7 @@
 .upgradeSel{
   flex: 1 1 35%;
 }
+
     .btnDanger{
       border:1px solid #ffd2d2;
       background:#fff5f5;
@@ -352,12 +397,14 @@ select.pop{
   transform: translateY(2px) scale(0.97);
 }
   </style>
+  <script src="data.js"></script>
 </head>
 <body>
 <header>
   <div class="title">契約ナビ</div>
-  <div class="sub">「今どこ？ 注意点は？ 次は何？」契約のフローを1画面で確認</div>
+  <div class="sub">ヒアリング・契約フロー確認</div>
   <button id="helpBtn" class="helpBtn">i</button>
+  <div class="devBadge">⚠ 開発中 ⚠</div>
 </header>
 
 <div class="wrap">
@@ -414,16 +461,6 @@ select.pop{
           <option value="ymobile">Y!mobile</option>
           <option value="other">その他</option>
         </select>
-
-        <select id="uqUpgrade" class="upgradeSel hidden">
-          <option value="yes">アプグレ対象</option>
-          <option value="no">アプグレ対象外</option>
-        </select>
-
-        <select id="ymUpgrade" class="upgradeSel hidden">
-          <option value="yes">アプグレ対象</option>
-          <option value="no">アプグレ対象外</option>
-        </select>
       </div>
     </div>
 
@@ -461,6 +498,7 @@ select.pop{
         <option value="jcom">J:COM</option>
         <option value="home5g">ホームルーター</option>
         <option value="unknown">その他</option>
+        <option value="included">カンコミ（管理費込み）</option>
         <option value="none">ご利用なし</option>
       </select>
     </div>
@@ -473,7 +511,7 @@ select.pop{
       <input type="checkbox" id="chk_id_confirmed" />
       <div>
         <div class="ctitle">本人確認書類を確認しました</div>
-        <div class="csub">氏名／生年月日／住所など</div>
+        <div class="csub">運転免許証／マイナンバーカード／在留カード+外国発行パスポート</div>
       </div>
     </div>
 
@@ -530,6 +568,70 @@ select.pop{
   <!-- ステップ内容 -->
   <div class="card" id="stepCard">
     <div class="state" id="stepTitle">開始してください</div>
+
+    <div class="donebox hidden" id="s2Box">
+
+  <b>📱 回線一覧（タップで切替）</b>
+  <div class="row" id="s2LineTabs" style="gap:8px; margin-top:8px;"></div>
+
+  <div class="divider"></div>
+
+  <div id="s2LineSummary" class="muted"></div>
+
+  <div class="divider"></div>
+
+  <b>🧾 端末 / データ移行 / 下取り</b>
+  <div class="grid" style="margin-top:10px;">
+    <div id="s2ToCarrierWrap">
+      <label>乗り換え先</label>
+      <select id="s2ToCarrier">
+        <option value="" selected>未選択</option>
+        <option value="docomo">docomo</option>
+        <option value="ahamo">ahamo</option>
+        <option value="au">au</option>
+        <option value="uq">UQ mobile</option>
+        <option value="softbank">SoftBank</option>
+        <option value="ymobile">Y!mobile</option>
+        <option value="other">その他</option>
+      </select>
+    </div>
+
+    <div id="s2ToPlanWrap">
+      <label>乗り換え先プラン</label>
+      <select id="s2ToPlanKey" disabled>
+        <option value="" selected>未選択</option>
+      </select>
+    </div>
+
+    <div id="s2PayWrap">
+      <label>端末購入方法</label>
+      <select id="s2PayType">
+        <option value="" selected>未選択</option>
+        <option value="nojimaInstall">分リセ</option>
+        <option value="carrierInstall">キャリア分割</option>
+        <option value="lump">一括</option>
+      </select>
+    </div>
+
+    <div id="s2TransferWrap">
+      <label>データ移行</label>
+      <select id="s2NeedDataTransfer">
+        <option value="no" selected>なし</option>
+        <option value="yes">あり</option>
+      </select>
+    </div>
+
+    <div id="s2TradeWrap">
+      <label>古物下取り受付</label>
+      <select id="s2NeedTradeInReception">
+        <option value="no" selected>なし</option>
+        <option value="yes">あり</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="alert hidden" id="s2PointAlert" style="margin-top:10px;"></div>
+</div>
 
     <div class="donebox hidden" id="attnBox">
       <b>⚠ ここでの注意</b>
@@ -745,12 +847,11 @@ function blankLine(){
       userRelation:"self",
       carrier:"",
       dataUsage:"",
-      uqUpgrade:"unknown",
-      ymUpgrade:"unknown",
       chk_id_confirmed:false, chk_homeNet_asked:false,
       chk_tradein:false, tradeinResult:""
     },
-    consult: { payType:"", needDataTransfer:"no", needTradeInReception:"no" },
+    consult: { payType:"", needDataTransfer:"no", needTradeInReception:"no",toCarrier:"",
+    toPlanKey:"" },
     flow:   { started:false, stepId:"S1" },
     s3:     { chk_s3sim_mnp:false, chk_s3sim_docs:false, chk_s3sim_input:false, chk_s3sim_notice:false },
     s3n:    { chk_s3n_mnp:false, chk_s3n_apply:false, chk_s3n_prepare:false, chk_s3n_input:false, chk_s3n_video:false, chk_s3n_result:false },
@@ -770,6 +871,37 @@ function readSharedSafe(){
   } catch(e){
     return { activeLine: 0, lines: [] };
   }
+}
+
+function renderS2ToPlanOptions(selectedCarrier, selectedPlanKey){
+  const planSel = el("s2ToPlanKey");
+  if (!planSel) return;
+
+  if (!selectedCarrier || !window.PRICE_DB?.getCarrier){
+    planSel.innerHTML = `<option value="" selected>まずキャリアを選択</option>`;
+    planSel.disabled = true;
+    return;
+  }
+
+  const cc = window.PRICE_DB.getCarrier(selectedCarrier);
+  const plans = cc?.plans || {};
+  const keys = Object.keys(plans);
+
+  if (keys.length === 0){
+    planSel.innerHTML = `<option value="" selected>プラン定義なし</option>`;
+    planSel.disabled = true;
+    return;
+  }
+
+  let html = `<option value="" ${!selectedPlanKey ? "selected" : ""}>未選択</option>`;
+  for (const k of keys){
+    const p = plans[k];
+    const label = p?.label || p?.name || k;
+    const sel = (k === selectedPlanKey) ? "selected" : "";
+    html += `<option value="${k}" ${sel}>${label}</option>`;
+  }
+  planSel.innerHTML = html;
+  planSel.disabled = false;
 }
 
 function ensureLines(){
@@ -831,6 +963,163 @@ function labelPayType(v){
     carrierInstall:"キャリア分割",
     lump:"一括"
   })[v] || v;
+}
+
+function safePlanName(carrier, dataUsage){
+  try{
+    if (typeof PRICE_DB !== "undefined" && PRICE_DB.getPlan){
+      const plan = PRICE_DB.getPlan(carrier, dataUsage);
+      return plan?.name || plan?.planName || "";
+    }
+  }catch(e){}
+  return "";
+}
+
+function isDeviceContractType(ct){
+  return ct === "deviceChange" || ct === "mnpDevice" || ct === "new";
+}
+
+function updateS2UI(){
+  const box = el("s2Box");
+  if (!box) return;
+
+  // S2 のときだけ出す
+  const curStepId = (idx >= 0 && steps[idx]) ? steps[idx].id : "";
+  const onS2 = (curStepId === "S2");
+  box.classList.toggle("hidden", !onS2);
+  if (!onS2) return;
+
+  const shared = ensureLines();
+
+  // --- 回線タブ（S2内） ---
+  const tabs = el("s2LineTabs");
+  if (tabs){
+    tabs.innerHTML = "";
+    shared.lines.forEach((_, i)=>{
+      const b = document.createElement("div");
+      const isCur = (i === activeLine);
+      b.className = "step" + (isCur ? " current" : "");
+      b.textContent = `回線 ${i+1}`;
+      b.onclick = () => gotoLine(i); // 既存の切替ロジックを流用
+      tabs.appendChild(b);
+    });
+  }
+
+const sum = el("s2LineSummary");
+if (sum){
+  const rows = shared.lines.map((ln, i)=>{
+    const f = ln.form || {};
+    const consult = ln.consult || {};
+
+    const ct = f.contractType || "";
+    const ur = f.userRelation || "self";
+
+    const pay = consult.payType || "";
+    const tr  = consult.needDataTransfer || "no";
+    const ti  = consult.needTradeInReception || "no";
+    const toC = consult.toCarrier || "";
+    const toP = consult.toPlanKey || "";
+
+    // 契約タイプ表示（必須）
+    const ctLabel = ({
+      mnpDevice: "MNP（端末あり）",
+      mnpSim: "MNP（SIMのみ）",
+      deviceChange: "機種変更",
+      new: "純新規"
+    })[ct] || "未選択";
+
+    // 利用者（必須）
+    const urLabel = labelUserRelation(ur) || "未選択";
+
+    // 乗り換え先は MNP / 純新規のときだけ自然に出す（機種変は基本不要）
+    const showTo = (ct === "mnpDevice" || ct === "mnpSim" || ct === "new");
+
+    // 乗り換え先プラン名（toCarrier/toPlanKey が揃っているときだけ）
+    let toPlanLabel = "";
+    if (toC && toP && window.PRICE_DB?.getCarrier){
+      const cc = window.PRICE_DB.getCarrier(toC);
+      const p = cc?.plans?.[toP];
+      toPlanLabel = p?.label || p?.name || toP;
+    }
+
+    // 端末あり系（購入/移行/下取を扱う）
+    const deviceOps = needsDeviceFlow(ct);
+
+    // --- 1行に詰めすぎない：partsは「必要なものだけ」 ---
+    const parts = [];
+    parts.push(`利用者：${urLabel}`);
+    parts.push(ctLabel);
+
+    if (showTo){
+      parts.push(`乗先：${toC ? labelCarrier(toC) : "未選択"}`);
+      if (toC && toP) parts.push(`プラン：${toPlanLabel || toP}`);
+    }
+
+    if (deviceOps){
+      if (pay) parts.push(`購入：${labelPayType(pay)}`);
+      if (tr === "yes") parts.push("移行あり");
+      if (ti === "yes") parts.push("下取りあり");
+    }
+
+    const head = `回線 ${i+1}${i===activeLine ? "（選択中）" : ""}`;
+
+    return `<div style="padding:8px 0; border-bottom:1px solid #eef0f3;">
+      <b>${head}</b>
+      <div>${parts.join(" / ")}</div>
+    </div>`;
+  }).join("");
+
+  sum.innerHTML = rows || "まだ回線がありません";
+}
+
+  // --- S2 編集対象（選択中の回線） ---
+  const line = shared.lines[activeLine];
+  line.consult = line.consult || { payType:"", needDataTransfer:"no", needTradeInReception:"no" };
+
+  const ct = (line.form?.contractType || el("contractType")?.value || "");
+  const showDeviceOps = isDeviceContractType(ct);
+
+  const showToPlan = (ct === "mnpDevice" || ct === "mnpSim" || ct === "new");
+  el("s2ToCarrierWrap")?.classList.toggle("hidden", !showToPlan);
+  el("s2ToPlanWrap")?.classList.toggle("hidden", !showToPlan);
+
+  // 端末あり系じゃないなら、購入方法/移行/下取りは隠す
+  el("s2PayWrap")?.classList.toggle("hidden", !showDeviceOps);
+  el("s2TransferWrap")?.classList.toggle("hidden", !showDeviceOps);
+  el("s2TradeWrap")?.classList.toggle("hidden", !showDeviceOps);
+
+  // 値を反映
+  if (el("s2PayType")) el("s2PayType").value = line.consult.payType || "";
+  if (el("s2NeedDataTransfer")) el("s2NeedDataTransfer").value = line.consult.needDataTransfer || "no";
+  if (el("s2NeedTradeInReception")) el("s2NeedTradeInReception").value = line.consult.needTradeInReception || "no";
+
+  const toCarrier = line.consult.toCarrier || "";
+  const toPlanKey = line.consult.toPlanKey || "";
+
+  if (el("s2ToCarrier")) el("s2ToCarrier").value = toCarrier;
+
+  // toCarrierに応じてプラン候補を作る（showToPlan=false でも壊れない）
+  renderS2ToPlanOptions(toCarrier, toPlanKey);
+
+  // 注意：MNP（端末あり） + (キャリア分割 or 一括) + 下取りなし → ポイントNG
+  const pointAlert = el("s2PointAlert");
+  if (pointAlert){
+    const pay = line.consult.payType || "";
+    const ti  = line.consult.needTradeInReception || "no";
+    const isBad = (ct === "mnpDevice") && (pay === "carrierInstall" || pay === "lump") && (ti === "no");
+    pointAlert.classList.toggle("hidden", !isBad);
+    pointAlert.textContent = isBad
+      ? "【注意】購入方法が「キャリア分割／一括」かつ「下取りなし」の場合、ポイント付与ができません（下取り受付の有無を再確認）"
+      : "";
+  }
+}
+
+function saveS2ConsultPatch(patch){
+  const shared = ensureLines();
+  const line = shared.lines[activeLine];
+  line.consult = line.consult || { payType:"", needDataTransfer:"no", needTradeInReception:"no" };
+  line.consult = { ...line.consult, ...patch };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(shared));
 }
 
 /* =========================
@@ -1231,6 +1520,7 @@ function render(){
   if (navRow) navRow.classList.toggle("hiddenRow", step.id === "S2");
   el("stepTitle").textContent = step.name;
 
+
   // S5
 if (step.id === "S5"){
   if (el("warnBox")) el("warnBox").classList.add("hidden");
@@ -1331,7 +1621,7 @@ if (el("nextBox")) el("nextBox").classList.add("hidden");
 if (step.id === "S2") {
   // stepTitle は既にセット済み
 }
-
+updateS2UI();
 el("backBtn").disabled = (idx === 0);
 el("nextBtn").disabled = (idx === steps.length - 1);
 }
@@ -1349,8 +1639,6 @@ function collectForm(){
 
     carrier: el("carrier").value,
     dataUsage: el("dataUsage").value,
-    uqUpgrade: (el("uqUpgrade")?.value || "unknown"),
-    ymUpgrade: (el("ymUpgrade")?.value || "unknown"),
 
     homeNetType:  (shared.houseNet?.homeNetType || ""),
 
@@ -1387,8 +1675,6 @@ setVal("userRelation", data.userRelation ?? "self");
   setVal("userRelation", data.userRelation);
   setVal("carrier", data.carrier);
   setVal("dataUsage", data.dataUsage);
-  setVal("uqUpgrade", data.uqUpgrade ?? "unknown");
-  setVal("ymUpgrade", data.ymUpgrade ?? "unknown");
   setVal("homeNetType",  shared.houseNet.homeNetType  || "");
 
   el("chk_id_confirmed").checked = !!data.chk_id_confirmed;
@@ -1397,7 +1683,6 @@ setVal("userRelation", data.userRelation ?? "self");
   if (el("tradeinResult")) el("tradeinResult").value = data.tradeinResult || "";
 
   syncNewDeviceLocks();
-  syncUpgradeVisibility();
   updateStartEnabled();
 }
 
@@ -1541,19 +1826,6 @@ function renderLinebarMini(){
   });
 }
 
-function syncUpgradeVisibility(){
-  const c = el("carrier")?.value || "";
-
-  const uqSel = el("uqUpgrade");
-  const ymSel = el("ymUpgrade");
-
-  if (uqSel) uqSel.classList.toggle("hidden", c !== "uq");
-  if (ymSel) ymSel.classList.toggle("hidden", c !== "ymobile");
-
-  if (c !== "uq" && uqSel) uqSel.value = "unknown";
-  if (c !== "ymobile" && ymSel) ymSel.value = "unknown";
-}
-
 function decideS3StartId(curCtx){
   // SIMのみ or 端末フロー不要 → S3
   if (!needsDeviceFlow(curCtx.contractType)) return "S3";
@@ -1621,13 +1893,13 @@ if (hasConsultDecision){
   render();
   renderLinebar();
   updateContractHolderOptions();
+  updateS2UI();
 }
 
 const watchIds = [
   "contractType","contractHolder",
   "userRelation",
   "carrier","dataUsage",
-  "uqUpgrade","ymUpgrade",
   "homeNetType"
 ]
 
@@ -1639,7 +1911,6 @@ watchIds.forEach(id => {
   if (!node) return;
   node.addEventListener("change", () => {
     if (id === "contractType") updateTradeInVisibility();
-    if (id === "carrier") syncUpgradeVisibility();
 
     syncUserRelationLock();
     syncNewDeviceLocks();
@@ -1658,6 +1929,36 @@ watchIds.forEach(id => {
     updateStartEnabled();
     saveDraft();
   });
+});
+
+["s2PayType","s2NeedDataTransfer","s2NeedTradeInReception"].forEach(id=>{
+  const node = el(id);
+  if (!node) return;
+  node.addEventListener("change", ()=>{
+    const patch = {};
+    if (id === "s2PayType") patch.payType = node.value || "";
+    if (id === "s2NeedDataTransfer") patch.needDataTransfer = node.value || "no";
+    if (id === "s2NeedTradeInReception") patch.needTradeInReception = node.value || "no";
+    saveS2ConsultPatch(patch);
+
+    syncFromStorage();
+  });
+});
+
+el("s2ToCarrier")?.addEventListener("change", ()=>{
+  const v = el("s2ToCarrier").value || "";
+  // キャリア変更 → プランはリセット
+  saveS2ConsultPatch({ toCarrier: v, toPlanKey: "" });
+
+  renderS2ToPlanOptions(v, "");
+  // steps自体は変わらないので syncFromStorage() までは不要、でも一覧を更新したいなら呼んでOK
+  syncFromStorage();
+});
+
+el("s2ToPlanKey")?.addEventListener("change", ()=>{
+  const v = el("s2ToPlanKey").value || "";
+  saveS2ConsultPatch({ toPlanKey: v });
+  syncFromStorage();
 });
 
 ["chk_s3sim_mnp","chk_s3sim_docs","chk_s3sim_input","chk_s3sim_notice"].forEach(id => {
@@ -1802,7 +2103,6 @@ window.addEventListener("storage", (ev) => { if (ev.key === STORAGE_KEY) syncFro
 updateTradeInVisibility();
 syncUserRelationLock();
 syncNewDeviceLocks();
-syncUpgradeVisibility();
 updateStartEnabled();
 syncFromStorage();
 </script>

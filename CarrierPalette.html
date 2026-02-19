@@ -15,7 +15,24 @@
     body[data-mode="single"] .grid2{ grid-template-columns: 1fr; }
     body[data-mode="single"] .resultGrid{ grid-template-columns: 1fr; }
 
-    .wrap{max-width:980px;margin:0 auto;padding:12px;}
+    :root{
+  --header-h: 90px;   /* ← ヘッダーの高さ。必要なら調整 */
+}
+
+html, body{
+  height:auto;
+  overflow:auto;
+}
+
+.wrap{
+  height: calc(100vh - var(--header-h));
+  overflow:auto;
+  -webkit-overflow-scrolling: touch;
+
+  max-width:980px;
+  margin:0 auto;
+  padding:12px 16px 40px;
+}
     .card{background:#fff;border:1px solid #e6e8eb;border-radius:14px;padding:12px;}
     .divider{height:1px;background:#eef0f3;margin:10px 0;}
     label{font-size:13px;color:#333;font-weight:900;}
@@ -38,6 +55,37 @@
       background:#fff5f5;border:1px solid #ffd2d2;border-radius:12px;padding:10px 10px;
       color:#b00020;font-size:14px;font-weight:1000;
     }
+    /* ===== ContractNavigator と同じヘッダー ===== */
+header{
+  padding:16px 16px 8px;
+  background:#fff;
+  border-bottom:1px solid #e6e8eb;
+  position:relative;
+  top:0;
+  z-index:10;
+}
+
+.title{font-size:24px;font-weight:800;}
+.sub{font-size:15px;color:#555;margin-top:4px;}
+
+.devBadge{
+  position:absolute;
+  top:50%;
+  left:35%;
+  transform:translate(-50%, -50%);
+
+  font-size:15px;
+  font-weight:1100;
+  letter-spacing:.12em;
+
+  color:#fff;
+  background:#d40000;
+
+  padding:7px 16px;
+  border-radius:999px;
+
+  pointer-events:none;
+}
 
     .grid2{display:grid;gap:10px;grid-template-columns:1fr 1fr;}
     @media (max-width: 760px){ .grid2{grid-template-columns:1fr;} }
@@ -95,6 +143,8 @@
   appearance:none;
   -webkit-appearance:none;
   -moz-appearance:none;
+  display:inline-flex;
+  align-items:center;
   border:1px solid #b7e4c7;
   background:#f3fff7;
   color:#0f5132;
@@ -102,13 +152,15 @@
   padding:8px 34px 8px 12px;
   font-size:13px;
   font-weight:900;
-  line-height:1;
+  line-height:1.2;
   cursor:pointer;
   position:relative;
+  vertical-align:middle;
 }
 .pillSelectWrap{
   position:relative;
-  display:inline-block;
+  display:inline-flex;
+  align-items:center;
 }
 .pillSelectWrap::after{
   content:"▾";
@@ -120,6 +172,7 @@
   font-size:12px;
   pointer-events:none;
   opacity:0.8;
+  line-height:1;
 }
 .pillSelect:disabled{
   opacity:0.45;
@@ -394,23 +447,25 @@
 </head>
 
 <body>
+  <header>
+  <div class="title">キャリアパレット</div>
+  <div class="sub">料金比較・見積り</div>
+
+  <!-- 開発中バッジ（契約ナビと同じ位置・見た目） -->
+  <div class="devBadge">⚠ 開発中 ⚠</div>
+
+  <!-- もともと右側にあったモード切替はヘッダー内に残す -->
+  <div class="modeSwitch" id="modeToggle" role="button" aria-label="表示モード切替" tabindex="0"
+       style="position:absolute; right:16px; top:50%; transform:translateY(-50%);">
+    <span class="modeLabel" id="modeLabelLeft">単体</span>
+    <span class="modeTrack" aria-hidden="true">
+      <span class="modeThumb" id="modeThumb"></span>
+    </span>
+    <span class="modeLabel" id="modeLabelRight">比較</span>
+  </div>
+</header>
   <div class="wrap">
     <div class="card">
-      <div class="row" style="justify-content:space-between; gap:10px;">
-        <div>
-          <h1 style="font-size:22px; margin:0;">キャリアパレット</h1>
-          <div style="font-size:12px; color:#555; font-weight:900; margin-top:2px;">料金比較・見積り</div>
-        </div>
-        <div class="modeSwitch" id="modeToggle" role="button" aria-label="表示モード切替" tabindex="0">
-          <span class="modeLabel" id="modeLabelLeft">単体</span>
-          <span class="modeTrack" aria-hidden="true">
-            <span class="modeThumb" id="modeThumb"></span>
-          </span>
-          <span class="modeLabel" id="modeLabelRight">比較</span>
-        </div>
-      </div>
-    </div>
-
     <div class="divider"></div>
     <div class="sectionTitle"><b></b></div>
 
@@ -485,17 +540,25 @@
         <div class="divider" style="margin:10px 0;"></div>
         <div class="mini" style="margin:0;font-weight:1000;">割引</div>
         <div class="pillRow" style="margin-top:6px;">
-          <div class="pill disc" id="A_family">家族割</div>
-
+          <div class="pill disc" id="A_aupay">auPAYカード割</div>
+          <div class="pill disc" id="A_dcardPill">dカード割</div>
+          <span class="pillSelectWrap hidden" id="A_dcardWrap">
+            <select id="A_dcard" class="pillSelect">
+              <option value="silver">シルバー</option>
+              <option value="gold">ゴールド</option>
+            </select>
+          </span> 
+          <div class="pill disc" id="A_hikari">光割</div>
+                    <div class="pill disc" id="A_family">家族割</div>
           <span class="pillSelectWrap" id="A_familyCountWrap">
             <select id="A_familyCount" class="pillSelect">
               <option value="2">2回線</option>
               <option value="3">3回線以上</option>
             </select>
           </span>
-          <div class="pill disc" id="A_oyako">親子割</div>
-          <div class="pill disc" id="A_hikari">光セット割</div>
-          <div class="pill disc" id="A_aupay">auPAYカード割</div>
+                    <div class="pill disc" id="A_oyako">親子割</div>
+          <div class="pill disc" id="A_support39">39割</div>
+          <div class="pill disc" id="A_denki">でんき割</div>         
         </div>
 
         <details class="compact" id="A_customBox">
@@ -553,6 +616,15 @@
         <div class="divider" style="margin:10px 0;"></div>
         <div class="mini" style="margin:0;font-weight:1000;">割引</div>
         <div class="pillRow" style="margin-top:6px;">
+          <div class="pill disc" id="B_aupay">auPAYカード割</div>
+          <div class="pill disc" id="B_dcardPill">dカード割</div>
+            <span class="pillSelectWrap hidden" id="B_dcardWrap">
+              <select id="B_dcard" class="pillSelect">
+                <option value="silver">シルバー</option>
+                <option value="gold">ゴールド</option>
+              </select>
+            </span>
+          <div class="pill disc" id="B_hikari">光割</div>
           <div class="pill disc" id="B_family">家族割</div>
           <span class="pillSelectWrap" id="B_familyCountWrap">
             <select id="B_familyCount" class="pillSelect">
@@ -561,8 +633,8 @@
             </select>
           </span>
           <div class="pill disc" id="B_oyako">親子割</div>
-          <div class="pill disc" id="B_hikari">光セット割</div>
-          <div class="pill disc" id="B_aupay">auPAYカード割</div>
+          <div class="pill disc" id="B_support39">39割</div>
+          <div class="pill disc" id="B_denki">でんき割</div>  
         </div>
 
         <details class="compact" id="B_customBox">
@@ -605,45 +677,14 @@
       </div>
     </div>
 
-    <div class="delta hidden" id="deltaBox">
-      <div><b id="deltaText">差額：—</b></div>
-    </div>
-
-    <!-- 端末/作業系 -->
-    <div class="divider"></div>
-    <div class="grid3">
-      <div id="payTypeBlock" class="hidden">
-        <label>端末の購入方法</label>
-        <select id="payType">
-          <option value="" selected>未選択</option>
-          <option value="nojimaInstall" id="optNojimaInstall">分リセ</option>
-          <option value="carrierInstall">キャリア分割</option>
-          <option value="lump">一括</option>
-        </select>
-      </div>
-
-      <div id="simOnlyNote" class="hidden">
-        <div class="note">SIMのみのため、データ移行・下取り受付は基本発生しません。</div>
-      </div>
-
-      <div id="dataTransferBlock">
-        <label>データ移行</label>
-        <select id="needDataTransfer">
-          <option value="yes">あり</option>
-          <option value="no" selected>なし</option>
-        </select>
-      </div>
-
-      <div id="tradeInReceptionBlock">
-        <label>下取り受付</label>
-        <select id="needTradeInReception">
-          <option value="yes">あり</option>
-          <option value="no" selected>なし</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="divider"></div>
+    <details class="compact hidden" id="deltaBox">
+  <summary>
+    <span class="badgeMini" id="deltaBadge">差額を表示</span>
+  </summary>
+  <div class="delta" style="margin-top:10px;">
+    <div><b id="deltaText">差額：—</b></div>
+  </div>
+</details>
 
     <div class="alert hidden" id="pointAlert" style="margin-top:10px;"></div>
     <div class="alert hidden" id="priceDbAlert" style="margin-top:10px;"></div>
@@ -939,6 +980,7 @@ function applyFamilyCountUI(side, carrier, consult){
   const sel  = el(side + "_familyCount");
   if (!wrap || !sel) return;
 
+  // UQ: 光割ONなら家族回線数は不要（非表示）
   const hikOn = (carrier === "uq") && !!getConsult(consult, side, "discHikari", false);
   if (hikOn){
     wrap.classList.add("hidden");
@@ -947,21 +989,24 @@ function applyFamilyCountUI(side, carrier, consult){
   }
 
   const need = needsFamilyCount(carrier, planKey);
-
-  // 必要なときだけ表示（家族割OFFでも表示はして、ONで選べる方が操作迷子になりにくい）
   wrap.classList.toggle("hidden", !need);
 
-  if (!need){
-    // 不要ならUIも状態も触らない（保存値は残してOK）
-    return;
-  }
+  if (!need) return;
 
-  // 必要なとき：家族割ONのときだけ選べる
+  // 家族割ONのときだけ触れる
   sel.disabled = !famOn;
 
-  // 値同期（未設定は2回線）
-  const cur = Number(getConsult(consult, side, "discFamilyCount", 2) || 2) || 2;
-  sel.value = String(cur >= 4 ? 4 : (cur <= 2 ? 2 : 3));
+  // ★discFamilyCount は 2 or 3 に正規化（4などが残ってても3へ）
+  let cur = Number(getConsult(consult, side, "discFamilyCount", 2) || 2) || 2;
+  cur = (cur >= 3) ? 3 : 2;
+
+  // UI反映
+  sel.value = String(cur);
+
+  // 保存値も正規化しておく（localStorageに4が残る事故を潰す）
+  if (Number(getConsult(consult, side, "discFamilyCount", 2) || 2) !== cur){
+    setConsultPatch(side, { discFamilyCount: cur });
+  }
 }
 
   function syncPlanSelect(side, carrier, form, consult){
@@ -1016,6 +1061,9 @@ function applyFamilyCountUI(side, carrier, consult){
     const hikBtn = el(side + "_hikari");
     const apyBtn = el(side + "_aupay");
     const oyaBtn = el(side + "_oyako");
+    const s39Btn = el(side + "_support39");
+    const denBtn  = el(side + "_denki");
+    const dcdPill = el(side + "_dcardPill"); 
 
     // UQコミコミは割引なし → pillを隠す（トクトクは表示）
     const uqNoDiscount = (carrier === "uq" && planKey === "komikomi_value");
@@ -1041,6 +1089,8 @@ function applyFamilyCountUI(side, carrier, consult){
     applyOne(hikBtn, "hikari", "discHikari");
     applyOne(apyBtn, "aupay",  "discAupay");
     applyOne(oyaBtn, "oyako",  "discOyako");
+    applyOne(s39Btn, "support39", "discSupport39");
+    applyOne(denBtn, "denki", "discDenki");
 
     if (carrier === "uq"){
     const hikOn = !!getConsult(consult, side, "discHikari", false);
@@ -1099,7 +1149,41 @@ function forceAhamoTalkOn(side){
   setConsultPatch(side, { talkEnabled:true, talkKind:"short" });
 }
 
+function applyDcardUI(side, carrier, consult){
+  const pill = el(side + "_dcardPill");
+  const wrap = el(side + "_dcardWrap");
+  const sel  = el(side + "_dcard");
+  if (!pill || !wrap || !sel) return;
+
+  const on = !!getConsult(consult, side, "discDcard", false);
+
+  // docomo 以外は非表示＆OFF（事故防止）
+  if (carrier !== "docomo"){
+    pill.classList.add("hidden");
+    wrap.classList.add("hidden");
+    if (on) setConsultPatch(side, { discDcard:false, dcardKind:"silver" });
+    return;
+  }
+
+  pill.classList.remove("hidden");
+  pillSet(pill, on);
+
+  wrap.classList.toggle("hidden", !on);
+  sel.disabled = !on;
+
+  const kind = getConsult(consult, side, "dcardKind", "silver") || "silver";
+  sel.value = (kind === "gold") ? "gold" : "silver";
+}
+
   function calcMonthly(carrier, form, consult, side){
+    console.log("[DBG]", { side, carrier,
+  planKey: getConsult(consult, side, "planKey", ""),
+  discHikari: getConsult(consult, side, "discHikari", false),
+  discFamily: getConsult(consult, side, "discFamily", false),
+  discFamilyCount: getConsult(consult, side, "discFamilyCount", 2),
+  consultCarrierA: consult.carrierA,
+  selCarrierA: el("carrierA")?.value,
+});
   if (!carrier) return { total: NaN, lines: [] };
   if (!window.PRICE_DB) return { total: NaN, lines: [] };
 
@@ -1156,8 +1240,18 @@ function forceAhamoTalkOn(side){
   // ===== discounts (eligibility) =====
   let family = 0;
   if (getConsult(consult, side, "discFamily", false) &&
-      window.PRICE_DB.isDiscountEligible && window.PRICE_DB.isDiscountEligible(carrier, "family", planKey)){
-    const d = window.PRICE_DB.getDiscount ? window.PRICE_DB.getDiscount(carrier, "family") : null;
+      window.PRICE_DB.isDiscountEligible &&
+      window.PRICE_DB.isDiscountEligible(carrier, "family", planKey, {
+        discHikari: getConsult(consult, side, "discHikari", false)
+      })) {
+
+    const d = window.PRICE_DB.getDiscount
+      ? window.PRICE_DB.getDiscount(carrier, "family", {
+          discFamilyCount: getConsult(consult, side, "discFamilyCount", 2),
+          planKey
+        })
+      : null;
+
     family = d ? d.amount : 0;
   }
 
@@ -1181,11 +1275,36 @@ function forceAhamoTalkOn(side){
     }
   }
 
+  let support39 = 0;
+  if (getConsult(consult, side, "discSupport39", false) &&
+      window.PRICE_DB.isDiscountEligible &&
+      window.PRICE_DB.isDiscountEligible(carrier, "support39", planKey)){
+    const d = window.PRICE_DB.getDiscount ? window.PRICE_DB.getDiscount(carrier, "support39") : null;
+    support39 = d ? d.amount : 0;
+  }
+
   let aupay = 0;
   if (getConsult(consult, side, "discAupay", false) &&
       window.PRICE_DB.isDiscountEligible && window.PRICE_DB.isDiscountEligible(carrier, "aupay", planKey)){
     const d = window.PRICE_DB.getDiscount ? window.PRICE_DB.getDiscount(carrier, "aupay") : null;
     aupay = d ? d.amount : 0;
+  }
+
+  let dcard = 0;
+  if (carrier === "docomo" && !!getConsult(consult, side, "discDcard", false)){
+    const kind = getConsult(consult, side, "dcardKind", "silver"); // silver|gold
+    const key = (kind === "gold") ? "dcard_gold" : "dcard_silver";
+    const d = window.PRICE_DB.getDiscount ? window.PRICE_DB.getDiscount("docomo", key) : null;
+    dcard = d ? d.amount : 0;
+  }
+
+  let denki = 0;
+  if (carrier === "docomo" &&
+      getConsult(consult, side, "discDenki", false) &&
+      window.PRICE_DB.isDiscountEligible &&
+      window.PRICE_DB.isDiscountEligible(carrier, "denki", planKey)){
+    const d = window.PRICE_DB.getDiscount ? window.PRICE_DB.getDiscount("docomo", "denki") : null;
+    denki = d ? d.amount : 0;
   }
 
   // ===== mail carry =====
@@ -1195,7 +1314,7 @@ function forceAhamoTalkOn(side){
   // ===== custom (±) =====
   const custom = Number(getConsult(consult, side, "customDiscountYen", 0) || 0) || 0;
 
-  const total = base + talkYen + mail + family + hikari + aupay + oyako_now + custom;
+  const total = base + talkYen + mail + family + hikari + aupay + oyako_now + support39 + dcard + denki + custom;
 
   // ===== breakdown lines =====
   const lines = [];
@@ -1217,10 +1336,20 @@ function forceAhamoTalkOn(side){
   }
 
   if (mail !== 0)     lines.push({ k:"メール", v: mail });
-  if (family !== 0)   lines.push({ k:"家族割", v: family });
-  if (oyako_now !== 0) lines.push({ k:"親子割(1年間)", v: oyako_now });
-  if (hikari !== 0)   lines.push({ k:"光割", v: hikari });
   if (aupay !== 0)    lines.push({ k:"auPAYカード割", v: aupay });
+  if (dcard !== 0){
+    const kind = getConsult(consult, side, "dcardKind", "silver") === "gold" ? "ゴールド" : "シルバー";
+    lines.push({ k:`dカード割（${kind}）`, v: dcard });
+  }
+  if (hikari !== 0)   lines.push({ k:"光割", v: hikari });
+  if (family !== 0){
+    const fc = Number(getConsult(consult, side, "discFamilyCount", 2) || 2) || 2;
+    const tag = (fc >= 3) ? "3回線以上" : "2回線";
+    lines.push({ k:`家族割（${tag}）`, v: family });
+  }
+  if (oyako_now !== 0) lines.push({ k:"親子割(1年間)", v: oyako_now });
+  if (support39 !== 0) lines.push({ k:"39割", v: support39 });
+  if (denki !== 0) lines.push({ k:"でんき割", v: denki });
   if (custom !== 0)   lines.push({ k:"任意調整", v: custom });
 
   return { total, totalAfter: (oyako_after ? (total - oyako_now + oyako_after) : null), lines, planKey };
@@ -1228,31 +1357,6 @@ function forceAhamoTalkOn(side){
 
 function renderAll(){
   let { form, consult } = loadCtx();
-
-  const deviceFlow = needsDeviceFlow(form.contractType || "");
-  const simOnly = (form.contractType === "mnpSim");
-  const isNew = (form.contractType === "new");
-
-  el("payTypeBlock")?.classList.toggle("hidden", !deviceFlow || simOnly);
-  el("simOnlyNote")?.classList.toggle("hidden", !simOnly);
-
-  const hideDT = (!deviceFlow || simOnly || isNew);
-  el("dataTransferBlock")?.classList.toggle("hidden", hideDT);
-  el("tradeInReceptionBlock")?.classList.toggle("hidden", hideDT);
-
-  const banNojima = (form.contractType === "deviceChange" || form.contractType === "new");
-  const optNoj = el("optNojimaInstall");
-  if (optNoj){
-    optNoj.disabled = banNojima;
-    optNoj.textContent = banNojima ? "分リセ ※選択不可" : "分リセ";
-  }
-  if (banNojima && el("payType") && el("payType").value === "nojimaInstall"){
-    el("payType").value = "";
-    saveConsultPatch({ payType:"" });
-  }
-
-  updatePointAlert();
-
   const mode = readMode();
   el("carrierGrid")?.classList.toggle("compare", mode === "compare");
   document.body.dataset.mode = mode;
@@ -1399,13 +1503,18 @@ function renderAll(){
   pillSet(el("A_family"), !!getConsult(consult,"A","discFamily",false));
   pillSet(el("A_hikari"), !!getConsult(consult,"A","discHikari",false));
   pillSet(el("A_oyako"),  !!getConsult(consult,"A","discOyako",false));
+  pillSet(el("A_support39"), !!getConsult(consult,"A","discSupport39",false));
   pillSet(el("A_aupay"),  !!getConsult(consult,"A","discAupay",false));
+  pillSet(el("A_denki"), !!getConsult(consult,"A","discDenki",false));
+
 
   pillSet(el("B_mail"),   !!getConsult(consult,"B","optMailCarry",false));
   pillSet(el("B_family"), !!getConsult(consult,"B","discFamily",false));
   pillSet(el("B_hikari"), !!getConsult(consult,"B","discHikari",false));
   pillSet(el("B_oyako"),  !!getConsult(consult,"B","discOyako",false));
+  pillSet(el("B_support39"), !!getConsult(consult,"B","discSupport39",false));
   pillSet(el("B_aupay"),  !!getConsult(consult,"B","discAupay",false));
+  pillSet(el("B_denki"), !!getConsult(consult,"B","discDenki",false));
 
   // 任意調整欄の同期
   if (el("A_customDiscountYen")) el("A_customDiscountYen").value = String(Number(getConsult(consult,"A","customDiscountYen",0) || 0) || 0);
@@ -1415,6 +1524,9 @@ function renderAll(){
 
   updateCustomBadge("A", consult);
   updateCustomBadge("B", consult);
+
+  applyDcardUI("A", a, consult);
+  applyDcardUI("B", b, consult);
 
   // ===== 結果 =====
   el("brandA") && (el("brandA").textContent = carrierLabel(a));
@@ -1488,12 +1600,12 @@ function renderAll(){
     });
 
     on("A_familyCount", "change", ()=>{
-      const v = Number(el("A_familyCount")?.value || 2) || 2;
+      const v = (el("A_familyCount")?.value === "3") ? 3 : 2;
       setConsultPatch("A", { discFamilyCount: v });
       renderAll();
     });
     on("B_familyCount", "change", ()=>{
-      const v = Number(el("B_familyCount")?.value || 2) || 2;
+      const v = (el("B_familyCount")?.value === "3") ? 3 : 2;
       setConsultPatch("B", { discFamilyCount: v });
       renderAll();
     });
@@ -1602,12 +1714,69 @@ function renderAll(){
 
       renderAll();
     });
+
+    click("A_support39", () => {
+      const { consult } = loadCtx();
+      const cur = !!getConsult(consult, "A", "discSupport39", false);
+      setConsultPatch("A", { discSupport39: !cur });
+      renderAll();
+    });
     click("A_aupay", () => {
       const { consult } = loadCtx();
       const carrier = el("carrierA")?.value || consult.carrierA || "";
       toggleDiscountWithUqRule("A", carrier, "aupay");
       renderAll();
     });
+
+    click("A_dcardPill", () => {
+  const { consult } = loadCtx();
+  const carrier = el("carrierA")?.value || consult.carrierA || "";
+  if (carrier !== "docomo") return;
+
+  const cur = !!getConsult(consult, "A", "discDcard", false);
+  setConsultPatch("A", { discDcard: !cur });
+  renderAll();
+});
+
+on("A_dcard", "change", () => {
+  const v = el("A_dcard")?.value === "gold" ? "gold" : "silver";
+  setConsultPatch("A", { dcardKind: v, discDcard: true });
+  renderAll();
+});
+
+click("B_dcardPill", () => {
+  const { consult } = loadCtx();
+  const carrier = el("carrierB")?.value || consult.carrierB || "";
+  if (carrier !== "docomo") return;
+
+  const cur = !!getConsult(consult, "B", "discDcard", false);
+  setConsultPatch("B", { discDcard: !cur });
+  renderAll();
+});
+
+on("B_dcard", "change", () => {
+  const v = el("B_dcard")?.value === "gold" ? "gold" : "silver";
+  setConsultPatch("B", { dcardKind: v, discDcard: true });
+  renderAll();
+});
+
+click("A_denki", () => {
+  const { consult } = loadCtx();
+  const carrier = el("carrierA")?.value || consult.carrierA || "";
+  if (carrier !== "docomo") return; // ★事故防止
+  const cur = !!getConsult(consult, "A", "discDenki", false);
+  setConsultPatch("A", { discDenki: !cur });
+  renderAll();
+});
+
+click("B_denki", () => {
+  const { consult } = loadCtx();
+  const carrier = el("carrierB")?.value || consult.carrierB || "";
+  if (carrier !== "docomo") return; // ★事故防止
+  const cur = !!getConsult(consult, "B", "discDenki", false);
+  setConsultPatch("B", { discDenki: !cur });
+  renderAll();
+});
 
     click("B_family", () => {
       const { consult } = loadCtx();
@@ -1641,6 +1810,13 @@ function renderAll(){
 
       renderAll();
     });
+
+    click("B_support39", () => {
+      const { consult } = loadCtx();
+      const cur = !!getConsult(consult, "B", "discSupport39", false);
+      setConsultPatch("B", { discSupport39: !cur });
+      renderAll();
+    });
     click("B_aupay", () => {
       const { consult } = loadCtx();
       const carrier = el("carrierB")?.value || consult.carrierB || "";
@@ -1669,32 +1845,6 @@ function renderAll(){
       setConsultPatch("B", { customDiscountNote: el("B_customDiscountNote")?.value || "" });
       renderAll();
     });
-
-    on("payType", "change", ()=>{
-      const { form } = loadCtx();
-      const v = el("payType")?.value || "";
-
-      if ((form.contractType === "deviceChange" || form.contractType === "new") && v === "nojimaInstall"){
-        if (el("payType")) el("payType").value = "";
-        saveConsultPatch({ payType:"" });
-        renderAll();
-        return;
-      }
-
-      saveConsultPatch({ payType:v });
-      renderAll();
-    });
-
-    on("needDataTransfer", "change", ()=>{
-      saveConsultPatch({ needDataTransfer: el("needDataTransfer")?.value || "no" });
-      renderAll();
-    });
-
-    on("needTradeInReception", "change", ()=>{
-      saveConsultPatch({ needTradeInReception: el("needTradeInReception")?.value || "no" });
-      renderAll();
-    });
-
     click("backToContractBtn", () => {
       window.location.href = "ContractNavigator.html";
     });
