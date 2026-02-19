@@ -7,11 +7,13 @@
 // プラン
   C.plans = {
     docomo: {
-      map: { lte5: "mini_4", lte30: "mini_10", unlimited: "max" },
+      map: { lte5: "mini_4", lte30: "mini_10", unlimited: "max_unlimited" },
       items: {
         mini_4:  { label:"ドコモ mini（4GB）",  price: 2750 },
-        mini_10: { label:"ドコモ mini（10GB）", price: 3850 },
-        max:     { label:"ドコモ MAX", price: 8448 }
+        mini_10: { label: "ドコモ mini（10GB）", price: 3850 },
+        max_28: { label: "【U22】ドコモ MAX(28GB)", price: 5698 },
+        max_30:     { label:"【U22】ドコモ MAX(30GB)", price: 6798 },
+        max_unlimited:     { label:"ドコモ MAX(無制限)", price: 8448 }
       }
     },
 
@@ -55,7 +57,7 @@
       items:{
         simple3_s: { label:"シンプル3 S（5GB）",  price: 3058 },
         simple3_m: { label:"シンプル3 M（30GB）", price: 4158 },
-        simple3_l: { label:"シンプル3 L（35GB）", price: 5258, includes:{ callShort:true } }
+        simple3_l: { label:"シンプル3 L（35GB）", price: 5258, includes:{ callShort:true, callShortMinutes:10 } }
       }
     }
   };
@@ -85,7 +87,8 @@
     },
     ymobile: {
       short:    { label:"だれとでも定額＋",       price: 880 },
-      unlimited:{ label:"スーパーだれとでも定額＋", price: 1980 }
+      unlimited: { label: "スーパーだれとでも定額＋", price: 1980 },
+      senior:   { label:"24時間かけ放題(60歳以上)", price: 880 }
     }
   };
 
@@ -98,6 +101,7 @@
 // 割引
   C.discounts = {
     docomo: {
+      u22: { label:"ドコモU22割（最大7か月）" },
       family: {
       label: "みんなドコモ割",
       tiers: {
@@ -183,6 +187,16 @@ C.getDiscount = function(carrier, kind, ctx){
     return { label: `${d.label}（${key === 2 ? "2回線" : "3回線以上"}）`, amount: d.tiers[key] };
   }
 
+  if (carrier === "docomo" && kind === "u22"){
+  const pk = String(ctx?.planKey || "");
+  const amount =
+    (pk === "max_unlimited") ? -550 :
+    (pk === "max_30")        ? -3828 :
+    (pk === "max_28")        ? -2728 :
+    0;
+  return { label: d.label, amount };
+}
+
   return d;
 };
 
@@ -208,33 +222,39 @@ C.getDiscount = function(carrier, kind, ctx){
   };
 
 C.isDiscountEligible = function(carrier, kind, planKey, ctx){
+  //【ahamo】
+  // 割引なし
   if (carrier === "ahamo") return false;
+  const d = C.discounts?.[carrier]?.[kind];
+  if (!d) return false;
 
+  //【docomo】
+  // miniは家族割なし
   if (carrier === "docomo" && kind === "family"){
     if (planKey === "mini_4" || planKey === "mini_10") return false;
   }
 
-  const d = C.discounts?.[carrier]?.[kind];
-  if (!d) return false;
+  // U22割はMAXのみ
+  if (carrier === "docomo" && kind === "u22"){
+    return (planKey === "max_28" || planKey === "max_30" || planKey === "max_unlimited");
+  }
 
+  //【UQ】
   if (carrier === "uq") {
-    if (kind === "support39"){
-    return planKey === "komikomi_value";
-  }
+    // コミコミは割引なし
+    if (planKey === "komikomi_value") return false;
 
-  if (planKey === "komikomi_value"){
-    return false;
-  }
+    // 親子割はトクトク2のみ
+    if (kind === "oyako"){
+      return planKey === "tokutoku_gt5";
+    }
 
-  if (kind === "oyako") {
-    return planKey === "tokutoku_gt5";
+    // 家族割より光割優先
+    if (ctx){
+      const hik = !!ctx.discHikari;
+      if (kind === "family" && hik) return false;
+    }
   }
-
-  if (ctx) {
-    const hik = !!ctx.discHikari;
-    if (kind === "family" && hik) return false;
-  }
-}
 
   return true;
 };

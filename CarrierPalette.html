@@ -540,25 +540,35 @@ header{
         <div class="divider" style="margin:10px 0;"></div>
         <div class="mini" style="margin:0;font-weight:1000;">割引</div>
         <div class="pillRow" style="margin-top:6px;">
-          <div class="pill disc" id="A_aupay">auPAYカード割</div>
-          <div class="pill disc" id="A_dcardPill">dカード割</div>
-          <span class="pillSelectWrap hidden" id="A_dcardWrap">
-            <select id="A_dcard" class="pillSelect">
-              <option value="silver">シルバー</option>
-              <option value="gold">ゴールド</option>
-            </select>
-          </span> 
-          <div class="pill disc" id="A_hikari">光割</div>
-                    <div class="pill disc" id="A_family">家族割</div>
+          <div class="pill disc" id="A_u22">U22割</div>
+          <div class="pill disc" id="A_upgradeUqToAu">アプグレ割</div>
+          <div class="pill disc" id="A_oyako">親子割</div>
+          <div class="pill disc" id="A_support39">39割</div>
+          <div class="pill disc" id="A_family">家族割</div>
+          <div class="pill disc" id="A_upgradeYToSb">アプグレ割</div>
           <span class="pillSelectWrap" id="A_familyCountWrap">
             <select id="A_familyCount" class="pillSelect">
               <option value="2">2回線</option>
               <option value="3">3回線以上</option>
             </select>
           </span>
-                    <div class="pill disc" id="A_oyako">親子割</div>
-          <div class="pill disc" id="A_support39">39割</div>
-          <div class="pill disc" id="A_denki">でんき割</div>         
+          <div class="pill disc" id="A_hikari">光割</div>
+          <div class="pill disc" id="A_denki">でんき割</div>
+          <div class="pill disc" id="A_dcardPill">dカード割</div>
+          <span class="pillSelectWrap hidden" id="A_dcardWrap">
+            <select id="A_dcard" class="pillSelect">
+              <option value="silver">シルバー</option>
+              <option value="gold">ゴールド</option>
+            </select>
+          </span>
+          <div class="pill disc" id="A_aupay">auPAYカード割</div>
+          <div class="pill disc" id="A_paypayPill">PayPayカード割</div>
+            <span class="pillSelectWrap hidden" id="A_paypayWrap">
+              <select id="A_paypay" class="pillSelect">
+                <option value="normal">通常</option>
+                <option value="gold">ゴールド</option>
+              </select>
+            </span>  
         </div>
 
         <details class="compact" id="A_customBox">
@@ -616,15 +626,11 @@ header{
         <div class="divider" style="margin:10px 0;"></div>
         <div class="mini" style="margin:0;font-weight:1000;">割引</div>
         <div class="pillRow" style="margin-top:6px;">
-          <div class="pill disc" id="B_aupay">auPAYカード割</div>
-          <div class="pill disc" id="B_dcardPill">dカード割</div>
-            <span class="pillSelectWrap hidden" id="B_dcardWrap">
-              <select id="B_dcard" class="pillSelect">
-                <option value="silver">シルバー</option>
-                <option value="gold">ゴールド</option>
-              </select>
-            </span>
-          <div class="pill disc" id="B_hikari">光割</div>
+          <div class="pill disc" id="B_u22">U22割</div>
+          <div class="pill disc" id="B_upgradeUqToAu">アプグレ割</div>
+          <div class="pill disc" id="B_oyako">親子割</div>
+          <div class="pill disc" id="B_support39">39割</div>
+          <div class="pill disc" id="B_upgradeYToSb">アプグレ割</div>
           <div class="pill disc" id="B_family">家族割</div>
           <span class="pillSelectWrap" id="B_familyCountWrap">
             <select id="B_familyCount" class="pillSelect">
@@ -632,9 +638,23 @@ header{
               <option value="3">3回線以上</option>
             </select>
           </span>
-          <div class="pill disc" id="B_oyako">親子割</div>
-          <div class="pill disc" id="B_support39">39割</div>
-          <div class="pill disc" id="B_denki">でんき割</div>  
+          <div class="pill disc" id="B_hikari">光割</div>
+          <div class="pill disc" id="B_denki">でんき割</div>
+          <div class="pill disc" id="B_dcardPill">dカード割</div>
+            <span class="pillSelectWrap hidden" id="B_dcardWrap">
+              <select id="B_dcard" class="pillSelect">
+                <option value="silver">シルバー</option>
+                <option value="gold">ゴールド</option>
+              </select>
+            </span>
+          <div class="pill disc" id="B_aupay">auPAYカード割</div>
+          <div class="pill disc" id="B_paypayPill">PayPayカード割</div>
+            <span class="pillSelectWrap hidden" id="B_paypayWrap">
+              <select id="B_paypay" class="pillSelect">
+                <option value="normal">通常</option>
+                <option value="gold">ゴールド</option>
+              </select>
+            </span>
         </div>
 
         <details class="compact" id="B_customBox">
@@ -813,44 +833,53 @@ header{
     saveConsultPatch({ viewMode: (mode === "compare" ? "compare" : "single") });
   }
 
-  /* ===== UQ: 家族割と光割は併用不可（光割優先） ===== */
-  function enforceUqDiscountRule(side, carrier, consult){
-    if (carrier !== "uq") return;
-    const famOn = !!getConsult(consult, side, "discFamily", false);
-    const hikOn = !!getConsult(consult, side, "discHikari", false);
-    if (famOn && hikOn){
-      setConsultPatch(side, { discFamily:false, discHikari:true });
-    }
+  /* ===== UQ/Y: 家族割と光割は併用不可（光割優先） ===== */
+function isHikariFamilyExclusiveCarrier(carrier){
+  return (carrier === "uq" || carrier === "ymobile");
+}
+
+function enforceHikariFamilyRule(side, carrier, consult){
+  if (!isHikariFamilyExclusiveCarrier(carrier)) return;
+
+  const famOn = !!getConsult(consult, side, "discFamily", false);
+  const hikOn = !!getConsult(consult, side, "discHikari", false);
+  if (famOn && hikOn){
+    // 光割優先
+    setConsultPatch(side, { discFamily:false, discHikari:true });
   }
-  function toggleDiscountWithUqRule(side, carrier, kind){
-    const { consult } = loadCtx();
-    const famOn = !!getConsult(consult, side, "discFamily", false);
-    const hikOn = !!getConsult(consult, side, "discHikari", false);
+}
 
-    if (carrier !== "uq"){
-      if (kind === "family") setConsultPatch(side, { discFamily: !famOn });
-      else if (kind === "hikari") setConsultPatch(side, { discHikari: !hikOn });
-      else if (kind === "aupay"){
-        const cur = !!getConsult(consult, side, "discAupay", false);
-        setConsultPatch(side, { discAupay: !cur });
-      }
-      return;
-    }
+function toggleDiscountWithHikariFamilyRule(side, carrier, kind){
+  const { consult } = loadCtx();
+  const famOn = !!getConsult(consult, side, "discFamily", false);
+  const hikOn = !!getConsult(consult, side, "discHikari", false);
 
-    if (kind === "hikari"){
-      const next = !hikOn;
-      setConsultPatch(side, { discHikari: next, discFamily: next ? false : famOn });
-    } else if (kind === "family"){
-      if (hikOn){
-        setConsultPatch(side, { discFamily:false, discHikari:true });
-      } else {
-        setConsultPatch(side, { discFamily: !famOn, discHikari:false });
-      }
-    } else if (kind === "aupay"){
+  // UQ/Y以外は通常トグル
+  if (!isHikariFamilyExclusiveCarrier(carrier)){
+    if (kind === "family") setConsultPatch(side, { discFamily: !famOn });
+    else if (kind === "hikari") setConsultPatch(side, { discHikari: !hikOn });
+    else if (kind === "aupay"){
       const cur = !!getConsult(consult, side, "discAupay", false);
       setConsultPatch(side, { discAupay: !cur });
     }
+    return;
   }
+
+  // UQ/Yは光割優先の排他
+  if (kind === "hikari"){
+    const next = !hikOn;
+    setConsultPatch(side, { discHikari: next, discFamily: next ? false : famOn });
+  } else if (kind === "family"){
+    if (hikOn){
+      setConsultPatch(side, { discFamily:false, discHikari:true }); // 光割優先
+    } else {
+      setConsultPatch(side, { discFamily: !famOn, discHikari:false });
+    }
+  } else if (kind === "aupay"){
+    const cur = !!getConsult(consult, side, "discAupay", false);
+    setConsultPatch(side, { discAupay: !cur });
+  }
+}
 
   function renderCarrierCards(side){
     const host = el(side === "A" ? "carrierCardsA" : "carrierCardsB");
@@ -1064,6 +1093,7 @@ function applyFamilyCountUI(side, carrier, consult){
     const s39Btn = el(side + "_support39");
     const denBtn  = el(side + "_denki");
     const dcdPill = el(side + "_dcardPill"); 
+    const u22Btn = el(side + "_u22");
 
     // UQコミコミは割引なし → pillを隠す（トクトクは表示）
     const uqNoDiscount = (carrier === "uq" && planKey === "komikomi_value");
@@ -1078,13 +1108,27 @@ function applyFamilyCountUI(side, carrier, consult){
         return;
       }
 
-      const ok = window.PRICE_DB.isDiscountEligible ? window.PRICE_DB.isDiscountEligible(carrier, kind, planKey) : true;
+      if (carrier === "uq" && kind === "support39"){
+        const isKomikomi = (planKey === "komikomi_value");
+        btn.classList.toggle("hidden", !isKomikomi);
+        if (!isKomikomi && getConsult(consult, side, stateKey, false)){
+          setConsultPatch(side, { [stateKey]: false });
+        }
+        return;
+      }
+
+      const ok = window.PRICE_DB.isDiscountEligible
+  ? window.PRICE_DB.isDiscountEligible(carrier, kind, planKey, {
+      discHikari: getConsult(consult, side, "discHikari", false)
+    })
+  : true;
       btn.classList.toggle("hidden", !ok);
       if (!ok && getConsult(consult, side, stateKey, false)){
         setConsultPatch(side, { [stateKey]: false });
       }
     };
 
+    applyOne(u22Btn, "u22", "discU22");
     applyOne(famBtn, "family", "discFamily");
     applyOne(hikBtn, "hikari", "discHikari");
     applyOne(apyBtn, "aupay",  "discAupay");
@@ -1092,7 +1136,7 @@ function applyFamilyCountUI(side, carrier, consult){
     applyOne(s39Btn, "support39", "discSupport39");
     applyOne(denBtn, "denki", "discDenki");
 
-    if (carrier === "uq"){
+    if (carrier === "uq" || carrier === "ymobile"){
     const hikOn = !!getConsult(consult, side, "discHikari", false);
     const famWrap = el(side + "_familyCountWrap");
 
@@ -1105,6 +1149,25 @@ function applyFamilyCountUI(side, carrier, consult){
       if (getConsult(consult, side, "discFamily", false)){
         setConsultPatch(side, { discFamily:false });
       }
+    }
+  }
+
+  const upUqAu = el(side + "_upgradeUqToAu");
+  const upYSb  = el(side + "_upgradeYToSb");
+
+  if (upUqAu){
+    const ok = (carrier === "au");
+    upUqAu.classList.toggle("hidden", !ok);
+    if (!ok && getConsult(consult, side, "optUpgradeUqToAu", false)){
+      setConsultPatch(side, { optUpgradeUqToAu:false });
+    }
+  }
+
+  if (upYSb){
+    const ok = (carrier === "softbank");
+    upYSb.classList.toggle("hidden", !ok);
+    if (!ok && getConsult(consult, side, "optUpgradeYToSb", false)){
+      setConsultPatch(side, { optUpgradeYToSb:false });
     }
   }
 }
@@ -1143,6 +1206,17 @@ function forceKomikomiTalkOn(side){
   setConsultPatch(side, { talkEnabled:true, talkKind:"short" });
 }
 
+function isYmobileSimple3L(carrier, consult, side){
+  if (carrier !== "ymobile") return false;
+  const planKey = getConsult(consult, side, "planKey", "");
+  return planKey === "simple3_l";
+}
+
+function forceYmobileSimple3LTalkOn(side){
+  // シンプル3 L は 10分通話OPを前提：必ずON+shortへ
+  setConsultPatch(side, { talkEnabled:true, talkKind:"short" });
+}
+
 function isAhamo(carrier){ return carrier === "ahamo"; }
 
 function forceAhamoTalkOn(side){
@@ -1175,15 +1249,71 @@ function applyDcardUI(side, carrier, consult){
   sel.value = (kind === "gold") ? "gold" : "silver";
 }
 
+function applyPaypayUI(side, carrier, consult){
+  const pill = el(side + "_paypayPill");
+  const wrap = el(side + "_paypayWrap");
+  const sel  = el(side + "_paypay");
+  if (!pill || !wrap || !sel) return;
+
+  const on = !!getConsult(consult, side, "discPaypay", false);
+
+  // ymobile 以外は非表示＆OFF（事故防止）
+  if (carrier !== "ymobile"){
+    pill.classList.add("hidden");
+    wrap.classList.add("hidden");
+    if (on) setConsultPatch(side, { discPaypay:false, paypayKind:"normal" });
+    return;
+  }
+
+  pill.classList.remove("hidden");
+  pillSet(pill, on);
+
+  wrap.classList.toggle("hidden", !on);
+  sel.disabled = !on;
+
+  const kind = getConsult(consult, side, "paypayKind", "normal") || "normal";
+  sel.value = (kind === "gold") ? "gold" : "normal";
+}
+
+function applyCustomBoxVisibility(side, carrier, consult){
+  const box = el(side + "_customBox");
+  if (!box) return;
+
+  const ok = (carrier === "au" || carrier === "softbank");
+  box.classList.toggle("hidden", !ok);
+
+  // 対象外に切り替えたら値をリセット（事故防止）
+  if (!ok){
+    const v = Number(getConsult(consult, side, "customDiscountYen", 0) || 0) || 0;
+    const note = (getConsult(consult, side, "customDiscountNote", "") || "").trim();
+    if (v !== 0 || note){
+      setConsultPatch(side, { customDiscountYen: 0, customDiscountNote: "" });
+    }
+  }
+}
+
+function enforceU22Policy(side, carrier, consult){
+  // ドコモ以外なら必ずOFF
+  if (carrier !== "docomo"){
+    if (getConsult(consult, side, "discU22", false)){
+      setConsultPatch(side, { discU22:false });
+    }
+    return;
+  }
+
+  // ドコモでも MAX 以外のプランならOFF
+  const planKey = getConsult(consult, side, "planKey", "");
+  const isMax = String(planKey || "").toLowerCase().includes("max"); // あなたの運用に合わせてOK
+
+  if (!isMax){
+    if (getConsult(consult, side, "discU22", false)){
+      setConsultPatch(side, { discU22:false });
+    }
+    return;
+  }
+}
+
   function calcMonthly(carrier, form, consult, side){
-    console.log("[DBG]", { side, carrier,
-  planKey: getConsult(consult, side, "planKey", ""),
-  discHikari: getConsult(consult, side, "discHikari", false),
-  discFamily: getConsult(consult, side, "discFamily", false),
-  discFamilyCount: getConsult(consult, side, "discFamilyCount", 2),
-  consultCarrierA: consult.carrierA,
-  selCarrierA: el("carrierA")?.value,
-});
   if (!carrier) return { total: NaN, lines: [] };
   if (!window.PRICE_DB) return { total: NaN, lines: [] };
 
@@ -1276,12 +1406,21 @@ function applyDcardUI(side, carrier, consult){
   }
 
   let support39 = 0;
-  if (getConsult(consult, side, "discSupport39", false) &&
-      window.PRICE_DB.isDiscountEligible &&
-      window.PRICE_DB.isDiscountEligible(carrier, "support39", planKey)){
-    const d = window.PRICE_DB.getDiscount ? window.PRICE_DB.getDiscount(carrier, "support39") : null;
+const support39On = !!getConsult(consult, side, "discSupport39", false);
+
+if (support39On){
+  const uqKomikomi = (carrier === "uq" && planKey === "komikomi_value");
+
+  const eligible =
+    uqKomikomi ||
+    !window.PRICE_DB?.isDiscountEligible ||
+    window.PRICE_DB.isDiscountEligible(carrier, "support39", planKey);
+
+  if (eligible){
+    const d = window.PRICE_DB?.getDiscount?.(carrier, "support39");
     support39 = d ? d.amount : 0;
   }
+}
 
   let aupay = 0;
   if (getConsult(consult, side, "discAupay", false) &&
@@ -1298,6 +1437,12 @@ function applyDcardUI(side, carrier, consult){
     dcard = d ? d.amount : 0;
   }
 
+  let paypay = 0;
+  if (carrier === "ymobile" && !!getConsult(consult, side, "discPaypay", false)){
+    const kind = getConsult(consult, side, "paypayKind", "normal"); // normal|gold
+    paypay = (kind === "gold") ? -550 : -330; // ★割引なのでマイナス
+  }
+
   let denki = 0;
   if (carrier === "docomo" &&
       getConsult(consult, side, "discDenki", false) &&
@@ -1307,6 +1452,26 @@ function applyDcardUI(side, carrier, consult){
     denki = d ? d.amount : 0;
   }
 
+    let u22 = 0;
+    if (carrier === "docomo" &&
+        getConsult(consult, side, "discU22", false) &&
+        window.PRICE_DB.isDiscountEligible &&
+        window.PRICE_DB.isDiscountEligible(carrier, "u22", planKey)) {
+
+      const d = window.PRICE_DB.getDiscount
+        ? window.PRICE_DB.getDiscount("docomo", "u22", { dataUsage, planKey })
+        : null;
+
+      u22 = d ? d.amount : 0;
+    }
+
+    let upgradeAdd = 0;
+    const upUqAuOn = !!getConsult(consult, side, "optUpgradeUqToAu", false);
+    const upYSbOn  = !!getConsult(consult, side, "optUpgradeYToSb", false);
+
+    if (carrier === "au" && upUqAuOn) upgradeAdd -= 2640;
+    if (carrier === "softbank" && upYSbOn) upgradeAdd -= 2750;
+
   // ===== mail carry =====
   const mailOn = !!getConsult(consult, side, "optMailCarry", false);
   const mail = mailOn ? (window.PRICE_DB.getMailCarry ? (window.PRICE_DB.getMailCarry(carrier)?.price || 0) : 0) : 0;
@@ -1314,11 +1479,12 @@ function applyDcardUI(side, carrier, consult){
   // ===== custom (±) =====
   const custom = Number(getConsult(consult, side, "customDiscountYen", 0) || 0) || 0;
 
-  const total = base + talkYen + mail + family + hikari + aupay + oyako_now + support39 + dcard + denki + custom;
+  const total = base + talkYen + mail + family + hikari
+  + aupay + oyako_now + support39 + dcard + paypay + denki + u22 + upgradeAdd + custom;
 
   // ===== breakdown lines =====
   const lines = [];
-  lines.push({ k:"プラン", v: base });
+  lines.push({ k:"基本料金", v: base });
 
   if (talkEnabled){
     // 0円でも内包を明示したいなら表示（好みで）
@@ -1335,21 +1501,41 @@ function applyDcardUI(side, carrier, consult){
     }
   }
 
-  if (mail !== 0)     lines.push({ k:"メール", v: mail });
+  if (mail !== 0)     lines.push({ k:"メール持ち運び", v: mail });
+  if (u22 !== 0) lines.push({ k:"U22割（7か月）", v: u22 });
+  if (upgradeAdd !== 0){
+    const label =
+      (carrier === "au") ? "UQ→au アップグレード（12ヶ月）" :
+      (carrier === "softbank") ? "Y→SB アップグレード（12ヶ月）" :
+      "アップグレード（12ヶ月）";
+    lines.push({ k: label, v: upgradeAdd });
+  }
+  if (oyako_now !== 0) lines.push({ k:"親子割(1年間)", v: oyako_now });
+  if (support39 !== 0) lines.push({ k:"39割", v: support39 });
+  if (hikari !== 0)   lines.push({ k:"光割", v: hikari });
+  if (family !== 0){
+  // UQ/Y は回線数タグを出さない
+  if (carrier === "uq"){
+    lines.push({ k:"家族割", v: family });
+  } 
+  else if (carrier === "ymobile"){
+    lines.push({ k:"家族割(2回線目以降)", v: family });
+  } else {
+    const fc = Number(getConsult(consult, side, "discFamilyCount", 2) || 2) || 2;
+    const tag = (fc >= 3) ? "3回線以上" : "2回線";
+    lines.push({ k:`家族割（${tag}）`, v: family });
+  }
+}
+  if (denki !== 0) lines.push({ k:"でんき割", v: denki });
   if (aupay !== 0)    lines.push({ k:"auPAYカード割", v: aupay });
   if (dcard !== 0){
     const kind = getConsult(consult, side, "dcardKind", "silver") === "gold" ? "ゴールド" : "シルバー";
     lines.push({ k:`dカード割（${kind}）`, v: dcard });
   }
-  if (hikari !== 0)   lines.push({ k:"光割", v: hikari });
-  if (family !== 0){
-    const fc = Number(getConsult(consult, side, "discFamilyCount", 2) || 2) || 2;
-    const tag = (fc >= 3) ? "3回線以上" : "2回線";
-    lines.push({ k:`家族割（${tag}）`, v: family });
+  if (paypay !== 0){
+    const kind = (getConsult(consult, side, "paypayKind", "normal") === "gold") ? "ゴールド" : "通常";
+    lines.push({ k:`PayPayカード割（${kind}）`, v: paypay });
   }
-  if (oyako_now !== 0) lines.push({ k:"親子割(1年間)", v: oyako_now });
-  if (support39 !== 0) lines.push({ k:"39割", v: support39 });
-  if (denki !== 0) lines.push({ k:"でんき割", v: denki });
   if (custom !== 0)   lines.push({ k:"任意調整", v: custom });
 
   return { total, totalAfter: (oyako_after ? (total - oyako_now + oyako_after) : null), lines, planKey };
@@ -1389,8 +1575,8 @@ function renderAll(){
   ({ form, consult } = loadCtx());
 
   // UQ割引の併用不可整合（光割優先）
-  enforceUqDiscountRule("A", a, consult);
-  enforceUqDiscountRule("B", b, consult);
+enforceHikariFamilyRule("A", a, consult);
+enforceHikariFamilyRule("B", b, consult);
   ({ form, consult } = loadCtx());
 
   // 割引可否UI（UQコミコミは割引自体を隠す）
@@ -1429,71 +1615,57 @@ function renderAll(){
   const hasVoice = (carrier, kind) =>
     !!(window.PRICE_DB && window.PRICE_DB.getVoice && window.PRICE_DB.getVoice(carrier, kind));
 
-  const applyTalkKindVisibility = (side, carrier, planKey) => {
-    const komi = (carrier === "uq" && planKey === "komikomi_value");
+const applyTalkKindVisibility = (side, carrier, planKey) => {
+  const komi = (carrier === "uq" && planKey === "komikomi_value");
+  const ySimple3L = (carrier === "ymobile" && planKey === "simple3_l");
+  el(side + "_kind_unlimited")?.classList.toggle("hidden", !hasVoice(carrier, "unlimited"));
 
-    el(side + "_kind_unlimited")?.classList.toggle("hidden", !hasVoice(carrier, "unlimited"));
+  el(side + "_kind_min60")?.classList.toggle(
+    "hidden",
+    komi || ySimple3L || !hasVoice(carrier, "min60")
+  );
 
-    el(side + "_kind_min60")?.classList.toggle(
-      "hidden",
-      komi || !hasVoice(carrier, "min60")
-    );
-
-    el(side + "_kind_senior")?.classList.toggle(
-      "hidden",
-      komi || !hasVoice(carrier, "senior")
-    );
-  };
+  el(side + "_kind_senior")?.classList.toggle(
+    "hidden",
+    komi || ySimple3L || !hasVoice(carrier, "senior")
+  );
+};
   applyTalkKindVisibility("A", a, aPlanKey);
   applyTalkKindVisibility("B", b, bPlanKey);
 
-  // ===== 通話UI状態反映（enabled + kind） =====
-  const applyTalkState = (side, carrier, consult) => {
-  const komi = isUqKomikomi(carrier, consult, side);
+// ===== 通話UI状態反映（enabled + kind） =====
+const applyTalkState = (side, carrier, consult) => {
+  const planKey = getConsult(consult, side, "planKey", "");
 
-  // コミコミは必ず通話ON
-  if (komi){
-    const enabled = !!getConsult(consult, side, "talkEnabled", false);
-    const kind = getConsult(consult, side, "talkKind", "short");
-    if (!enabled || kind !== "short"){
-      forceKomikomiTalkOn(side);
-      // localStorage更新されるので、この呼び出し元(renderAll)側で後でloadCtxし直すのが理想
+  const komi = (carrier === "uq" && planKey === "komikomi_value");
+  const y3l  = (carrier === "ymobile" && planKey === "simple3_l");
+  const isAh = (carrier === "ahamo");
+
+  // 現在値
+  let enabled = !!getConsult(consult, side, "talkEnabled", false);
+  let kind    = getConsult(consult, side, "talkKind", "short");
+
+  // 強制系：UIも保存値も short/ON に寄せる
+  if (komi || y3l || isAh) {
+    if (!enabled || kind !== "short") {
+      setConsultPatch(side, { talkEnabled:true, talkKind:"short" });
     }
-    if (kind === "min60" || kind === "senior"){
-      forceKomikomiTalkOn(side); // => talkEnabled:true, talkKind:"short"
-    }
+    enabled = true;
+    kind = "short";
   }
 
-  if (isAhamo(carrier)){
-    const enabled = !!getConsult(consult, side, "talkEnabled", false);
-    const kind = getConsult(consult, side, "talkKind", "short");
-    if (!enabled || kind !== "short"){
-      forceAhamoTalkOn(side);
-    }
-  }
-
-  const enabled = !!getConsult(consult, side, "talkEnabled", false);
-  const kind = getConsult(consult, side, "talkKind", "short");
-
-  // コミコミは OFFボタン自体を消す（視覚的にも「なし不可」）
-  el(side + "_talk_off")?.classList.toggle("hidden", komi);
-
-  // kinds row show/hide（コミコミは常に表示）
-  el(side + "_talkKinds")?.classList.toggle("hidden", !enabled && !komi);
-
+  // スイッチ
   const sw = el(side + "_talkSwitch");
-  if (sw){
-    const komi = isUqKomikomi(carrier, consult, side);
-    const enabled = !!getConsult(consult, side, "talkEnabled", false) || komi;
-    sw.setAttribute("aria-pressed", enabled ? "true" : "false");
-  }
-  el(side + "_talkKinds")?.classList.toggle("hidden", !(!!getConsult(consult, side, "talkEnabled", false)) && !isUqKomikomi(carrier, consult, side));
+  if (sw) sw.setAttribute("aria-pressed", enabled ? "true" : "false");
+
+  // 種類欄の表示：ONのときだけ（強制系もON扱い）
+  el(side + "_talkKinds")?.classList.toggle("hidden", !enabled);
 
   // kinds
-  pillSet(el(side + "_kind_short"),     (enabled || komi) && kind === "short");
-  pillSet(el(side + "_kind_unlimited"), (enabled || komi) && kind === "unlimited");
-  pillSet(el(side + "_kind_min60"),     (enabled || komi) && kind === "min60");
-  pillSet(el(side + "_kind_senior"),    (enabled || komi) && kind === "senior");
+  pillSet(el(side + "_kind_short"),     enabled && kind === "short");
+  pillSet(el(side + "_kind_unlimited"), enabled && kind === "unlimited");
+  pillSet(el(side + "_kind_min60"),     enabled && kind === "min60");
+  pillSet(el(side + "_kind_senior"),    enabled && kind === "senior");
 };
   applyTalkState("A", a, consult);
   applyTalkState("B", b, consult);
@@ -1506,7 +1678,9 @@ function renderAll(){
   pillSet(el("A_support39"), !!getConsult(consult,"A","discSupport39",false));
   pillSet(el("A_aupay"),  !!getConsult(consult,"A","discAupay",false));
   pillSet(el("A_denki"), !!getConsult(consult,"A","discDenki",false));
-
+  pillSet(el("A_u22"), !!getConsult(consult,"A","discU22",false));
+  pillSet(el("A_upgradeUqToAu"), !!getConsult(consult,"A","optUpgradeUqToAu",false));
+  pillSet(el("A_upgradeYToSb"),  !!getConsult(consult,"A","optUpgradeYToSb",false));
 
   pillSet(el("B_mail"),   !!getConsult(consult,"B","optMailCarry",false));
   pillSet(el("B_family"), !!getConsult(consult,"B","discFamily",false));
@@ -1515,6 +1689,10 @@ function renderAll(){
   pillSet(el("B_support39"), !!getConsult(consult,"B","discSupport39",false));
   pillSet(el("B_aupay"),  !!getConsult(consult,"B","discAupay",false));
   pillSet(el("B_denki"), !!getConsult(consult,"B","discDenki",false));
+  pillSet(el("B_u22"), !!getConsult(consult,"B","discU22",false));
+  pillSet(el("B_upgradeUqToAu"), !!getConsult(consult,"B","optUpgradeUqToAu",false));
+  pillSet(el("B_upgradeYToSb"),  !!getConsult(consult,"B","optUpgradeYToSb",false));
+
 
   // 任意調整欄の同期
   if (el("A_customDiscountYen")) el("A_customDiscountYen").value = String(Number(getConsult(consult,"A","customDiscountYen",0) || 0) || 0);
@@ -1527,6 +1705,17 @@ function renderAll(){
 
   applyDcardUI("A", a, consult);
   applyDcardUI("B", b, consult);
+
+  applyPaypayUI("A", a, consult);
+  applyPaypayUI("B", b, consult);
+
+  applyCustomBoxVisibility("A", a, consult);
+  applyCustomBoxVisibility("B", b, consult);
+  enforceU22Policy("A", a, consult);
+  enforceU22Policy("B", b, consult);
+  ({ form, consult } = loadCtx());
+  updateCustomBadge("A", consult);
+  updateCustomBadge("B", consult);
 
   // ===== 結果 =====
   el("brandA") && (el("brandA").textContent = carrierLabel(a));
@@ -1590,14 +1779,32 @@ function renderAll(){
       renderAll();
     });
 
-    on("A_planSelect", "change", ()=>{
-      setConsultPatch("A", { planKey: el("A_planSelect")?.value || "" });
-      renderAll();
-    });
+      on("A_planSelect", "change", ()=>{
+    const v = el("A_planSelect")?.value || "";
+    setConsultPatch("A", { planKey: v });
+
+    // docomo MAXならU22を自動ON（任意）
+    const { consult } = loadCtx();
+    const carrier = el("carrierA")?.value || consult.carrierA || "";
+    if (carrier === "docomo" && (v === "max_28" || v === "max_30")){
+      setConsultPatch("A", { discU22: true });
+    }
+
+    renderAll();
+  });
+  
     on("B_planSelect", "change", ()=>{
-      setConsultPatch("B", { planKey: el("B_planSelect")?.value || "" });
-      renderAll();
-    });
+    const v = el("B_planSelect")?.value || "";
+    setConsultPatch("B", { planKey: v });
+
+    const { consult } = loadCtx();
+    const carrier = el("carrierB")?.value || consult.carrierB || "";
+    if (carrier === "docomo" && (v === "max_28" || v === "max_30")){
+      setConsultPatch("B", { discU22: true });
+    }
+
+    renderAll();
+  });
 
     on("A_familyCount", "change", ()=>{
       const v = (el("A_familyCount")?.value === "3") ? 3 : 2;
@@ -1627,6 +1834,12 @@ function renderAll(){
         }
       }
 
+      if (carrier === "ymobile"){
+        const planKey = getConsult(consult, side, "planKey", "");
+        const ySimple3L = (planKey === "simple3_l");
+        if (ySimple3L && (kind === "min60" || kind === "senior")) return;
+      }
+
       setConsultPatch(side, { talkEnabled:true, talkKind: kind });
       renderAll();
     };
@@ -1636,9 +1849,11 @@ function renderAll(){
       const carrier = el("carrierA")?.value || consult.carrierA || "";
       const enabled = !!getConsult(consult,"A","talkEnabled",false);
 
-      // コミコミはOFF禁止：押してもON維持
+      // コミコミ / シンプル3L はOFF禁止
       if (isUqKomikomi(carrier, consult, "A")){
         forceKomikomiTalkOn("A");
+      } else if (isYmobileSimple3L(carrier, consult, "A")){
+        forceYmobileSimple3LTalkOn("A");
       } else {
         setConsultPatch("A", { talkEnabled: !enabled });
       }
@@ -1656,6 +1871,8 @@ function renderAll(){
 
       if (isUqKomikomi(carrier, consult, "B")){
         forceKomikomiTalkOn("B");
+      } else if (isYmobileSimple3L(carrier, consult, "B")){
+        forceYmobileSimple3LTalkOn("B");
       } else {
         setConsultPatch("B", { talkEnabled: !enabled });
       }
@@ -1681,13 +1898,14 @@ function renderAll(){
     click("A_family", () => {
       const { consult } = loadCtx();
       const carrier = el("carrierA")?.value || consult.carrierA || "";
-      toggleDiscountWithUqRule("A", carrier, "family");
+      toggleDiscountWithHikariFamilyRule("A", carrier, "family");
+
       renderAll();
     });
     click("A_hikari", () => {
       const { consult } = loadCtx();
       const carrier = el("carrierA")?.value || consult.carrierA || "";
-      toggleDiscountWithUqRule("A", carrier, "hikari");
+      toggleDiscountWithHikariFamilyRule("A", carrier, "hikari");
       renderAll();
     });
 
@@ -1724,7 +1942,7 @@ function renderAll(){
     click("A_aupay", () => {
       const { consult } = loadCtx();
       const carrier = el("carrierA")?.value || consult.carrierA || "";
-      toggleDiscountWithUqRule("A", carrier, "aupay");
+      toggleDiscountWithHikariFamilyRule("A", carrier, "aupay");
       renderAll();
     });
 
@@ -1744,19 +1962,12 @@ on("A_dcard", "change", () => {
   renderAll();
 });
 
-click("B_dcardPill", () => {
+click("A_u22", () => {
   const { consult } = loadCtx();
-  const carrier = el("carrierB")?.value || consult.carrierB || "";
+  const carrier = el("carrierA")?.value || consult.carrierA || "";
   if (carrier !== "docomo") return;
-
-  const cur = !!getConsult(consult, "B", "discDcard", false);
-  setConsultPatch("B", { discDcard: !cur });
-  renderAll();
-});
-
-on("B_dcard", "change", () => {
-  const v = el("B_dcard")?.value === "gold" ? "gold" : "silver";
-  setConsultPatch("B", { dcardKind: v, discDcard: true });
+  const cur = !!getConsult(consult, "A", "discU22", false);
+  setConsultPatch("A", { discU22: !cur });
   renderAll();
 });
 
@@ -1766,6 +1977,64 @@ click("A_denki", () => {
   if (carrier !== "docomo") return; // ★事故防止
   const cur = !!getConsult(consult, "A", "discDenki", false);
   setConsultPatch("A", { discDenki: !cur });
+  renderAll();
+});
+
+click("A_upgradeUqToAu", () => {
+  const { consult } = loadCtx();
+  const cur = !!getConsult(consult, "A", "optUpgradeUqToAu", false);
+  setConsultPatch("A", { optUpgradeUqToAu: !cur });
+  renderAll();
+});
+click("A_upgradeYToSb", () => {
+  const { consult } = loadCtx();
+  const cur = !!getConsult(consult, "A", "optUpgradeYToSb", false);
+  setConsultPatch("A", { optUpgradeYToSb: !cur });
+  renderAll();
+});
+
+click("A_paypayPill", () => {
+  const { consult } = loadCtx();
+  const carrier = el("carrierA")?.value || consult.carrierA || "";
+  if (carrier !== "ymobile") return;
+
+  const cur = !!getConsult(consult, "A", "discPaypay", false);
+  setConsultPatch("A", { discPaypay: !cur });
+  renderAll();
+});
+
+on("A_paypay", "change", () => {
+  const v = el("A_paypay")?.value === "gold" ? "gold" : "normal";
+  setConsultPatch("A", { paypayKind: v, discPaypay: true });
+  renderAll();
+});
+
+click("B_paypayPill", () => {
+  const { consult } = loadCtx();
+  const carrier = el("carrierB")?.value || consult.carrierB || "";
+  if (carrier !== "ymobile") return;
+
+  const cur = !!getConsult(consult, "B", "discPaypay", false);
+  setConsultPatch("B", { discPaypay: !cur });
+  renderAll();
+});
+
+on("B_paypay", "change", () => {
+  const v = el("B_paypay")?.value === "gold" ? "gold" : "normal";
+  setConsultPatch("B", { paypayKind: v, discPaypay: true });
+  renderAll();
+});
+
+click("B_upgradeUqToAu", () => {
+  const { consult } = loadCtx();
+  const cur = !!getConsult(consult, "B", "optUpgradeUqToAu", false);
+  setConsultPatch("B", { optUpgradeUqToAu: !cur });
+  renderAll();
+});
+click("B_upgradeYToSb", () => {
+  const { consult } = loadCtx();
+  const cur = !!getConsult(consult, "B", "optUpgradeYToSb", false);
+  setConsultPatch("B", { optUpgradeYToSb: !cur });
   renderAll();
 });
 
@@ -1781,13 +2050,13 @@ click("B_denki", () => {
     click("B_family", () => {
       const { consult } = loadCtx();
       const carrier = el("carrierB")?.value || consult.carrierB || "";
-      toggleDiscountWithUqRule("B", carrier, "family");
+      toggleDiscountWithHikariFamilyRule("B", carrier, "family");
       renderAll();
     });
     click("B_hikari", () => {
       const { consult } = loadCtx();
       const carrier = el("carrierB")?.value || consult.carrierB || "";
-      toggleDiscountWithUqRule("B", carrier, "hikari");
+      toggleDiscountWithHikariFamilyRule("B", carrier, "hikari");
       renderAll();
     });
     click("B_oyako", () => {
@@ -1820,9 +2089,34 @@ click("B_denki", () => {
     click("B_aupay", () => {
       const { consult } = loadCtx();
       const carrier = el("carrierB")?.value || consult.carrierB || "";
-      toggleDiscountWithUqRule("B", carrier, "aupay");
+      toggleDiscountWithHikariFamilyRule("B", carrier, "aupay");
       renderAll();
     });
+
+    click("B_dcardPill", () => {
+  const { consult } = loadCtx();
+  const carrier = el("carrierB")?.value || consult.carrierB || "";
+  if (carrier !== "docomo") return;
+
+  const cur = !!getConsult(consult, "B", "discDcard", false);
+  setConsultPatch("B", { discDcard: !cur });
+  renderAll();
+});
+
+on("B_dcard", "change", () => {
+  const v = el("B_dcard")?.value === "gold" ? "gold" : "silver";
+  setConsultPatch("B", { dcardKind: v, discDcard: true });
+  renderAll();
+});
+
+click("B_u22", () => {
+  const { consult } = loadCtx();
+  const carrier = el("carrierB")?.value || consult.carrierB || "";
+  if (carrier !== "docomo") return;
+  const cur = !!getConsult(consult, "B", "discU22", false);
+  setConsultPatch("B", { discU22: !cur });
+  renderAll();
+});
 
     on("A_customDiscountYen", "change", ()=>{
       let v = Number(el("A_customDiscountYen")?.value || 0) || 0;
