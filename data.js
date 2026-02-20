@@ -149,12 +149,17 @@
         3: -1210
       }
     },
-      hikari: { label:"おうち割 光セット",         amount: -1100 }
+      hikari: { label: "おうち割 光セット", amount: -1100 },
+      paypay_normal: { label:"paypayカード割（通常）", amount: -187 },
+      paypay_gold:   { label:"paypayカード割（ゴールド）", amount: -187 }
     },
 
     ymobile: {
       family: { label:"家族割引（2回線目以降）", amount: -1100 },
-      hikari: { label:"おうち割 光セット（A）", amount: -1650 }
+      hikari: { label: "おうち割 光セット（A）", amount: -1650 },
+      paypay_normal: { label:"paypayカード割（通常）", amount: -330 },
+      paypay_gold: { label: "paypayカード割（ゴールド）", amount: -550 },
+      oyako: { label:"ワイモバ親子割（13か月）", amount: -1100 }
     },
 
     ahamo: {
@@ -253,6 +258,14 @@ C.isDiscountEligible = function(carrier, kind, planKey, ctx){
     if (ctx){
       const hik = !!ctx.discHikari;
       if (kind === "family" && hik) return false;
+    }
+  }
+
+  //【Y!mobile】
+  if (carrier === "ymobile") {
+  // 親子割は シンプル3 M/L のみ
+    if (kind === "oyako"){
+      return (planKey === "simple3_m" || planKey === "simple3_l");
     }
   }
 
