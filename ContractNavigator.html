@@ -88,6 +88,7 @@
 
   padding:7px 16px;
   border-radius:999px;
+  opacity: 0.8;
 
   pointer-events:none;
 }
@@ -196,10 +197,17 @@
       font-size:17px;background:#fff;
     }
     .hiddenRow{ display:none !important; }
-    .grid{display:grid;gap:10px;margin-top:10px;}
-    @media (min-width: 760px){
-      .grid{grid-template-columns: 1fr 1fr;}
-    }
+    .grid{
+        display:grid;
+        gap:10px;
+        margin-top:10px;
+
+        grid-template-columns: 1fr 1fr;
+      }
+
+      @media (max-width: 360px){
+        .grid{ grid-template-columns: 1fr; }
+      }
     .divider{height:1px;background:#eef0f3;margin:12px 0;}
     .badge{
       display:inline-block;font-size:17px;padding:8px 16px;border-radius:999px;

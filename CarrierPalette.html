@@ -16,7 +16,7 @@
     body[data-mode="single"] .resultGrid{ grid-template-columns: 1fr; }
 
     :root{
-  --header-h: 90px;   /* ← ヘッダーの高さ。必要なら調整 */
+  --header-h: 90px;
 }
 
 html, body{
@@ -25,7 +25,7 @@ html, body{
 }
 
 .wrap{
-  height: calc(100vh - var(--header-h));
+  height: calc(100dvh - var(--header-h));
   overflow:auto;
   -webkit-overflow-scrolling: touch;
 
@@ -55,7 +55,7 @@ html, body{
       background:#fff5f5;border:1px solid #ffd2d2;border-radius:12px;padding:10px 10px;
       color:#b00020;font-size:14px;font-weight:1000;
     }
-    /* ===== ContractNavigator と同じヘッダー ===== */
+
 header{
   padding:16px 16px 8px;
   background:#fff;
@@ -83,12 +83,16 @@ header{
 
   padding:7px 16px;
   border-radius:999px;
+  opacity: 0.8;
 
   pointer-events:none;
 }
 
-    .grid2{display:grid;gap:10px;grid-template-columns:1fr 1fr;}
-    @media (max-width: 640px){ .grid2{grid-template-columns:1fr;} }
+  .grid2{
+  display:grid;
+  gap:10px;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+}
 
     .grid3{
       display:grid;
@@ -113,7 +117,7 @@ header{
   border:1px solid #e6e8eb;
   border-radius:14px;
   padding:10px;
-  background:#f8fafc;        /* 通話だけ薄く色付け */
+  background:#f8fafc;
 }
 .talkBoxTitle{
   font-size:12px;
@@ -182,29 +186,43 @@ header{
 .switchRow{ display:flex; align-items:center; gap:8px; }
 .switchLabel{ font-size:12px; color:#64748b; font-weight:1000; }
 .switch{
-  width:46px; height:26px;
+  --pad: 1px;
+  --k: 22px;
+  width:46px;
+  height:26px;
   border-radius:999px;
   background:#e9ecef;
   border:1px solid #d9dde3;
   position:relative;
   cursor:pointer;
+  overflow:hidden;
+  padding:0;
+  box-sizing:border-box;
+  -webkit-appearance:none;
+  appearance:none;
+  line-height:0;
 }
+
 .switch .knob{
-  width:22px; height:22px;
+  width:var(--k);
+  height:var(--k);
   border-radius:999px;
   background:#16a34a;
   position:absolute;
-  top:1px; left:1px;
-  transition: transform 160ms ease;
+  top:50%;
+  transform: translateY(-50%);
+  left: var(--pad);
+
+  transition: left 160ms ease;
 }
+
 .switch[aria-pressed="true"]{
   background:#dcfce7;
   border-color:#86efac;
 }
 .switch[aria-pressed="true"] .knob{
-  transform: translateX(20px);
+  left: calc(100% - var(--k) - var(--pad));
 }
-
     .sectionTitle{
       display:flex;align-items:center;justify-content:space-between;gap:10px;
       margin-top:2px;
@@ -232,8 +250,11 @@ header{
       color:#fff;
     }
 
-    .resultGrid{display:grid;gap:10px;grid-template-columns:1fr 1fr;}
-    @media (max-width: 640px){ .resultGrid{grid-template-columns:1fr;} }
+    .resultGrid{
+      display:grid;
+      gap:10px;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    }
 
     .resultCard{
       border:1px solid #e6e8eb;border-radius:14px;padding:10px 10px;background:#fff;
@@ -293,10 +314,31 @@ header{
       grid-template-columns: 1fr;
     }
     .carrierGrid.compare{
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
     }
-    @media (max-width: 640px){
-      .carrierGrid.compare{ grid-template-columns: 1fr; }
+
+    @media (max-width: 420px){
+      .grid2, .resultGrid, .carrierGrid.compare{
+        grid-template-columns: 1fr 1fr;
+      }
+      label{ font-size:11px; }
+      .price{ font-size:11px; }
+      .pill{ padding:6px 11px; font-size:11px; }
+      select,input{ padding:8px 8px; font-size:11px; }
+      .switch{
+    --h: 24px;
+    --k: 20px;
+    width: 42px;}
+
+      /* キャリアカード並び替え */
+      .carrierList .carrierCard{ order: 50; }
+
+      .carrierList .carrierCard.docomo   { order: 1; }
+      .carrierList .carrierCard.ahamo    { order: 2; }
+      .carrierList .carrierCard.au       { order: 3; }
+      .carrierList .carrierCard.uq       { order: 4; }
+      .carrierList .carrierCard.softbank { order: 5; }
+      .carrierList .carrierCard.ymobile  { order: 6; }
     }
 
     .carrierList{
@@ -367,7 +409,6 @@ header{
 
     #recPills{ display:none !important; }
 
-    /* ===== one-button toggle ===== */
     .modeSwitch{
       display:flex; align-items:center; gap:10px;
       user-select:none;
@@ -399,11 +440,15 @@ header{
       border-radius:999px;
       background:#16a34a;
       position:absolute;
-      top:1px; left:1px;
+
+      left:1px;
+      top:50%;
+      transform: translate(0, -50%);
       transition: transform 160ms ease;
     }
+
     body[data-mode="compare"] .modeThumb{
-      transform: translateX(20px);
+      transform: translate(22px, -50%);
     }
     body[data-mode="compare"] .modeTrack{
       background:#dcfce7;
@@ -429,7 +474,7 @@ header{
   background:#fff;
   text-decoration:none;
   box-shadow: 0 10px 26px rgba(0,0,0,0.18);
-  font-size:30px;   /* ← アイコン大きく */
+  font-size:30px;
   user-select:none;
   -webkit-tap-highlight-color: transparent;
   transition: all 120ms ease;
@@ -451,10 +496,8 @@ header{
   <div class="title">キャリアパレット</div>
   <div class="sub">料金比較・見積り</div>
 
-  <!-- 開発中バッジ（契約ナビと同じ位置・見た目） -->
   <div class="devBadge">⚠ 開発中 ⚠</div>
 
-  <!-- もともと右側にあったモード切替はヘッダー内に残す -->
   <div class="modeSwitch" id="modeToggle" role="button" aria-label="表示モード切替" tabindex="0"
        style="position:absolute; right:16px; top:50%; transform:translateY(-50%);">
     <span class="modeLabel" id="modeLabelLeft">単体</span>
@@ -515,7 +558,7 @@ header{
         <div class="divider" style="margin:10px 0;"></div>
         <div class="talkBox">
         <div class="talkBoxTitle">
-          <span>通話オプション</span>
+          <span>通話OP</span>
           <div class="switchRow">
             <span class="switchLabel">なし</span>
             <button class="switch" id="A_talkSwitch" type="button" aria-pressed="false">
@@ -600,7 +643,7 @@ header{
         <div class="divider" style="margin:10px 0;"></div>
         <div class="talkBox">
         <div class="talkBoxTitle">
-          <span>通話オプション</span>
+          <span>通話OP</span>
           <div class="switchRow">
             <span class="switchLabel">なし</span>
             <button class="switch" id="B_talkSwitch" type="button" aria-pressed="false">
@@ -833,7 +876,7 @@ header{
     saveConsultPatch({ viewMode: (mode === "compare" ? "compare" : "single") });
   }
 
-  /* ===== UQ/Y: 家族割と光割は併用不可（光割優先） ===== */
+  /* UQ/Y: 家族割と光割は併用不可（光割優先）*/
 function isHikariFamilyExclusiveCarrier(carrier){
   return (carrier === "uq" || carrier === "ymobile");
 }
@@ -865,7 +908,6 @@ function toggleDiscountWithHikariFamilyRule(side, carrier, kind){
     return;
   }
 
-  // UQ/Yは光割優先の排他
   if (kind === "hikari"){
     const next = !hikOn;
     setConsultPatch(side, { discHikari: next, discFamily: next ? false : famOn });
@@ -893,7 +935,7 @@ function toggleDiscountWithHikariFamilyRule(side, carrier, kind){
 
     CARRIER_ORDER.forEach(key=>{
       const card = document.createElement("div");
-      card.className = "carrierCard" + (current === key ? " on" : "");
+      card.className = "carrierCard " + key + (current === key ? " on" : "");
 
       if (mode === "single"){
         const img = document.createElement("img");
@@ -913,7 +955,6 @@ function toggleDiscountWithHikariFamilyRule(side, carrier, kind){
         if (sel) sel.value = key;
         saveConsultPatch(side === "A" ? { carrierA:key } : { carrierB:key });
 
-        // キャリア切替で状態が残留しないように初期化（A/B共通）
         const isAhamo = (key === "ahamo");
 
         setConsultPatch(side, {
@@ -938,16 +979,11 @@ function toggleDiscountWithHikariFamilyRule(side, carrier, kind){
     elm.classList.toggle("on", !!on);
   }
 
-  // 「短時間かけ放題」表示（キャリアで 5/10 を出し分け）
   function shortTalkLabel(carrier, planKey){
-    // ahamo / docomo は 5分
-    if (carrier === "docomo" || carrier === "ahamo") return "5分以内";
-
-    // UQ：コミコミは 10分付帯だが、表示は同じでOK
-    if (carrier === "uq") return "10分以内";
-
-    // ymobile/sb/au は 10分想定
-    return "10分以内";
+    // 5分
+    if (carrier === "docomo" || carrier === "ahamo" || carrier === "au" || carrier === "softbank") return "5分以内";
+    // 10分
+    if (carrier === "uq" || carrier === "ymobile") return "10分以内";
   }
 
   function updateCustomBadge(side, consult){
@@ -997,8 +1033,6 @@ function toggleDiscountWithHikariFamilyRule(side, carrier, kind){
   if (carrier === "au" || carrier === "softbank") return true;
 
   if (carrier === "docomo"){
-    // ドコモMAXの planKey 命名に合わせて調整してOK
-    // 例: "docomo_max" / "max" / "irumo_max" など
     return String(planKey || "").toLowerCase().includes("max");
   }
   return false;
@@ -1012,7 +1046,6 @@ function applyFamilyCountUI(side, carrier, consult){
   const sel  = el(side + "_familyCount");
   if (!wrap || !sel) return;
 
-  // UQ: 光割ONなら家族回線数は不要（非表示）
   const hikOn = (carrier === "uq") && !!getConsult(consult, side, "discHikari", false);
   if (hikOn){
     wrap.classList.add("hidden");
@@ -1025,17 +1058,13 @@ function applyFamilyCountUI(side, carrier, consult){
 
   if (!need) return;
 
-  // 家族割ONのときだけ触れる
   sel.disabled = !famOn;
 
-  // ★discFamilyCount は 2 or 3 に正規化（4などが残ってても3へ）
   let cur = Number(getConsult(consult, side, "discFamilyCount", 2) || 2) || 2;
   cur = (cur >= 3) ? 3 : 2;
 
-  // UI反映
   sel.value = String(cur);
 
-  // 保存値も正規化しておく（localStorageに4が残る事故を潰す）
   if (Number(getConsult(consult, side, "discFamilyCount", 2) || 2) !== cur){
     setConsultPatch(side, { discFamilyCount: cur });
   }
@@ -1098,13 +1127,11 @@ function applyFamilyCountUI(side, carrier, consult){
     const dcdPill = el(side + "_dcardPill"); 
     const u22Btn = el(side + "_u22");
 
-    // UQコミコミは割引なし → pillを隠す（トクトクは表示）
     const uqNoDiscount = (carrier === "uq" && planKey === "komikomi_value");
 
     const applyOne = (btn, kind, stateKey) => {
       if (!btn) return;
 
-      // ahamoは割引なし（従来通り隠す）
       if (carrier === "ahamo"){
         btn.classList.add("hidden");
         if (getConsult(consult, side, stateKey, false)) setConsultPatch(side, { [stateKey]: false });
@@ -1144,11 +1171,9 @@ function applyFamilyCountUI(side, carrier, consult){
     const famWrap = el(side + "_familyCountWrap");
 
     if (hikOn){
-      // 表示を消す
       famBtn && famBtn.classList.add("hidden");
       famWrap && famWrap.classList.add("hidden");
 
-      // 状態もOFFに寄せる（事故防止）
       if (getConsult(consult, side, "discFamily", false)){
         setConsultPatch(side, { discFamily:false });
       }
@@ -1177,11 +1202,9 @@ function applyFamilyCountUI(side, carrier, consult){
 
   function enforceDefaultsAfterPlan(side, carrier, consult){
       const planKey = getConsult(consult, side, "planKey", "");
-      // 「まだ未設定」のときだけ初期値を入れる
       const enabledExists = (getKey(side, "talkEnabled") in consult);
       const kindExists    = (getKey(side, "talkKind") in consult);
 
-      // UQコミコミ：初期は short(=10分内包) を入れるが、ユーザー選択は尊重する
       if (carrier === "uq" && planKey === "komikomi_value"){
         if (!enabledExists || !kindExists){
           setConsultPatch(side, { talkEnabled:true, talkKind:"short" });
@@ -1189,7 +1212,6 @@ function applyFamilyCountUI(side, carrier, consult){
         return;
       }
 
-      // ahamo：初期は short(=5分内包) を入れるが、ユーザー選択は尊重する
       if (carrier === "ahamo"){
         if (!enabledExists || !kindExists){
           setConsultPatch(side, { talkEnabled:true, talkKind:"short" });
@@ -1205,7 +1227,6 @@ function isUqKomikomi(carrier, consult, side){
 }
 
 function forceKomikomiTalkOn(side){
-  // コミコミは通話内包（short）前提：必ずON+shortへ
   setConsultPatch(side, { talkEnabled:true, talkKind:"short" });
 }
 
@@ -1216,7 +1237,6 @@ function isYmobileSimple3L(carrier, consult, side){
 }
 
 function forceYmobileSimple3LTalkOn(side){
-  // シンプル3 L は 10分通話OPを前提：必ずON+shortへ
   setConsultPatch(side, { talkEnabled:true, talkKind:"short" });
 }
 
@@ -1234,7 +1254,6 @@ function applyDcardUI(side, carrier, consult){
 
   const on = !!getConsult(consult, side, "discDcard", false);
 
-  // docomo 以外は非表示＆OFF（事故防止）
   if (carrier !== "docomo"){
     pill.classList.add("hidden");
     wrap.classList.add("hidden");
@@ -1285,7 +1304,6 @@ function applyCustomBoxVisibility(side, carrier, consult){
   const ok = (carrier === "au" || carrier === "softbank");
   box.classList.toggle("hidden", !ok);
 
-  // 対象外に切り替えたら値をリセット（事故防止）
   if (!ok){
     const v = Number(getConsult(consult, side, "customDiscountYen", 0) || 0) || 0;
     const note = (getConsult(consult, side, "customDiscountNote", "") || "").trim();
@@ -1296,7 +1314,6 @@ function applyCustomBoxVisibility(side, carrier, consult){
 }
 
 function enforceU22Policy(side, carrier, consult){
-  // ドコモ以外なら必ずOFF
   if (carrier !== "docomo"){
     if (getConsult(consult, side, "discU22", false)){
       setConsultPatch(side, { discU22:false });
@@ -1304,9 +1321,8 @@ function enforceU22Policy(side, carrier, consult){
     return;
   }
 
-  // ドコモでも MAX 以外のプランならOFF
   const planKey = getConsult(consult, side, "planKey", "");
-  const isMax = String(planKey || "").toLowerCase().includes("max"); // あなたの運用に合わせてOK
+  const isMax = String(planKey || "").toLowerCase().includes("max");
 
   if (!isMax){
     if (getConsult(consult, side, "discU22", false)){
@@ -1341,9 +1357,8 @@ function enforceU22Policy(side, carrier, consult){
   const plan = window.PRICE_DB.getPlan ? window.PRICE_DB.getPlan(carrier, planKey) : null;
   const base = plan ? plan.price : 0;
 
-  // ===== talk (2-step: enabled + kind) =====
   const talkEnabled = !!getConsult(consult, side, "talkEnabled", false);
-  const talkKind = getConsult(consult, side, "talkKind", "short"); // short|unlimited|min60|senior
+  const talkKind = getConsult(consult, side, "talkKind", "short");
   let talkYen = 0;
 
   const includesCallShort = !!(plan?.includes?.callShort);
@@ -1351,7 +1366,6 @@ function enforceU22Policy(side, carrier, consult){
 
   if (talkEnabled){
     if (talkKind === "short"){
-      // 内包(ahamo=5分, UQコミコミ=10分など)なら追加0円
       if (!includesCallShort){
         const v = window.PRICE_DB.getVoice ? window.PRICE_DB.getVoice(carrier, "short") : null;
         talkYen = v ? v.price : 0;
@@ -1370,7 +1384,6 @@ function enforceU22Policy(side, carrier, consult){
     }
   }
 
-  // ===== discounts (eligibility) =====
   let family = 0;
   if (getConsult(consult, side, "discFamily", false) &&
       window.PRICE_DB.isDiscountEligible &&
@@ -1487,22 +1500,18 @@ if (support39On){
     if (carrier === "au" && upUqAuOn) upgradeAdd -= 2640;
     if (carrier === "softbank" && upYSbOn) upgradeAdd -= 2750;
 
-  // ===== mail carry =====
   const mailOn = !!getConsult(consult, side, "optMailCarry", false);
   const mail = mailOn ? (window.PRICE_DB.getMailCarry ? (window.PRICE_DB.getMailCarry(carrier)?.price || 0) : 0) : 0;
 
-  // ===== custom (±) =====
   const custom = Number(getConsult(consult, side, "customDiscountYen", 0) || 0) || 0;
 
   const total = base + talkYen + mail + family + hikari
   + aupay + oyako_now + support39 + dcard + paypay + denki + u22 + upgradeAdd + custom;
 
-  // ===== breakdown lines =====
   const lines = [];
   lines.push({ k:"基本料金", v: base });
 
   if (talkEnabled){
-    // 0円でも内包を明示したいなら表示（好みで）
     if (talkKind === "short" && includesCallShort){
       const m = includesMinutes ? `${includesMinutes}分` : "短時間";
       lines.push({ k:`短時間かけ放題（内包${m}）`, v: 0 });
@@ -1534,7 +1543,6 @@ if (support39On){
   if (support39 !== 0) lines.push({ k:"39割", v: support39 });
   if (hikari !== 0)   lines.push({ k:"光割", v: hikari });
   if (family !== 0){
-  // UQ/Y は回線数タグを出さない
   if (carrier === "uq"){
     lines.push({ k:"家族割", v: family });
   } 
@@ -1585,25 +1593,20 @@ function renderAll(){
   el("optTitleA") && (el("optTitleA").textContent = carrierLabel(a));
   el("optTitleB") && (el("optTitleB").textContent = carrierLabel(b));
 
-  // プラン選択同期（planKeyを書き戻す）
   syncPlanSelect("A", a, form, consult);
   syncPlanSelect("B", b, form, consult);
 
-  // planKeyがsyncで変わった可能性があるので読み直す
   ({ form, consult } = loadCtx());
 
-  // 初期値だけ enforce（固定はしない）
   enforceDefaultsAfterPlan("A", a, consult);
   enforceDefaultsAfterPlan("B", b, consult);
 
   ({ form, consult } = loadCtx());
 
-  // UQ割引の併用不可整合（光割優先）
 enforceHikariFamilyRule("A", a, consult);
 enforceHikariFamilyRule("B", b, consult);
   ({ form, consult } = loadCtx());
 
-  // 割引可否UI（UQコミコミは割引自体を隠す）
   applyDiscountEligibilityUI("A", a, consult);
   applyDiscountEligibilityUI("B", b, consult);
 
@@ -1613,7 +1616,6 @@ enforceHikariFamilyRule("B", b, consult);
   const aPlanKey = getConsult(consult, "A", "planKey", "");
   const bPlanKey = getConsult(consult, "B", "planKey", "");
 
-  // ===== 「短時間」ラベル（内包分数があれば優先） =====
   const setShortKindLabel = (side, carrier, planKey) => {
     const btn = el(side + "_kind_short");
     if (!btn) return;
@@ -1635,7 +1637,6 @@ enforceHikariFamilyRule("B", b, consult);
   setShortKindLabel("A", a, aPlanKey);
   setShortKindLabel("B", b, bPlanKey);
 
-  // ===== 種類表示：定義がないものは隠す =====
   const hasVoice = (carrier, kind) =>
     !!(window.PRICE_DB && window.PRICE_DB.getVoice && window.PRICE_DB.getVoice(carrier, kind));
 
@@ -1657,7 +1658,6 @@ const applyTalkKindVisibility = (side, carrier, planKey) => {
   applyTalkKindVisibility("A", a, aPlanKey);
   applyTalkKindVisibility("B", b, bPlanKey);
 
-// ===== 通話UI状態反映（enabled + kind） =====
 const applyTalkState = (side, carrier, consult) => {
   const planKey = getConsult(consult, side, "planKey", "");
 
@@ -1665,11 +1665,9 @@ const applyTalkState = (side, carrier, consult) => {
   const y3l  = (carrier === "ymobile" && planKey === "simple3_l");
   const isAh = (carrier === "ahamo");
 
-  // 現在値
   let enabled = !!getConsult(consult, side, "talkEnabled", false);
   let kind    = getConsult(consult, side, "talkKind", "short");
 
-  // 強制系：UIも保存値も short/ON に寄せる
   if (komi || y3l || isAh) {
     if (!enabled || kind !== "short") {
       setConsultPatch(side, { talkEnabled:true, talkKind:"short" });
@@ -1678,14 +1676,11 @@ const applyTalkState = (side, carrier, consult) => {
     kind = "short";
   }
 
-  // スイッチ
   const sw = el(side + "_talkSwitch");
   if (sw) sw.setAttribute("aria-pressed", enabled ? "true" : "false");
 
-  // 種類欄の表示：ONのときだけ（強制系もON扱い）
   el(side + "_talkKinds")?.classList.toggle("hidden", !enabled);
 
-  // kinds
   pillSet(el(side + "_kind_short"),     enabled && kind === "short");
   pillSet(el(side + "_kind_unlimited"), enabled && kind === "unlimited");
   pillSet(el(side + "_kind_min60"),     enabled && kind === "min60");
@@ -1694,7 +1689,6 @@ const applyTalkState = (side, carrier, consult) => {
   applyTalkState("A", a, consult);
   applyTalkState("B", b, consult);
 
-  // ===== その他pill状態 =====
   pillSet(el("A_mail"),   !!getConsult(consult,"A","optMailCarry",false));
   pillSet(el("A_family"), !!getConsult(consult,"A","discFamily",false));
   pillSet(el("A_hikari"), !!getConsult(consult,"A","discHikari",false));
@@ -1717,8 +1711,6 @@ const applyTalkState = (side, carrier, consult) => {
   pillSet(el("B_upgradeUqToAu"), !!getConsult(consult,"B","optUpgradeUqToAu",false));
   pillSet(el("B_upgradeYToSb"),  !!getConsult(consult,"B","optUpgradeYToSb",false));
 
-
-  // 任意調整欄の同期
   if (el("A_customDiscountYen")) el("A_customDiscountYen").value = String(Number(getConsult(consult,"A","customDiscountYen",0) || 0) || 0);
   if (el("A_customDiscountNote")) el("A_customDiscountNote").value = getConsult(consult,"A","customDiscountNote","") || "";
   if (el("B_customDiscountYen")) el("B_customDiscountYen").value = String(Number(getConsult(consult,"B","customDiscountYen",0) || 0) || 0);
@@ -1741,7 +1733,7 @@ const applyTalkState = (side, carrier, consult) => {
   updateCustomBadge("A", consult);
   updateCustomBadge("B", consult);
 
-  // ===== 結果 =====
+  // 結果
   el("brandA") && (el("brandA").textContent = carrierLabel(a));
   el("brandB") && (el("brandB").textContent = carrierLabel(b));
 
@@ -1804,7 +1796,6 @@ const applyTalkState = (side, carrier, consult) => {
     const v = el("A_planSelect")?.value || "";
     setConsultPatch("A", { planKey: v });
 
-    // docomo MAXならU22を自動ON（任意）
     const { consult } = loadCtx();
     const carrier = el("carrierA")?.value || consult.carrierA || "";
     if (carrier === "docomo" && (v === "max_28" || v === "max_30")){
@@ -1845,12 +1836,10 @@ const applyTalkState = (side, carrier, consult) => {
         ? (el("carrierA")?.value || consult.carrierA || "")
         : (el("carrierB")?.value || consult.carrierB || "");
 
-      // UQコミコミは min60 / senior 選択不可
       if (carrier === "uq"){
         const planKey = getConsult(consult, side, "planKey", "");
         const komi = (planKey === "komikomi_value");
         if (komi && (kind === "min60" || kind === "senior")){
-          // 何もしない（または short に寄せるなら forceKomikomiTalkOn(side);）
           return;
         }
       }
@@ -1870,7 +1859,6 @@ const applyTalkState = (side, carrier, consult) => {
       const carrier = el("carrierA")?.value || consult.carrierA || "";
       const enabled = !!getConsult(consult,"A","talkEnabled",false);
 
-      // コミコミ / シンプル3L はOFF禁止
       if (isUqKomikomi(carrier, consult, "A")){
         forceKomikomiTalkOn("A");
       } else if (isYmobileSimple3L(carrier, consult, "A")){
@@ -1915,7 +1903,6 @@ const applyTalkState = (side, carrier, consult) => {
       renderAll();
     });
 
-    // discounts（UQは光割優先ルール＋auPAY追加）
     click("A_family", () => {
       const { consult } = loadCtx();
       const carrier = el("carrierA")?.value || consult.carrierA || "";
@@ -1936,12 +1923,10 @@ const applyTalkState = (side, carrier, consult) => {
       const planKey = getConsult(consult, "A", "planKey", "");
       const cur = !!getConsult(consult, "A", "discOyako", false);
 
-      // UQ + 対象プランのみ
       const ok = window.PRICE_DB?.isDiscountEligible
       ? window.PRICE_DB.isDiscountEligible(carrier, "oyako", planKey)
       : false;
       if (!ok){
-        // 対象外ならOFFに戻す（事故防止）
         if (cur) setConsultPatch("A", { discOyako:false });
         renderAll();
         return;
@@ -1952,7 +1937,6 @@ const applyTalkState = (side, carrier, consult) => {
       if (carrier === "uq"){
         setConsultPatch("A", { discOyako: !cur, discFamily: (!cur ? false : famOn) });
       } else {
-        // ymobile等：家族割は触らない
         setConsultPatch("A", { discOyako: !cur });
       }
 
@@ -2000,7 +1984,7 @@ click("A_u22", () => {
 click("A_denki", () => {
   const { consult } = loadCtx();
   const carrier = el("carrierA")?.value || consult.carrierA || "";
-  if (carrier !== "docomo") return; // ★事故防止
+  if (carrier !== "docomo") return;
   const cur = !!getConsult(consult, "A", "discDenki", false);
   setConsultPatch("A", { discDenki: !cur });
   renderAll();
@@ -2067,7 +2051,7 @@ click("B_upgradeYToSb", () => {
 click("B_denki", () => {
   const { consult } = loadCtx();
   const carrier = el("carrierB")?.value || consult.carrierB || "";
-  if (carrier !== "docomo") return; // ★事故防止
+  if (carrier !== "docomo") return;
   const cur = !!getConsult(consult, "B", "discDenki", false);
   setConsultPatch("B", { discDenki: !cur });
   renderAll();
@@ -2179,11 +2163,9 @@ click("B_u22", () => {
     if (el("needDataTransfer")) el("needDataTransfer").value = consult.needDataTransfer || "no";
     if (el("needTradeInReception")) el("needTradeInReception").value = consult.needTradeInReception || "no";
 
-    // talk default
     if (!("A_talkEnabled" in consult)) setConsultPatch("A", { talkEnabled:false, talkKind:"short" });
     if (!("B_talkEnabled" in consult)) setConsultPatch("B", { talkEnabled:false, talkKind:"short" });
 
-    // ahamoは初期5分
     const a0 = consult.carrierA || "";
     const b0 = consult.carrierB || "";
     if (a0 === "ahamo") setConsultPatch("A", { talkEnabled:true, talkKind:"short" });
