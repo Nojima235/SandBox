@@ -1637,9 +1637,8 @@ function saveDraft(){
   const shared = ensureLines();
 
   shared.lines[activeLine].form = { ...collectForm() };
-  if (activeLine === 0){
-    shared.houseNet.homeNetType  = el("homeNetType").value  || "";
-  }
+  shared.houseNet.homeNetType  = el("homeNetType").value  || "";
+
 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(shared));
 }

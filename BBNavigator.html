@@ -13,90 +13,190 @@ body{
   color:#111;
 }
 
+/* ===== ヘッダー ===== */
 header{
   padding:16px 16px 8px;
   background:#fff;
   border-bottom:1px solid #e6e8eb;
   position:relative;
-  top:0;
-  z-index:10;
 }
-
 .title{font-size:24px;font-weight:800;}
 .sub{font-size:15px;color:#555;margin-top:4px;}
-
-/* （任意）開発中バッジも揃えるなら */
 .devBadge{
   position:absolute;
   top:50%;
   left:35%;
   transform:translate(-50%, -50%);
-
   font-size:15px;
-  font-weight:1100;
+  font-weight:900;
   letter-spacing:.12em;
-
   color:#fff;
   background:#d40000;
-
   padding:7px 16px;
   border-radius:999px;
-  opacity: 0.8;
-
+  opacity:0.85;
   pointer-events:none;
 }
 
+/* ===== 共通 ===== */
 .wrap{
   max-width:900px;
   margin:0 auto;
   padding:20px;
 }
-
-.grid{
-  display:grid;
-  gap:20px;
-  margin-top:20px;
-}
-
-@media(min-width:700px){
-  .grid{ grid-template-columns:1fr 1fr; }
-}
-
 .card{
   background:#fff;
   border:2px solid #e6e8eb;
   border-radius:20px;
-  overflow:hidden;
-  cursor:pointer;
-  transition: all 0.2s ease;
+  padding:18px;
   box-shadow:0 4px 14px rgba(0,0,0,0.08);
 }
+.stack{ display:grid; gap:16px; margin-top:18px; }
 
-.card:hover{
-  transform:translateY(-4px);
-  box-shadow:0 8px 20px rgba(0,0,0,0.12);
+.sectionTitle{
+  margin:0 0 10px;
+  font-size:16px;
+  font-weight:900;
+}
+.subNote{
+  margin-top:6px;
+  font-size:12px;
+  color:#666;
+}
+.divider{
+  height:1px;
+  background:#eef0f3;
+  margin:14px 0;
 }
 
-.card.selected{
-  border:3px solid #111;
-  box-shadow:0 10px 24px rgba(0,0,0,0.18);
+/* ===== 乗り換え元（大きく1枚） ===== */
+.fromRow{ display:flex; align-items:center; gap:16px; }
+.fromBig{
+  width:140px;
+  height:104px;
+  border-radius:20px;
+  border:2px solid #2563eb;
+  background:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 10px 24px rgba(37,99,235,.18);
+}
+.fromBig img{
+  width:84px;
+  height:84px;
+  object-fit:contain;
 }
 
-.card img{
-  width:100%;
-  height:180px;       /* ← 少し小さく */
-  object-fit:contain; /* ← 全体表示 */
-  background:#fff;    /* 余白対策 */
-  padding:10px;       /* 少し余白 */
+/* ===== グループ囲い（ムダを減らす） ===== */
+.groupWrap{
+  display:grid;
+  grid-template-columns: 1fr;
+  gap:12px;
+}
+@media(min-width:720px){
+  .groupWrap{ grid-template-columns: 1fr 1fr; }
+  .groupWrap .groupBox:last-child{ grid-column: 1 / -1; } /* 3つ目を横断してバランス */
 }
 
-.cardLabel{
-  padding:16px;
-  font-size:20px;
-  font-weight:800;
-  text-align:center;
+.groupBox{
+  border:2px solid #eef0f3;
+  border-radius:18px;
+  padding:12px;
+  background:#fbfbfc;
+}
+.groupTitle{
+  font-size:13px;
+  font-weight:900;
+  color:#333;
+  margin:0 0 10px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.groupTitle .dot{
+  width:8px;height:8px;border-radius:999px;background:#111;opacity:.25;
 }
 
+/* ===== 乗り換え先（カード） ===== */
+.netGrid{
+  display:grid;
+  gap:12px;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+}
+
+/* アイコンカード */
+.netCard{
+  height:96px;
+  border-radius:18px;
+  border:2px solid #e6e8eb;
+  background:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  transition:.15s ease;
+  box-shadow:0 4px 12px rgba(0,0,0,.06);
+}
+.netCard:hover{ transform:translateY(-2px); }
+.netCard.on{
+  border-color:#2563eb;
+  box-shadow:0 10px 24px rgba(37,99,235,.18);
+}
+.netCard img{
+  width:68px;
+  height:68px;
+  object-fit:contain;
+  filter:grayscale(1);
+  opacity:.78;
+}
+.netCard.on img{ filter:none; opacity:1; }
+
+/* 現在回線は選択不可 */
+.netCard.disabled{
+  cursor:not-allowed;
+  opacity:.55;
+}
+.netCard.disabled img{
+  filter:grayscale(1);
+  opacity:.55;
+}
+
+/* ===== 住居タイプ（PNGを使うミニカード2択） ===== */
+.houseGrid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:12px;
+}
+.houseCard{
+  height:64px;
+  border-radius:18px;
+  border:2px solid #e6e8eb;
+  background:#fff;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 12px;
+  cursor:pointer;
+  transition:.15s ease;
+  box-shadow:0 3px 10px rgba(0,0,0,.06);
+}
+.houseCard:hover{ transform:translateY(-1px); }
+.houseCard.on{
+  border-color:#2563eb;
+  box-shadow:0 10px 22px rgba(37,99,235,.16);
+}
+.houseCard img{
+  width:38px;
+  height:38px;
+  object-fit:contain;
+}
+.houseCard .txt{
+  font-weight:900;
+  font-size:15px;
+}
+
+/* ===== アプリ切替 ===== */
 .appSwitch{
   position:fixed;
   right:18px;
@@ -105,7 +205,6 @@ header{
   gap:14px;
   z-index:9999;
 }
-
 .appSwitch a{
   width:64px;
   height:64px;
@@ -118,11 +217,10 @@ header{
   box-shadow:0 10px 26px rgba(0,0,0,0.18);
   font-size:30px;
 }
-.appSwitch a.on{
-  border-color:#111;
-}
+.appSwitch a.on{ border-color:#111; }
 </style>
 </head>
+
 <body>
 
 <header>
@@ -132,19 +230,28 @@ header{
 </header>
 
 <div class="wrap">
+  <div class="stack">
 
-  <div class="grid">
-    <div class="card" id="houseCard" data-type="house">
-      <img src="img/house.png" alt="戸建て">
-      <div class="cardLabel">戸建て</div>
+    <!-- ===== 光回線 ===== -->
+    <div class="card">
+      <div class="sectionTitle">現在お使いの光回線</div>
+      <div id="bbFrom" class="fromRow"></div>
+      <div class="subNote">※契約ナビのヒアリング情報を表示しています</div>
+
+      <div class="divider"></div>
+
+      <div class="sectionTitle">これから乗り換える光回線</div>
+      <div id="bbToGroups" class="groupWrap"></div>
     </div>
 
-    <div class="card" id="apartmentCard" data-type="apartment">
-      <img src="img/apartment.png" alt="マンション">
-      <div class="cardLabel">マンション</div>
+    <!-- ===== 住居タイプ（PNG） ===== -->
+    <div class="card">
+      <div class="sectionTitle">住居タイプ</div>
+      <div class="houseGrid" id="housingGrid"></div>
+      <div class="subNote">※月額や工事可否に影響します</div>
     </div>
+
   </div>
-
 </div>
 
 <nav class="appSwitch">
@@ -159,41 +266,153 @@ const STORAGE_KEY = "contract_navi_ctx_v2_multi";
 function loadShared(){
   const raw = localStorage.getItem(STORAGE_KEY);
   if(!raw) return { houseNet:{} };
-  try{
-    return JSON.parse(raw);
-  }catch(e){
-    return { houseNet:{} };
-  }
+  try{ return JSON.parse(raw); }
+  catch{ return { houseNet:{} }; }
+}
+function saveShared(data){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
-function saveHousing(type){
-  const shared = loadShared();
+/* ===== 光回線：グループ定義（要望どおり） ===== */
+const BB_GROUPS = [
+  { title:"NTT回線",  keys:["docomohikari","niftyhikari","softbankhikari","biglobehikari"] },
+  { title:"KDDI回線", keys:["jcom","auhikari"] },
+  { title:"そのほか", keys:["fletshikari","nurohikari"] }
+];
+
+const BB_LABEL = {
+  fletshikari:"フレッツ光",
+  nurohikari:"NURO光",
+  docomohikari:"ドコモ光",
+  niftyhikari:"@nifty光",
+  softbankhikari:"ソフトバンク光",
+  biglobehikari:"ビッグローブ光",
+  auhikari:"auひかり",
+  jcom:"J:COM"
+};
+
+const BB_ICON = {
+  fletshikari:   "icons/flets.png",
+  nurohikari:    "icons/nuro.png",
+  docomohikari:  "icons/docomohikari.png",
+  niftyhikari:   "icons/nifty.png",
+  softbankhikari:"icons/SBhikari.png",
+  biglobehikari: "icons/BIGLOBE.png",
+  auhikari:      "icons/auhikari.png",
+  jcom:          "icons/JCOM.png"
+};
+
+function renderNetIcons(shared){
   shared.houseNet = shared.houseNet || {};
-  shared.houseNet.housingType = type;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(shared));
+  const fromKey = shared.houseNet.homeNetType || "";
+  const toKey   = shared.houseNet.toNetType || "";
+
+  /* ===== 乗り換え元（1枚） ===== */
+  const fromHost = document.getElementById("bbFrom");
+  fromHost.innerHTML = "";
+
+  const box = document.createElement("div");
+  box.className = "fromBig";
+  const img = document.createElement("img");
+  img.src = BB_ICON[fromKey] || "";
+  img.alt = BB_LABEL[fromKey] || "未設定";
+  box.title = img.alt;
+  if(!img.src) img.style.opacity = ".35";
+  box.appendChild(img);
+  fromHost.appendChild(box);
+
+  /* ===== 乗り換え先（囲い＋同一グリッド） ===== */
+  const groupsHost = document.getElementById("bbToGroups");
+  groupsHost.innerHTML = "";
+
+  BB_GROUPS.forEach(g=>{
+    const group = document.createElement("div");
+    group.className = "groupBox";
+
+    const title = document.createElement("div");
+    title.className = "groupTitle";
+    title.innerHTML = `<span class="dot"></span>${g.title}`;
+    group.appendChild(title);
+
+    const grid = document.createElement("div");
+    grid.className = "netGrid";
+
+    g.keys.forEach(key=>{
+      const card = document.createElement("div");
+      const isCurrent = key === fromKey;
+      const isOn = key === toKey;
+
+      card.className = "netCard" + (isOn ? " on" : "") + (isCurrent ? " disabled" : "");
+
+      const im = document.createElement("img");
+      im.src = BB_ICON[key] || "";
+      im.alt = BB_LABEL[key] || key;
+      card.title = isCurrent ? `${im.alt}（現在ご利用中のため選択不可）` : im.alt;
+      if(!im.src) im.style.opacity = ".35";
+      card.appendChild(im);
+
+      if(!isCurrent){
+        card.onclick = ()=>{
+          shared.houseNet.toNetType = key;
+          saveShared(shared);
+          render();
+        };
+      }
+
+      grid.appendChild(card);
+    });
+
+    group.appendChild(grid);
+    groupsHost.appendChild(group);
+  });
 }
 
-function highlightSelected(){
+/* ===== 住居タイプ（PNG） ===== */
+const HOUSING = [
+  { key:"mansion", label:"マンション", icon:"img/apartment.png" },
+  { key:"house",   label:"戸建て",     icon:"img/house.png"   }
+];
+
+function renderHousing(shared){
+  shared.houseNet = shared.houseNet || {};
+  const type = shared.houseNet.housingType || "";
+
+  const host = document.getElementById("housingGrid");
+  host.innerHTML = "";
+
+  HOUSING.forEach(h=>{
+    const card = document.createElement("div");
+    card.className = "houseCard" + (h.key === type ? " on" : "");
+    card.title = h.label;
+
+    const img = document.createElement("img");
+    img.src = h.icon;
+    img.alt = h.label;
+
+    const txt = document.createElement("div");
+    txt.className = "txt";
+    txt.textContent = h.label;
+
+    card.appendChild(img);
+    card.appendChild(txt);
+
+    card.onclick = ()=>{
+      shared.houseNet.housingType = h.key;
+      saveShared(shared);
+      render();
+    };
+
+    host.appendChild(card);
+  });
+}
+
+function render(){
   const shared = loadShared();
-  const type = shared.houseNet?.housingType;
-
-  document.querySelectorAll(".card").forEach(card=>{
-    card.classList.remove("selected");
-    if(card.dataset.type === type){
-      card.classList.add("selected");
-    }
-  });
+  renderNetIcons(shared);
+  renderHousing(shared);
 }
 
-document.querySelectorAll(".card").forEach(card=>{
-  card.addEventListener("click", ()=>{
-    const type = card.dataset.type;
-    saveHousing(type);
-    highlightSelected();
-  });
-});
-
-highlightSelected();
+render();
 </script>
 
 </body>

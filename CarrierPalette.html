@@ -366,7 +366,7 @@ details.compact summary{
       grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
     }
 
-    @media (max-width: 420px){
+    @media (max-width: 640px){
       .grid2, .resultGrid, .carrierGrid.compare{
         grid-template-columns: 1fr 1fr;
       }
@@ -549,15 +549,6 @@ body[data-mode="compare"] .modeTrack{
   <div class="sub">料金比較・見積り</div>
 
   <div class="devBadge">⚠ 開発中 ⚠</div>
-
-  <div class="modeSwitch" id="themeToggle" role="button" aria-label="テーマ切替" tabindex="0"
-      style="position:absolute; right:170px; top:50%; transform:translateY(-50%);">
-    <span class="modeLabel" id="themeIcon">🌙</span>
-    <span class="modeTrack" aria-hidden="true">
-      <span class="modeThumb" id="themeThumb"></span>
-    </span>
-    <span class="modeLabel" id="themeText">Dark</span>
-  </div>
 
   <div class="modeSwitch" id="modeToggle" role="button" aria-label="表示モード切替" tabindex="0"
       style="position:absolute; right:16px; top:50%; transform:translateY(-50%);">
@@ -816,8 +807,36 @@ body[data-mode="compare"] .modeTrack{
 
   <script src="data.js"></script>
   <script>
-  const STORAGE_KEY = "contract_navi_ctx_v2_multi";
   const THEME_KEY = "cp_theme_v1";
+
+  const CP_CTX_KEY = "carrier_palette_ctx_v1";
+
+  function readCpCtx(){
+    const raw = localStorage.getItem(CP_CTX_KEY);
+    if (!raw) return { form:{ dataUsage:"lte30" }, consult:{} };
+    try {
+      const obj = JSON.parse(raw) || {};
+      obj.form = obj.form || { dataUsage:"lte30" };
+      obj.consult = obj.consult || {};
+      if (!obj.form.dataUsage) obj.form.dataUsage = "lte30";
+      return obj;
+    } catch(e){
+      return { form:{ dataUsage:"lte30" }, consult:{} };
+    }
+  }
+  function writeCpCtx(obj){
+    localStorage.setItem(CP_CTX_KEY, JSON.stringify(obj));
+    return obj;
+  }
+  function saveConsultPatch(patch){
+    const s = readCpCtx();
+    s.consult = { ...(s.consult||{}), ...patch };
+    writeCpCtx(s);
+  }
+  function loadCtx(){
+    const s = readCpCtx();
+    return { form: s.form||{}, consult: s.consult||{} };
+  }
 
 function readTheme(){
   const saved = localStorage.getItem(THEME_KEY);
@@ -854,6 +873,40 @@ function toggleTheme(){
   const cur = document.body.dataset.theme === "dark" ? "dark" : "light";
   setTheme(cur === "dark" ? "light" : "dark");
 }
+
+function bindSecretThemeToggle(){
+  const title = document.querySelector("header .title");
+  if (!title) return;
+
+  let timer = null;
+  let moved = false;
+
+  const start = () => {
+    moved = false;
+    timer = setTimeout(() => {
+      toggleTheme();
+    }, 700); // 0.7秒
+  };
+
+  const cancel = () => {
+    if (timer){
+      clearTimeout(timer);
+      timer = null;
+    }
+  };
+
+  const markMove = () => { moved = true; cancel(); };
+
+  title.addEventListener("touchstart", start, { passive:true });
+  title.addEventListener("touchend", cancel, { passive:true });
+  title.addEventListener("touchcancel", cancel, { passive:true });
+  title.addEventListener("touchmove", markMove, { passive:true });
+
+  title.addEventListener("mousedown", start);
+  title.addEventListener("mouseup", cancel);
+  title.addEventListener("mouseleave", cancel);
+  title.addEventListener("mousemove", () => { if (timer) markMove(); });
+}
   const el = (id) => document.getElementById(id);
 
   const on = (id, ev, fn) => { const x = el(id); if (x) x.addEventListener(ev, fn); };
@@ -887,70 +940,6 @@ function toggleTheme(){
   function yen(n){
     if (!Number.isFinite(n)) return "—";
     return "¥" + Math.round(n).toLocaleString("ja-JP");
-  }
-
-  function readShared(){
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return {};
-    try { return JSON.parse(raw) || {}; } catch(e){ return {}; }
-  }
-  function writeSharedAll(obj){
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
-    return obj;
-  }
-  function needsDeviceFlow(ct){
-    return ct === "deviceChange" || ct === "mnpDevice" || ct === "new";
-  }
-  function getActiveLine(shared){
-    const lines = Array.isArray(shared.lines) ? shared.lines : [];
-    const active = Number.isFinite(shared.activeLine) ? shared.activeLine : 0;
-    const idx = Math.max(0, Math.min(active, Math.max(0, lines.length - 1)));
-    const line = lines[idx] || { form:{}, consult:{} , flow:{} };
-    line.consult = line.consult || {};
-    return { idx, line, lines };
-  }
-  function saveConsultPatch(patch){
-    const s = readShared();
-    const t = getActiveLine(s);
-    t.line.consult = { ...(t.line.consult || {}), ...patch };
-    s.lines = Array.isArray(s.lines) ? s.lines : [];
-    s.lines[t.idx] = t.line;
-    writeSharedAll(s);
-  }
-  function loadCtx(){
-    const s = readShared();
-    const { line } = getActiveLine(s);
-    const form = line.form || {};
-    const consult = line.consult || {};
-    return { s, line, form, consult };
-  }
-
-  function updatePointAlert(){
-    const box = el("pointAlert");
-    if (!box) return;
-
-    const { form, consult } = loadCtx();
-    const ct = form.contractType || "";
-
-    if (ct !== "mnpDevice") {
-      box.classList.add("hidden");
-      box.textContent = "";
-      return;
-    }
-
-    const payType = (el("payType") ? el("payType").value : "") || (consult.payType || "");
-    const tradeIn = (el("needTradeInReception") ? el("needTradeInReception").value : "no") || (consult.needTradeInReception || "no");
-
-    const isCarrierOrLump = (payType === "carrierInstall" || payType === "lump");
-    const noTradeIn = (tradeIn === "no");
-
-    if (isCarrierOrLump && noTradeIn){
-      box.textContent = "【注意】購入方法が「分リセ以外」かつ「下取りなし」の場合、ポイント付与ができません。下取り受付をご確認ください。";
-      box.classList.remove("hidden");
-    } else {
-      box.classList.add("hidden");
-      box.textContent = "";
-    }
   }
 
   function getKey(side, name){ return `${side}_${name}`; }
@@ -1866,10 +1855,6 @@ const applyTalkState = (side, carrier, consult) => {
     on("modeToggle","keydown",(e)=>{
       if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleMode(); }
     });
-    click("themeToggle", toggleTheme);
-    on("themeToggle","keydown",(e)=>{
-      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleTheme(); }
-    });
 
     on("carrierA", "change", ()=>{
       saveConsultPatch({ carrierA: el("carrierA")?.value || "" });
@@ -2275,6 +2260,7 @@ click("B_u22", () => {
     if (b0 === "ahamo") setConsultPatch("B", { talkEnabled:true, talkKind:"short" });
 
     bind();
+    bindSecretThemeToggle();
     renderAll();
   }
 
