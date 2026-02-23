@@ -39,11 +39,9 @@ header{
 }
 
 /* ===== 共通 ===== */
-.wrap{
-  max-width:900px;
-  margin:0 auto;
-  padding:20px;
-}
+.wrap{ max-width:900px; margin:0 auto; padding:20px; }
+.stack{ display:grid; gap:16px; margin-top:18px; }
+
 .card{
   background:#fff;
   border:2px solid #e6e8eb;
@@ -51,8 +49,6 @@ header{
   padding:18px;
   box-shadow:0 4px 14px rgba(0,0,0,0.08);
 }
-.stack{ display:grid; gap:16px; margin-top:18px; }
-
 .sectionTitle{
   margin:0 0 10px;
   font-size:16px;
@@ -63,17 +59,13 @@ header{
   font-size:12px;
   color:#666;
 }
-.divider{
-  height:1px;
-  background:#eef0f3;
-  margin:14px 0;
-}
+.divider{ height:1px; background:#eef0f3; margin:14px 0; }
 
-/* ===== 乗り換え元（大きく1枚） ===== */
-.fromRow{ display:flex; align-items:center; gap:16px; }
+/* ===== 現在回線（でかく1枚） ===== */
+.fromRow{ display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
 .fromBig{
-  width:140px;
-  height:104px;
+  width:150px;
+  height:110px;
   border-radius:20px;
   border:2px solid #2563eb;
   background:#fff;
@@ -82,30 +74,35 @@ header{
   justify-content:center;
   box-shadow:0 10px 24px rgba(37,99,235,.18);
 }
-.fromBig img{
-  width:84px;
-  height:84px;
-  object-fit:contain;
+.fromBig img{ width:88px; height:88px; object-fit:contain; }
+.fromMeta{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
 }
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  font-size:12px;
+  font-weight:900;
+  padding:6px 10px;
+  border-radius:999px;
+  border:1px solid #e6e8eb;
+  background:#fff;
+  color:#333;
+}
+.badge .dot{ width:8px; height:8px; border-radius:999px; background:#111; opacity:.25; }
 
-/* ===== グループ囲い（ムダを減らす） ===== */
-.groupWrap{
-  display:grid;
-  grid-template-columns: 1fr;
-  gap:12px;
-}
-@media(min-width:720px){
-  .groupWrap{ grid-template-columns: 1fr 1fr; }
-  .groupWrap .groupBox:last-child{ grid-column: 1 / -1; } /* 3つ目を横断してバランス */
-}
-
-.groupBox{
+/* ===== 選択エリア：囲い ===== */
+.box{
   border:2px solid #eef0f3;
   border-radius:18px;
   padding:12px;
   background:#fbfbfc;
+  margin-top:12px;
 }
-.groupTitle{
+.boxTitle{
   font-size:13px;
   font-weight:900;
   color:#333;
@@ -114,20 +111,52 @@ header{
   align-items:center;
   gap:8px;
 }
-.groupTitle .dot{
+.boxTitle .dot{
   width:8px;height:8px;border-radius:999px;background:#111;opacity:.25;
 }
 
-/* ===== 乗り換え先（カード） ===== */
-.netGrid{
+/* ===== 主役3社（大） ===== */
+.primaryGrid{
+  display:grid;
+  gap:14px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+.primaryCard{
+  height:128px;
+  border-radius:20px;
+  border:2px solid #e6e8eb;
+  background:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  transition:.15s ease;
+  box-shadow:0 6px 16px rgba(0,0,0,.07);
+}
+.primaryCard:hover{ transform:translateY(-2px); }
+.primaryCard.on{
+  border-color:#2563eb;
+  box-shadow:0 12px 28px rgba(37,99,235,.18);
+}
+.primaryCard img{
+  width:96px;
+  height:96px;
+  object-fit:contain;
+  filter:grayscale(1);
+  opacity:.78;
+}
+.primaryCard.on img{ filter:none; opacity:1; }
+.primaryCard.disabled{ cursor:not-allowed; opacity:.55; }
+.primaryCard.disabled img{ filter:grayscale(1); opacity:.55; }
+
+/* ===== 回線種別（小） ===== */
+.typeGrid{
   display:grid;
   gap:12px;
-  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
 }
-
-/* アイコンカード */
-.netCard{
-  height:96px;
+.typeCard{
+  height:92px;
   border-radius:18px;
   border:2px solid #e6e8eb;
   background:#fff;
@@ -138,31 +167,23 @@ header{
   transition:.15s ease;
   box-shadow:0 4px 12px rgba(0,0,0,.06);
 }
-.netCard:hover{ transform:translateY(-2px); }
-.netCard.on{
+.typeCard:hover{ transform:translateY(-1px); }
+.typeCard.on{
   border-color:#2563eb;
-  box-shadow:0 10px 24px rgba(37,99,235,.18);
+  box-shadow:0 10px 24px rgba(37,99,235,.16);
 }
-.netCard img{
+.typeCard img{
   width:68px;
   height:68px;
   object-fit:contain;
   filter:grayscale(1);
   opacity:.78;
 }
-.netCard.on img{ filter:none; opacity:1; }
+.typeCard.on img{ filter:none; opacity:1; }
+.typeCard.disabled{ cursor:not-allowed; opacity:.55; }
+.typeCard.disabled img{ filter:grayscale(1); opacity:.55; }
 
-/* 現在回線は選択不可 */
-.netCard.disabled{
-  cursor:not-allowed;
-  opacity:.55;
-}
-.netCard.disabled img{
-  filter:grayscale(1);
-  opacity:.55;
-}
-
-/* ===== 住居タイプ（PNGを使うミニカード2択） ===== */
+/* ===== 住居タイプ（PNG 2択） ===== */
 .houseGrid{
   display:grid;
   grid-template-columns: 1fr 1fr;
@@ -186,15 +207,8 @@ header{
   border-color:#2563eb;
   box-shadow:0 10px 22px rgba(37,99,235,.16);
 }
-.houseCard img{
-  width:38px;
-  height:38px;
-  object-fit:contain;
-}
-.houseCard .txt{
-  font-weight:900;
-  font-size:15px;
-}
+.houseCard img{ width:38px; height:38px; object-fit:contain; }
+.houseCard .txt{ font-weight:900; font-size:15px; }
 
 /* ===== アプリ切替 ===== */
 .appSwitch{
@@ -236,12 +250,20 @@ header{
     <div class="card">
       <div class="sectionTitle">現在お使いの光回線</div>
       <div id="bbFrom" class="fromRow"></div>
-      <div class="subNote">※契約ナビのヒアリング情報を表示しています</div>
 
       <div class="divider"></div>
 
       <div class="sectionTitle">これから乗り換える光回線</div>
-      <div id="bbToGroups" class="groupWrap"></div>
+
+      <div class="box">
+        <div class="boxTitle"><span class="dot"></span>おすすめ</div>
+        <div id="bbPrimary" class="primaryGrid"></div>
+      </div>
+
+      <div class="box">
+        <div class="boxTitle"><span class="dot"></span>回線種別の確認用（工事要否など）</div>
+        <div id="bbType" class="typeGrid"></div>
+      </div>
     </div>
 
     <!-- ===== 住居タイプ（PNG） ===== -->
@@ -273,22 +295,16 @@ function saveShared(data){
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
-/* ===== 光回線：グループ定義（要望どおり） ===== */
-const BB_GROUPS = [
-  { title:"NTT回線",  keys:["docomohikari","niftyhikari","softbankhikari","biglobehikari"] },
-  { title:"KDDI回線", keys:["jcom","auhikari"] },
-  { title:"そのほか", keys:["fletshikari","nurohikari"] }
-];
-
+/* ===== 回線定義 ===== */
 const BB_LABEL = {
-  fletshikari:"フレッツ光",
-  nurohikari:"NURO光",
   docomohikari:"ドコモ光",
-  niftyhikari:"@nifty光",
   softbankhikari:"ソフトバンク光",
-  biglobehikari:"ビッグローブ光",
+  niftyhikari:"@nifty光",
+  fletshikari:"フレッツ光",
   auhikari:"auひかり",
-  jcom:"J:COM"
+  nurohikari:"NURO光",
+  jcom:"J:COM",
+  biglobehikari:"ビッグローブ光",
 };
 
 const BB_ICON = {
@@ -302,68 +318,108 @@ const BB_ICON = {
   jcom:          "icons/JCOM.png"
 };
 
-function renderNetIcons(shared){
+/* 主役（大） */
+const PRIMARY_PROVIDERS = ["docomohikari","softbankhikari","niftyhikari"];
+
+/* 工事/回線判定（小）：
+   - NTT/KDDI を見るために最低限
+   - NURO は任意（必要なら残す）
+*/
+const TYPE_PROVIDERS = ["fletshikari","auhikari","nurohikari"];
+
+function classifyLine(key){
+  // “現在回線が何系か”を表示したい場合の簡易分類
+  if(key === "auhikari" || key === "jcom") return "KDDI系";
+  if(key === "fletshikari" || key === "docomohikari" || key === "softbankhikari" || key === "niftyhikari" || key === "biglobehikari") return "NTT系";
+  if(key === "nurohikari") return "そのほか";
+  return "未設定";
+}
+
+function setToNetType(shared, key){
+  shared.houseNet = shared.houseNet || {};
+  shared.houseNet.toNetType = key;
+  saveShared(shared);
+}
+
+function makeCard({key, fromKey, toKey, kind}){
+  const isCurrent = (key && fromKey && key === fromKey);
+  const isOn = (key === toKey);
+
+  const el = document.createElement("div");
+  el.className =
+    (kind === "primary" ? "primaryCard" : "typeCard") +
+    (isOn ? " on" : "") +
+    (isCurrent ? " disabled" : "");
+
+  const img = document.createElement("img");
+  img.src = BB_ICON[key] || "";
+  img.alt = BB_LABEL[key] || key;
+  el.title = isCurrent ? `${img.alt}（現在ご利用中のため選択不可）` : img.alt;
+
+  if(!img.src) img.style.opacity = ".35";
+  el.appendChild(img);
+
+  return { el, isCurrent };
+}
+
+function renderNet(shared){
   shared.houseNet = shared.houseNet || {};
   const fromKey = shared.houseNet.homeNetType || "";
   const toKey   = shared.houseNet.toNetType || "";
 
-  /* ===== 乗り換え元（1枚） ===== */
+  // --- 乗り換え元 ---
   const fromHost = document.getElementById("bbFrom");
   fromHost.innerHTML = "";
 
-  const box = document.createElement("div");
-  box.className = "fromBig";
+  const big = document.createElement("div");
+  big.className = "fromBig";
   const img = document.createElement("img");
   img.src = BB_ICON[fromKey] || "";
   img.alt = BB_LABEL[fromKey] || "未設定";
-  box.title = img.alt;
+  big.title = img.alt;
   if(!img.src) img.style.opacity = ".35";
-  box.appendChild(img);
-  fromHost.appendChild(box);
+  big.appendChild(img);
 
-  /* ===== 乗り換え先（囲い＋同一グリッド） ===== */
-  const groupsHost = document.getElementById("bbToGroups");
-  groupsHost.innerHTML = "";
+  const meta = document.createElement("div");
+  meta.className = "fromMeta";
+  const b1 = document.createElement("div");
+  b1.className = "badge";
+  b1.innerHTML = `<span class="dot"></span>${img.alt}`;
+  const b2 = document.createElement("div");
+  b2.className = "badge";
+  b2.innerHTML = `<span class="dot"></span>${classifyLine(fromKey)}`;
+  meta.appendChild(b1);
+  meta.appendChild(b2);
 
-  BB_GROUPS.forEach(g=>{
-    const group = document.createElement("div");
-    group.className = "groupBox";
+  fromHost.appendChild(big);
+  fromHost.appendChild(meta);
 
-    const title = document.createElement("div");
-    title.className = "groupTitle";
-    title.innerHTML = `<span class="dot"></span>${g.title}`;
-    group.appendChild(title);
+  // --- 乗り換え先：主役（大） ---
+  const primaryHost = document.getElementById("bbPrimary");
+  primaryHost.innerHTML = "";
+  PRIMARY_PROVIDERS.forEach(key=>{
+    const { el, isCurrent } = makeCard({ key, fromKey, toKey, kind:"primary" });
+    if(!isCurrent){
+      el.onclick = ()=>{
+        setToNetType(shared, key);
+        render();
+      };
+    }
+    primaryHost.appendChild(el);
+  });
 
-    const grid = document.createElement("div");
-    grid.className = "netGrid";
-
-    g.keys.forEach(key=>{
-      const card = document.createElement("div");
-      const isCurrent = key === fromKey;
-      const isOn = key === toKey;
-
-      card.className = "netCard" + (isOn ? " on" : "") + (isCurrent ? " disabled" : "");
-
-      const im = document.createElement("img");
-      im.src = BB_ICON[key] || "";
-      im.alt = BB_LABEL[key] || key;
-      card.title = isCurrent ? `${im.alt}（現在ご利用中のため選択不可）` : im.alt;
-      if(!im.src) im.style.opacity = ".35";
-      card.appendChild(im);
-
-      if(!isCurrent){
-        card.onclick = ()=>{
-          shared.houseNet.toNetType = key;
-          saveShared(shared);
-          render();
-        };
-      }
-
-      grid.appendChild(card);
-    });
-
-    group.appendChild(grid);
-    groupsHost.appendChild(group);
+  // --- 乗り換え先：回線判定（小） ---
+  const typeHost = document.getElementById("bbType");
+  typeHost.innerHTML = "";
+  TYPE_PROVIDERS.forEach(key=>{
+    const { el, isCurrent } = makeCard({ key, fromKey, toKey, kind:"type" });
+    if(!isCurrent){
+      el.onclick = ()=>{
+        setToNetType(shared, key);
+        render();
+      };
+    }
+    typeHost.appendChild(el);
   });
 }
 
@@ -408,7 +464,7 @@ function renderHousing(shared){
 
 function render(){
   const shared = loadShared();
-  renderNetIcons(shared);
+  renderNet(shared);
   renderHousing(shared);
 }
 
