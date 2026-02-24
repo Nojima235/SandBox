@@ -530,14 +530,145 @@ details.compact summary{
   select,input{ padding:8px 8px; font-size:11px; }
   .switch{ --k:20px; width:42px; height:24px; }
 
-  /* キャリアカード並び替え */
-  .carrierList .carrierCard{ order: 50; }
-  .carrierList .carrierCard.docomo   { order: 1; }
-  .carrierList .carrierCard.ahamo    { order: 2; }
-  .carrierList .carrierCard.au       { order: 3; }
-  .carrierList .carrierCard.uq       { order: 4; }
-  .carrierList .carrierCard.softbank { order: 5; }
-  .carrierList .carrierCard.ymobile  { order: 6; }
+    @media (max-width: 640px){
+      .grid2, .resultGrid, .carrierGrid.compare{
+        grid-template-columns: 1fr 1fr;
+      }
+      label{ font-size:11px; }
+      .price{ font-size:20px; }
+      .pill{ padding:6px 11px; font-size:11px; }
+      select,input{ padding:8px 8px; font-size:11px; }
+      .switch{
+    --h: 24px;
+    --k: 20px;
+    width: 42px;}
+
+      /* キャリアカード並び替え */
+      .carrierList .carrierCard{ order: 50; }
+
+      .carrierList .carrierCard.docomo   { order: 1; }
+      .carrierList .carrierCard.ahamo    { order: 2; }
+      .carrierList .carrierCard.au       { order: 3; }
+      .carrierList .carrierCard.uq       { order: 4; }
+      .carrierList .carrierCard.softbank { order: 5; }
+      .carrierList .carrierCard.ymobile  { order: 6; }
+    }
+
+    .carrierList{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap:8px;
+    }
+    @media (max-width: 360px){
+      .carrierList{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    .carrierCard{
+      padding:8px;
+      border:1px solid var(--border);
+      border-radius:12px;
+      background:var(--panel);
+      cursor:pointer;
+      user-select:none;
+      position:relative;
+    }
+    .carrierCard.on{
+      border-color:#111;
+      background:#d8dff8;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    }
+    .carrierHeroImg{
+      width:100%;
+      height:96px;
+      border-radius:10px;
+      object-fit:cover;
+      display:block;
+      border:1px solid var(--border);
+      background:var(--chip2);
+    }
+
+    .carrierCard:not(.on) .carrierHeroImg{
+      filter: grayscale(100%);
+      opacity: 0.55;
+    }
+    .carrierCard:not(.on)::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      border-radius:12px;
+      background: rgba(220,220,220,0.35);
+      pointer-events:none;
+    }
+    .carrierCard:not(.on) .carrierCompareImg{
+      filter: grayscale(100%);
+      opacity: 0.55;
+    }
+    .carrierCard.on::after{ display:none; }
+
+    .carrierGrid.compare .carrierCard{
+      aspect-ratio: 1 / 1;
+      padding: 8px;
+      display: grid;
+      place-items: center;
+    }
+    .carrierGrid.compare .carrierCompareImg{
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+}
+
+.carrierGrid:not(.compare) .carrierCompareImg{ display:none; }
+.carrierGrid.compare .carrierHeroImg{ display:none; }
+
+#recPills{ display:none !important; }
+
+.modeSwitch{
+  display:flex; align-items:center; gap:10px;
+  user-select:none;
+  padding:10px 12px;
+  border:1px solid var(--border2);
+  border-radius:14px;
+  background:var(--panel);
+  cursor:pointer;
+}
+
+.modeLabel{
+  font-size:13px;
+  font-weight:1000;
+  color:var(--muted);
+}
+
+body[data-mode="single"] #modeLabelLeft,
+body[data-mode="compare"] #modeLabelRight{ color:var(--text); }
+
+.modeTrack{
+  width:46px; height:26px;
+  border-radius:999px;
+  background: var(--switchTrack);
+  position:relative;
+  flex:0 0 auto;
+  border:1px solid var(--border2);
+}
+
+.modeThumb{
+  width:22px; height:22px;
+  border-radius:999px;
+  background: var(--primary);
+  position:absolute;
+  left:1px;
+  top:50%;
+  transform: translate(0, -50%);
+  transition: transform 160ms ease;
+}
+
+body[data-mode="compare"] .modeThumb{
+  transform: translate(22px, -50%);
+}
+
+body[data-mode="compare"] .modeTrack{
+  background:#dcfce7;
+  border-color:#86efac;
 }
 
 /* =============== App switch =============== */
