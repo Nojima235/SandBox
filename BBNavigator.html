@@ -9,14 +9,38 @@
 body{
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans JP",sans-serif;
   margin:0;
-  background:#f6f7f9;
+  background: transparent;
   color:#111;
 }
 
-/* ===== ヘッダー ===== */
+html, body{
+  height: 100%;
+  overflow: hidden;
+}
+
+html::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-1;
+  pointer-events:none;
+
+  background:
+    linear-gradient(rgba(246,247,249,0.60), rgba(246,247,249,0.60)),
+    url("img/consaru.png") center/150% repeat,
+    #f6f7f9;
+}
+
+html[data-theme="dark"]::before{
+  background:
+    linear-gradient(rgba(11,12,16,0.78), rgba(11,12,16,0.78)),
+    url("img/consaru.png") center/150% repeat,
+    #0b0f19;
+}
+
 header{
-  padding:16px 16px 8px;
-  background:#fff;
+  padding: var(--header-pad-top) var(--header-pad-x) var(--header-pad-bottom);
+  background:var(--panel);
   border-bottom:1px solid #e6e8eb;
   position:relative;
 }
@@ -38,9 +62,21 @@ header{
   pointer-events:none;
 }
 
-/* ===== 共通 ===== */
-.wrap{ max-width:900px; margin:0 auto; padding:20px; }
-.stack{ display:grid; gap:16px; margin-top:18px; }
+.wrap{
+  height: calc(100dvh - var(--header-h));
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+}
+
+html::before{
+  transform: translateZ(0);
+  will-change: transform;
+  backface-visibility: hidden;
+}
+.stack{ display:grid; gap:12px; margin-top:0px; }
 
 .card{
   background:#fff;
@@ -54,76 +90,124 @@ header{
   font-size:16px;
   font-weight:900;
 }
-.subNote{
-  margin-top:6px;
-  font-size:12px;
-  color:#666;
-}
 .divider{ height:1px; background:#eef0f3; margin:14px 0; }
 
-/* ===== 現在回線（でかく1枚） ===== */
-.fromRow{ display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
-.fromBig{
-  width:150px;
-  height:110px;
-  border-radius:20px;
+label{
+  display:block;
+  font-size:12px;
+  font-weight:900;
+  color:#333;
+  margin:0 0 6px;
+}
+select{
+  width:100%;
+  padding:10px 12px;
+  border-radius:14px;
+  border:1px solid #e6e8eb;
+  background:#fff;
+  font-weight:800;
+  font-size:14px;
+}
+
+.grid2{
+  display:grid;
+  gap:10px;
+  grid-template-columns: 1fr 1fr;
+}
+@media (max-width: 640px){
+  .grid2{ grid-template-columns: 1fr; }
+}
+
+.bbFromRow{
+  display:grid;
+  grid-template-columns: 140px 1fr;
+  gap:14px;
+  align-items:center;
+}
+.bbFromIcon{
+  width:140px;
+  min-width:140px;
+  height:140px;
+  border-radius:22px;
   border:2px solid #2563eb;
   background:#fff;
   display:flex;
   align-items:center;
   justify-content:center;
+  overflow:hidden;
   box-shadow:0 10px 24px rgba(37,99,235,.18);
 }
-.fromBig img{ width:88px; height:88px; object-fit:contain; }
-.fromMeta{
-  display:flex;
-  flex-direction:column;
-  gap:6px;
+.bbFromIcon img{
+  width:96px;
+  height:96px;
+  object-fit:contain;
 }
-.badge{
+.bbFromRight{ min-width:0; }
+
+@media (max-width: 640px){
+  .bbFromRow{ grid-template-columns: 110px 1fr; gap:12px; }
+  .bbFromIcon{ width:110px; min-width:110px; height:110px; border-radius:18px; }
+  .bbFromIcon img{ width:78px; height:78px; }
+}
+
+.pillRow{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  align-items:center;
+  margin:2px 0 10px;
+}
+.pill{
   display:inline-flex;
   align-items:center;
-  gap:6px;
-  font-size:12px;
-  font-weight:900;
-  padding:6px 10px;
-  border-radius:999px;
-  border:1px solid #e6e8eb;
-  background:#fff;
-  color:#333;
-}
-.badge .dot{ width:8px; height:8px; border-radius:999px; background:#111; opacity:.25; }
-
-/* ===== 選択エリア：囲い ===== */
-.box{
-  border:2px solid #eef0f3;
-  border-radius:18px;
-  padding:12px;
-  background:#fbfbfc;
-  margin-top:12px;
-}
-.boxTitle{
-  font-size:13px;
-  font-weight:900;
-  color:#333;
-  margin:0 0 10px;
-  display:flex;
-  align-items:center;
   gap:8px;
+  padding:8px 12px;
+  border:1px solid #e6e8eb;
+  border-radius:999px;
+  background:#fff;
+  font-weight:900;
+  font-size:13px;
+  width:fit-content;
 }
-.boxTitle .dot{
+.pill .dot{
   width:8px;height:8px;border-radius:999px;background:#111;opacity:.25;
 }
 
-/* ===== 主役3社（大） ===== */
+.houseGrid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:10px;
+  margin:2px 0 10px;
+}
+.houseCard{
+  height:54px;
+  border-radius:16px;
+  border:2px solid #e6e8eb;
+  background:#fff;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:8px 10px;
+  cursor:pointer;
+  transition:.15s ease;
+  box-shadow:0 3px 10px rgba(0,0,0,.06);
+}
+.houseCard:hover{ transform:translateY(-1px); }
+.houseCard.on{
+  border-color:#2563eb;
+  box-shadow:0 10px 22px rgba(37,99,235,.16);
+}
+.houseCard img{ width:34px; height:34px; object-fit:contain; }
+.houseCard .txt{ font-weight:900; font-size:15px; }
+
 .primaryGrid{
   display:grid;
   gap:14px;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 }
 .primaryCard{
-  height:128px;
-  border-radius:20px;
+  height:148px;
+  border-radius:22px;
   border:2px solid #e6e8eb;
   background:#fff;
   display:flex;
@@ -139,21 +223,19 @@ header{
   box-shadow:0 12px 28px rgba(37,99,235,.18);
 }
 .primaryCard img{
-  width:96px;
-  height:96px;
+  width:132px;
+  height:132px;
   object-fit:contain;
   filter:grayscale(1);
   opacity:.78;
 }
 .primaryCard.on img{ filter:none; opacity:1; }
-.primaryCard.disabled{ cursor:not-allowed; opacity:.55; }
-.primaryCard.disabled img{ filter:grayscale(1); opacity:.55; }
 
-/* ===== 回線種別（小） ===== */
 .typeGrid{
   display:grid;
   gap:12px;
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  margin-top:12px;
 }
 .typeCard{
   height:92px;
@@ -180,37 +262,24 @@ header{
   opacity:.78;
 }
 .typeCard.on img{ filter:none; opacity:1; }
-.typeCard.disabled{ cursor:not-allowed; opacity:.55; }
-.typeCard.disabled img{ filter:grayscale(1); opacity:.55; }
 
-/* ===== 住居タイプ（PNG 2択） ===== */
-.houseGrid{
-  display:grid;
-  grid-template-columns: 1fr 1fr;
-  gap:12px;
-}
-.houseCard{
-  height:64px;
-  border-radius:18px;
-  border:2px solid #e6e8eb;
-  background:#fff;
+.moreRow{
   display:flex;
-  align-items:center;
-  gap:10px;
+  justify-content:flex-end;
+  margin-top:10px;
+}
+.moreBtn{
+  border:1px solid #d9dde3;
+  background:#fff;
+  border-radius:14px;
   padding:10px 12px;
+  font-weight:900;
   cursor:pointer;
-  transition:.15s ease;
-  box-shadow:0 3px 10px rgba(0,0,0,.06);
+  user-select:none;
+  box-shadow:0 6px 16px rgba(0,0,0,.06);
 }
-.houseCard:hover{ transform:translateY(-1px); }
-.houseCard.on{
-  border-color:#2563eb;
-  box-shadow:0 10px 22px rgba(37,99,235,.16);
-}
-.houseCard img{ width:38px; height:38px; object-fit:contain; }
-.houseCard .txt{ font-weight:900; font-size:15px; }
+.moreBtn:active{ transform:translateY(1px) scale(0.99); }
 
-/* ===== アプリ切替 ===== */
 .appSwitch{
   position:fixed;
   right:18px;
@@ -232,11 +301,223 @@ header{
   font-size:30px;
 }
 .appSwitch a.on{ border-color:#111; }
+
+/* ===== 契約ナビと同じチェックリスト見た目 ===== */
+.donebox{
+  background:#f6fbff;
+  border:1px solid #d6e8ff;
+  border-radius:12px;
+  padding:12px;
+  margin-top:10px;
+}
+.donebox b{
+  display:inline-block;
+  margin-bottom:6px;
+}
+.checklist{margin-top:10px;display:flex;flex-direction:column;gap:8px;}
+.checkitem{
+  display:flex;gap:10px;align-items:flex-start;
+  border:1px solid #e6e8eb;border-radius:12px;padding:10px 12px;background:#fff;
+}
+.checkitem input{margin-top:2px;transform:scale(1.2);}
+.checkitem .ctitle{font-size:15px;font-weight:700;}
+.checkitem .csub{font-size:14px;color:#555;margin-top:2px;line-height:1.35;}
+.warn{background:#fff5f5;border:1px solid #ffd2d2;border-radius:12px;padding:12px;margin-top:10px;font-size:15px;}
+:root{
+  /* light */
+  --bg: #f6f7f9;
+  --panel: #ffffff;
+  --text: #111111;
+  --muted: #555555;
+
+  --border: #e6e8eb;
+  --border2:#d9dde3;
+  --soft: #eef0f3;
+
+  --chip: #f8fafc;
+  --chip2:#f3f4f6;
+
+  --noteBg:#f6fbff;
+  --noteBd:#d6e8ff;
+  --noteTx:#223344;
+
+  --dangerBg:#fff5f5;
+  --dangerBd:#ffd2d2;
+  --dangerTx:#b00020;
+
+  --track:#e9ecef;
+
+  /* accent (CPと同一) */
+  --accent:#16a34a;
+  --accent-weak: color-mix(in srgb, var(--accent) 18%, var(--panel));
+  --accent-border: color-mix(in srgb, var(--accent) 45%, var(--border2));
+  --accent-text: color-mix(in srgb, var(--accent) 60%, #0b2a14);
+
+  --selectedBg: color-mix(in srgb, var(--accent) 12%, var(--panel));
+  --selectedBd: color-mix(in srgb, var(--accent) 45%, var(--border2));
+
+  --maxw: 960px;
+
+  /* 左右の基本余白（iPadでもPCでも同じにする基準） */
+  --pad-x: 16px;
+
+  /* 上下の基本余白 */
+  --pad-top: 12px;
+  --pad-bottom: 40px;
+
+  /* header の内側余白 */
+  --header-pad-x: 16px;
+  --header-pad-top: 16px;
+  --header-pad-bottom: 8px;
+  
+  --header-h: 90px;
+}
+
+body[data-theme="dark"]{
+  --bg:#0b0f19;
+  --panel:#121826;
+  --text:#e6e8ef;
+  --muted:#aab3c2;
+
+  --border:#2b3446;
+  --border2:#3a4660;
+  --soft:#1a2435;
+
+  --chip:#0f172a;
+  --chip2:#0b1220;
+
+  --noteBg:#0b1b2e;
+  --noteBd:#1b3a63;
+  --noteTx:#cfe4ff;
+
+  --dangerBg:#2a1216;
+  --dangerBd:#6b1f2a;
+  --dangerTx:#ffb4c0;
+
+  --track:#1d2738;
+
+  --accent:#22c55e;
+  --accent-weak: color-mix(in srgb, var(--accent) 16%, var(--panel));
+  --accent-border: color-mix(in srgb, var(--accent) 45%, var(--border2));
+  --accent-text: color-mix(in srgb, var(--accent) 70%, #cfeeda);
+
+  --selectedBg: color-mix(in srgb, var(--accent) 12%, var(--panel));
+  --selectedBd: color-mix(in srgb, var(--accent) 55%, var(--border2));
+}
+
+html[data-theme="dark"]{
+  --bg:#0b0c10;
+  --text:#e9edf2;
+  --muted:#aab3bf;
+
+  --panel:#121522;
+  --border:rgba(255,255,255,.10);
+  --border2:rgba(255,255,255,.14);
+
+  --shadowCard: 0 10px 26px rgba(0,0,0,0.35);
+  --shadowBtn:  0 10px 26px rgba(0,0,0,0.35);
+
+  --accent:#78aaff;
+
+  --warnBg: rgba(255,80,80,.10);
+  --warnBd: rgba(255,80,80,.28);
+
+  --doneBg: rgba(120,180,255,.10);
+  --doneBd: rgba(120,180,255,.22);
+}
+
+/* ベース反映 */
+body{
+  color: var(--text) !important;
+  position:relative;
+}
+header{
+  border-bottom:1px solid var(--border) !important;
+}
+.sub{ color: var(--muted) !important; }
+
+/* カード類 */
+.card{
+  background: var(--panel) !important;
+  border-color: var(--border) !important;
+  box-shadow: var(--shadowCard) !important;
+}
+.divider{ background: rgba(255,255,255,.06); }
+html:not([data-theme="dark"]) .divider{ background:#eef0f3; }
+
+/* 入力 */
+label{ color: var(--text) !important; }
+select{
+  background: var(--panel) !important;
+  color: var(--text) !important;
+  border-color: var(--border) !important;
+}
+
+/* 選択カード */
+.bbFromIcon{
+  border-color: var(--accent) !important;
+  background: var(--panel) !important;
+  box-shadow: 0 10px 24px rgba(37,99,235,.18);
+}
+html[data-theme="dark"] .bbFromIcon{
+  box-shadow: 0 10px 24px rgba(120,170,255,.18);
+}
+
+.houseCard,
+.primaryCard,
+.typeCard{
+  background: var(--panel) !important;
+  border-color: var(--border) !important;
+}
+.houseCard.on,
+.primaryCard.on,
+.typeCard.on{
+  border-color: var(--accent) !important;
+  box-shadow: 0 12px 28px rgba(37,99,235,.18);
+}
+html[data-theme="dark"] .houseCard.on,
+html[data-theme="dark"] .primaryCard.on,
+html[data-theme="dark"] .typeCard.on{
+  box-shadow: 0 12px 28px rgba(120,170,255,.18);
+}
+
+/* ピル */
+.pill{
+  background: var(--panel) !important;
+  border-color: var(--border) !important;
+  color: var(--text) !important;
+}
+.pill .dot{ background: var(--text); opacity:.22; }
+
+/* チェックリスト/警告 */
+.donebox{
+  background: var(--doneBg) !important;
+  border-color: var(--doneBd) !important;
+}
+.checkitem{
+  background: var(--panel) !important;
+  border-color: var(--border) !important;
+}
+.checkitem .csub{ color: var(--muted) !important; }
+
+.warn{
+  background: var(--warnBg) !important;
+  border-color: var(--warnBd) !important;
+  color: var(--text) !important;
+}
+
+/* appSwitch */
+.appSwitch a{
+  background: var(--panel) !important;
+  border-color: var(--border2) !important;
+  box-shadow: var(--shadowBtn) !important;
+}
+.appSwitch a.on{ border-color: var(--text) !important; }
+
 </style>
 </head>
 
 <body>
-
 <header>
   <div class="title">BBナビ</div>
   <div class="sub">光回線の見積もり</div>
@@ -245,34 +526,88 @@ header{
 
 <div class="wrap">
   <div class="stack">
-
-    <!-- ===== 光回線 ===== -->
     <div class="card">
       <div class="sectionTitle">現在お使いの光回線</div>
-      <div id="bbFrom" class="fromRow"></div>
+
+      <div class="bbFromRow" id="bbFromRow">
+        <div class="bbFromIcon" id="bbFromIcon"></div>
+
+        <div class="bbFromRight">
+          <div class="pillRow">
+            <div class="pill"><span class="dot"></span><span id="bbLineTypeText">未設定</span></div>
+          </div>
+
+          <div class="pillRow" style="margin-top:-2px;">
+            <div class="pill"><span class="dot"></span><span>居住タイプ</span></div>
+          </div>
+          <div class="houseGrid" id="housingGrid"></div>
+
+          <div class="grid2" style="margin-top:10px;">
+            <div>
+              <label>ラック検索結果</label>
+              <select id="rackSearch">
+                <option value="" disabled>選択してください</option>
+                <option value="yes">可</option>
+                <option value="no">不可</option>
+              </select>
+            </div>
+
+            <div>
+              <label>契約形態</label>
+              <select id="homeCap">
+                <option value="" disabled>選択してください</option>
+                <option value="1">1Gbps</option>
+                <option value="10">10Gbps</option>
+              </select>
+            </div>
+
+            <div>
+              <label>ルーター</label>
+              <select id="router">
+                <option value="" disabled>選択してください</option>
+                <option value="rent">レンタル</option>
+                <option value="own">持込/購入</option>
+              </select>
+            </div>
+
+            <div>
+              <label>光電話</label>
+              <select id="hikariPhone">
+                <option value="" disabled>選択してください</option>
+                <option value="yes">あり</option>
+                <option value="no">なし</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div class="divider"></div>
 
-      <div class="sectionTitle">これから乗り換える光回線</div>
+      <div class="sectionTitle">乗り換え先</div>
 
-      <div class="box">
-        <div class="boxTitle"><span class="dot"></span>おすすめ</div>
-        <div id="bbPrimary" class="primaryGrid"></div>
+      <div id="bbPrimary" class="primaryGrid"></div>
+
+      <div class="moreRow">
+        <button class="moreBtn" id="moreBtn" type="button">＋</button>
       </div>
 
-      <div class="box">
-        <div class="boxTitle"><span class="dot"></span>回線種別の確認用（工事要否など）</div>
+      <div id="bbTypeWrap" style="display:none;">
         <div id="bbType" class="typeGrid"></div>
       </div>
-    </div>
 
-    <!-- ===== 住居タイプ（PNG） ===== -->
-    <div class="card">
-      <div class="sectionTitle">住居タイプ</div>
-      <div class="houseGrid" id="housingGrid"></div>
-      <div class="subNote">※月額や工事可否に影響します</div>
-    </div>
+      <div class="divider"></div>
 
+      <div class="sectionTitle">工事・手続きチェック</div>
+
+      <div class="warn" id="bbDecision" style="display:none;"></div>
+
+      <div class="donebox" id="bbChecklistBox">
+        <b>チェックリスト</b>
+        <div class="checklist" id="bbChecklist"></div>
+      </div>
+
+    </div>
   </div>
 </div>
 
@@ -283,6 +618,34 @@ header{
 </nav>
 
 <script>
+const APP_THEME_KEY = "APP_THEME_V1";
+
+function getSystemTheme(){
+  return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark" : "light";
+}
+function applyTheme(theme){
+  const t = (theme === "dark" || theme === "light") ? theme : getSystemTheme();
+  document.documentElement.setAttribute("data-theme", t);
+}
+function loadTheme(){
+  const saved = localStorage.getItem(APP_THEME_KEY);
+  applyTheme(saved || getSystemTheme());
+}
+loadTheme();
+
+/* 他ページ/他タブでテーマ変わったら即反映 */
+window.addEventListener("storage", (ev)=>{
+  if (ev.key === APP_THEME_KEY) loadTheme();
+});
+
+/* OS側が変わった時：保存が無ければ追従 */
+if (window.matchMedia){
+  const mq = window.matchMedia("(prefers-color-scheme: dark)");
+  const onChange = ()=>{ if (!localStorage.getItem(APP_THEME_KEY)) applyTheme(getSystemTheme()); };
+  if (mq.addEventListener) mq.addEventListener("change", onChange);
+  else if (mq.addListener) mq.addListener(onChange);
+}
 const STORAGE_KEY = "contract_navi_ctx_v2_multi";
 
 function loadShared(){
@@ -295,7 +658,31 @@ function saveShared(data){
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
-/* ===== 回線定義 ===== */
+function toggleTheme(){
+  const cur = document.documentElement.getAttribute("data-theme") || getSystemTheme();
+  const next = (cur === "dark") ? "light" : "dark";
+  localStorage.setItem(APP_THEME_KEY, next);
+  applyTheme(next);
+}
+
+window.addEventListener("DOMContentLoaded", ()=>{
+  const title = document.querySelector("header .title");
+  if (!title) return;
+
+  title.addEventListener("dblclick", toggleTheme);
+
+  let timer=null;
+  const start=()=>{ timer=setTimeout(()=>{ toggleTheme(); timer=null; }, 420); };
+  const cancel=()=>{ if(timer){ clearTimeout(timer); timer=null; } };
+
+  title.addEventListener("touchstart", start, {passive:true});
+  title.addEventListener("touchend", cancel, {passive:true});
+  title.addEventListener("touchcancel", cancel, {passive:true});
+  title.addEventListener("mousedown", start);
+  title.addEventListener("mouseup", cancel);
+  title.addEventListener("mouseleave", cancel);
+});
+
 const BB_LABEL = {
   docomohikari:"ドコモ光",
   softbankhikari:"ソフトバンク光",
@@ -308,168 +695,316 @@ const BB_LABEL = {
 };
 
 const BB_ICON = {
-  fletshikari:   "icons/flets.png",
-  nurohikari:    "icons/nuro.png",
+  fletshikari:   "icons/Flets.png",
+  nurohikari:    "icons/Nuro.png",
   docomohikari:  "icons/docomohikari.png",
-  niftyhikari:   "icons/nifty.png",
+  niftyhikari:   "icons/Nifty.png",
   softbankhikari:"icons/SBhikari.png",
   biglobehikari: "icons/BIGLOBE.png",
   auhikari:      "icons/auhikari.png",
   jcom:          "icons/JCOM.png"
 };
 
-/* 主役（大） */
 const PRIMARY_PROVIDERS = ["docomohikari","softbankhikari","niftyhikari"];
+const TYPE_PROVIDERS = ["fletshikari","auhikari","nurohikari","jcom","biglobehikari"];
 
-/* 工事/回線判定（小）：
-   - NTT/KDDI を見るために最低限
-   - NURO は任意（必要なら残す）
-*/
-const TYPE_PROVIDERS = ["fletshikari","auhikari","nurohikari"];
-
-function classifyLine(key){
-  // “現在回線が何系か”を表示したい場合の簡易分類
-  if(key === "auhikari" || key === "jcom") return "KDDI系";
-  if(key === "fletshikari" || key === "docomohikari" || key === "softbankhikari" || key === "niftyhikari" || key === "biglobehikari") return "NTT系";
-  if(key === "nurohikari") return "そのほか";
-  return "未設定";
-}
-
-function setToNetType(shared, key){
-  shared.houseNet = shared.houseNet || {};
-  shared.houseNet.toNetType = key;
-  saveShared(shared);
-}
-
-function makeCard({key, fromKey, toKey, kind}){
-  const isCurrent = (key && fromKey && key === fromKey);
-  const isOn = (key === toKey);
-
-  const el = document.createElement("div");
-  el.className =
-    (kind === "primary" ? "primaryCard" : "typeCard") +
-    (isOn ? " on" : "") +
-    (isCurrent ? " disabled" : "");
-
-  const img = document.createElement("img");
-  img.src = BB_ICON[key] || "";
-  img.alt = BB_LABEL[key] || key;
-  el.title = isCurrent ? `${img.alt}（現在ご利用中のため選択不可）` : img.alt;
-
-  if(!img.src) img.style.opacity = ".35";
-  el.appendChild(img);
-
-  return { el, isCurrent };
-}
-
-function renderNet(shared){
-  shared.houseNet = shared.houseNet || {};
-  const fromKey = shared.houseNet.homeNetType || "";
-  const toKey   = shared.houseNet.toNetType || "";
-
-  // --- 乗り換え元 ---
-  const fromHost = document.getElementById("bbFrom");
-  fromHost.innerHTML = "";
-
-  const big = document.createElement("div");
-  big.className = "fromBig";
-  const img = document.createElement("img");
-  img.src = BB_ICON[fromKey] || "";
-  img.alt = BB_LABEL[fromKey] || "未設定";
-  big.title = img.alt;
-  if(!img.src) img.style.opacity = ".35";
-  big.appendChild(img);
-
-  const meta = document.createElement("div");
-  meta.className = "fromMeta";
-  const b1 = document.createElement("div");
-  b1.className = "badge";
-  b1.innerHTML = `<span class="dot"></span>${img.alt}`;
-  const b2 = document.createElement("div");
-  b2.className = "badge";
-  b2.innerHTML = `<span class="dot"></span>${classifyLine(fromKey)}`;
-  meta.appendChild(b1);
-  meta.appendChild(b2);
-
-  fromHost.appendChild(big);
-  fromHost.appendChild(meta);
-
-  // --- 乗り換え先：主役（大） ---
-  const primaryHost = document.getElementById("bbPrimary");
-  primaryHost.innerHTML = "";
-  PRIMARY_PROVIDERS.forEach(key=>{
-    const { el, isCurrent } = makeCard({ key, fromKey, toKey, kind:"primary" });
-    if(!isCurrent){
-      el.onclick = ()=>{
-        setToNetType(shared, key);
-        render();
-      };
-    }
-    primaryHost.appendChild(el);
-  });
-
-  // --- 乗り換え先：回線判定（小） ---
-  const typeHost = document.getElementById("bbType");
-  typeHost.innerHTML = "";
-  TYPE_PROVIDERS.forEach(key=>{
-    const { el, isCurrent } = makeCard({ key, fromKey, toKey, kind:"type" });
-    if(!isCurrent){
-      el.onclick = ()=>{
-        setToNetType(shared, key);
-        render();
-      };
-    }
-    typeHost.appendChild(el);
-  });
-}
-
-/* ===== 住居タイプ（PNG） ===== */
 const HOUSING = [
   { key:"mansion", label:"マンション", icon:"img/apartment.png" },
   { key:"house",   label:"戸建て",     icon:"img/house.png"   }
 ];
 
-function renderHousing(shared){
-  shared.houseNet = shared.houseNet || {};
-  const type = shared.houseNet.housingType || "";
+function lineFamily(key){
+  if(!key) return "unknown";
+  if(key === "auhikari" || key === "jcom") return "kddi";
+  if(key === "nurohikari") return "other";
+  if(key === "fletshikari" || key === "docomohikari" || key === "softbankhikari" || key === "niftyhikari" || key === "biglobehikari") return "ntt";
+  return "unknown";
+}
 
-  const host = document.getElementById("housingGrid");
-  host.innerHTML = "";
+function lineFamilyLabel(fam){
+  if (fam === "ntt")  return "NTT回線";
+  if (fam === "kddi") return "KDDI回線";
+  if (fam === "other")return "独自回線";
+  return "未設定/不明";
+}
 
-  HOUSING.forEach(h=>{
-    const card = document.createElement("div");
-    card.className = "houseCard" + (h.key === type ? " on" : "");
-    card.title = h.label;
+function decisionFrom(hn){
+  const fromKey = hn.homeNetType || "";
+  const toKey   = hn.toNetType || "";
+  const fromFam = lineFamily(fromKey);
+  const toFam   = lineFamily(toKey);
 
-    const img = document.createElement("img");
-    img.src = h.icon;
-    img.alt = h.label;
+  const cap = String(hn.homeCap || "");
+  const rack = String(hn.rackSearch || "");
+  const housing = String(hn.housingType || "");
 
-    const txt = document.createElement("div");
-    txt.className = "txt";
-    txt.textContent = h.label;
+  const wants10g = (cap === "10");
+  const capKnown = (cap === "1" || cap === "10");
 
-    card.appendChild(img);
-    card.appendChild(txt);
+  let work = "要確認";
+  let proc = "要確認";
 
-    card.onclick = ()=>{
-      shared.houseNet.housingType = h.key;
+  if(fromKey && toKey){
+    const famChanged = (fromFam !== "unknown" && toFam !== "unknown" && fromFam !== toFam);
+
+    if(fromFam === "other" || toFam === "other"){
+      work = "工事あり";
+      proc = "新規（回線切替）";
+    } else if(famChanged){
+      work = "工事あり";
+      proc = "新規（回線切替）";
+    } else {
+      work = "工事なし（原則）";
+      proc = (fromKey === "fletshikari" && toFam === "ntt") ? "転用"
+           : (fromFam === "ntt" && toFam === "ntt") ? "事業者変更"
+           : "要確認";
+    }
+  }
+
+  if(capKnown && wants10g){
+    if(work === "工事なし（原則）") work = "工事あり（10G切替）";
+    if(housing === "mansion" && rack === "no") work = "要確認（ラック不可）";
+  }
+
+  const phone = String(hn.hikariPhone || "");
+  const hasPhone = (phone === "yes");
+
+  return { work, proc, hasPhone, housing, rack, wants10g, fromKey, toKey, fromFam, toFam };
+}
+
+function checklistFrom(d){
+  const items = [];
+
+  if(!d.fromKey || !d.toKey){
+    items.push({ id:"sel_pair", t:"現回線/乗換先を選択", s:"まずは両方選ぶと判定が出ます" });
+    return items;
+  }
+
+  if(d.proc === "事業者変更"){
+    items.push({ id:"code_biz", t:"事業者変更番号を取得", s:"現事業者へ案内（有効期限に注意）" });
+  } else if(d.proc === "転用"){
+    items.push({ id:"code_tenyo", t:"転用承諾番号を取得", s:"フレッツ側の番号が必要" });
+  } else if(String(d.proc).includes("新規")){
+    items.push({ id:"new_apply", t:"新規申込（回線切替）", s:"現回線は解約/撤去の要否を確認" });
+  } else {
+    items.push({ id:"proc_check", t:"手続き種別を確認", s:"事業者変更/転用/新規のどれかを確定" });
+  }
+
+  if(String(d.work).includes("工事あり")){
+    items.push({ id:"work_date", t:"工事日の調整", s:"立会い有無、希望日、工期目安を説明" });
+    items.push({ id:"work_place", t:"宅内配線・設置場所の確認", s:"ONU位置、配線経路、電源" });
+  } else if(String(d.work).includes("要確認")){
+    items.push({ id:"work_recheck", t:"提供可否/工事要否の再確認", s:"物件状況・設備・エリアで変動" });
+  } else {
+    items.push({ id:"switch_date", t:"切替日（開通日）の調整", s:"利用停止期間が出ないように" });
+  }
+
+  if(d.wants10g){
+    items.push({ id:"10g_area", t:"10G提供可否の確認", s:"戸建/マンション、設備条件" });
+    if(d.housing === "mansion"){
+      items.push({ id:"rack_check", t:"ラック検索結果を確認", s:"不可の場合は10Gが難しい可能性" });
+    }
+  }
+
+  if(d.hasPhone){
+    items.push({ id:"phone_keep", t:"光電話の継続可否を案内", s:"番号・工事・切替タイミングに注意" });
+  } else {
+    items.push({ id:"phone_none", t:"光電話なし（確認）", s:"不要ならOK、必要なら追加提案" });
+  }
+
+  items.push({ id:"equip_return", t:"レンタル機器の返却/撤去確認", s:"ONU/ルータ/TV機器など" });
+  items.push({ id:"wifi_setup", t:"Wi-Fi再設定の案内", s:"SSID/パス、メッシュ/中継器" });
+  items.push({ id:"fee_check", t:"違約金・工事費残債の確認", s:"更新月/解約金/残債有無" });
+
+  return items;
+}
+
+function renderChecklist(shared, hn){
+  const decHost = document.getElementById("bbDecision");
+  const listHost = document.getElementById("bbChecklist");
+  if(!decHost || !listHost) return;
+
+  hn.bbChecks = hn.bbChecks || {};
+
+  const d = decisionFrom(hn);
+
+  if (!d.fromKey || !d.toKey){
+    decHost.style.display = "none";
+  } else {
+    decHost.style.display = "";
+    decHost.innerHTML =
+      `<b>判定</b><div style="margin-top:6px; line-height:1.5;">
+        工事：<span style="font-weight:900;">${d.work}</span><br>
+        手続き：<span style="font-weight:900;">${d.proc}</span>
+      </div>`;
+  }
+
+  const items = checklistFrom(d);
+  listHost.innerHTML = "";
+
+  items.forEach((it)=>{
+    const row = document.createElement("div");
+    row.className = "checkitem";
+
+    const cb = document.createElement("input");
+    cb.type = "checkbox";
+    cb.checked = !!hn.bbChecks[it.id];
+    cb.onchange = ()=>{
+      hn.bbChecks[it.id] = cb.checked;
       saveShared(shared);
-      render();
     };
 
-    host.appendChild(card);
+    const right = document.createElement("div");
+    const t = document.createElement("div");
+    t.className = "ctitle";
+    t.textContent = it.t;
+
+    const s = document.createElement("div");
+    s.className = "csub";
+    s.textContent = it.s || "";
+
+    right.appendChild(t);
+    if (it.s) right.appendChild(s);
+
+    row.appendChild(cb);
+    row.appendChild(right);
+    listHost.appendChild(row);
   });
 }
 
 function render(){
   const shared = loadShared();
-  renderNet(shared);
-  renderHousing(shared);
+  shared.houseNet = shared.houseNet || {};
+  const hn = shared.houseNet;
+
+  if(!hn.housingType) hn.housingType = "mansion";
+
+  const fromKey = hn.homeNetType || "";
+  const toKey   = hn.toNetType || "";
+
+  const iconEl = document.getElementById("bbFromIcon");
+  if(iconEl){
+    const src = BB_ICON[fromKey] || "";
+    if(src){
+      iconEl.innerHTML = `<img src="${src}" alt="">`;
+    }else{
+      iconEl.innerHTML = `<div style="font-weight:900;color:#777;">未設定</div>`;
+    }
+  }
+
+  const famText = document.getElementById("bbLineTypeText");
+  if (famText){
+    famText.textContent = lineFamilyLabel(lineFamily(fromKey));
+  }
+
+  const bindSelect = (id, key, fallback) => {
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(!(key in hn) || hn[key] === undefined || hn[key] === null || hn[key] === "") hn[key] = fallback;
+    el.value = hn[key];
+    el.onchange = ()=>{
+      hn[key] = el.value;
+      saveShared(shared);
+      render();
+    };
+  };
+
+  bindSelect("homeCap", "homeCap", "");
+  bindSelect("router", "router", "");
+  bindSelect("hikariPhone", "hikariPhone", "");
+  bindSelect("rackSearch", "rackSearch", "");
+
+  const primaryHost = document.getElementById("bbPrimary");
+  if(primaryHost){
+    primaryHost.innerHTML = "";
+    PRIMARY_PROVIDERS
+      .filter(k => k !== fromKey)
+      .forEach(key=>{
+        const c = document.createElement("div");
+        c.className = "primaryCard" + (key === toKey ? " on" : "");
+        const img = document.createElement("img");
+        img.src = BB_ICON[key] || "";
+        img.alt = BB_LABEL[key] || key;
+        c.title = img.alt;
+        c.appendChild(img);
+        c.onclick = ()=>{
+          hn.toNetType = key;
+          saveShared(shared);
+          render();
+        };
+        primaryHost.appendChild(c);
+      });
+  }
+
+  const typeHost = document.getElementById("bbType");
+  if(typeHost){
+    typeHost.innerHTML = "";
+    TYPE_PROVIDERS
+      .filter(k => k !== fromKey)
+      .forEach(key=>{
+        const c = document.createElement("div");
+        c.className = "typeCard" + (key === toKey ? " on" : "");
+        const img = document.createElement("img");
+        img.src = BB_ICON[key] || "";
+        img.alt = BB_LABEL[key] || key;
+        c.title = img.alt;
+        c.appendChild(img);
+        c.onclick = ()=>{
+          hn.toNetType = key;
+          saveShared(shared);
+          render();
+        };
+        typeHost.appendChild(c);
+      });
+  }
+
+  const houseHost = document.getElementById("housingGrid");
+  if(houseHost){
+    houseHost.innerHTML = "";
+    HOUSING.forEach(h=>{
+      const c = document.createElement("div");
+      c.className = "houseCard" + (h.key === hn.housingType ? " on" : "");
+      c.title = h.label;
+
+      const img = document.createElement("img");
+      img.src = h.icon;
+      img.alt = h.label;
+
+      const txt = document.createElement("div");
+      txt.className = "txt";
+      txt.textContent = h.label;
+
+      c.appendChild(img);
+      c.appendChild(txt);
+      c.onclick = ()=>{
+        hn.housingType = h.key;
+        saveShared(shared);
+        render();
+      };
+
+      houseHost.appendChild(c);
+    });
+  }
+
+  const rackSel = document.getElementById("rackSearch");
+  const isMansion = (hn.housingType === "mansion");
+  if(rackSel){
+    rackSel.disabled = !isMansion;
+    rackSel.style.opacity = isMansion ? "1" : "0.55";
+  }
+
+  renderChecklist(shared, hn);
 }
+
+document.getElementById("moreBtn")?.addEventListener("click", ()=>{
+  const wrap = document.getElementById("bbTypeWrap");
+  if(!wrap) return;
+  const open = (wrap.style.display !== "none");
+  wrap.style.display = open ? "none" : "block";
+  document.getElementById("moreBtn").textContent = open ? "＋" : "－";
+});
 
 render();
 </script>
-
 </body>
 </html>

@@ -9,44 +9,27 @@
   <title>契約ナビ</title>
     <link rel="apple-touch-icon" sizes="180x180" href="./Icon.png">
   <style>
-    body{
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",sans-serif;
-      margin:0;
-      color:#111;
-      font-size:17px;
-      background: transparent;
-    }
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",sans-serif;
+  margin:0;
+  color: var(--text); 
+  font-size:17px;
+  background: transparent;
+}
 
-    html::before{
-      content:"";
-      position:fixed;
-      inset:0;
-      z-index:-1;
-      pointer-events:none;
+html, body{
+  height: 100%;
+  overflow: hidden;
+}
 
-      background:
-        linear-gradient(rgba(246,247,249,0.60), rgba(246,247,249,0.60)),
-        url("img/consaru.png") center/150% repeat,
-        #f6f7f9;
-    }
-    :root{
-      --header-h: 200px;
-    }
-
-    html, body{
-      height:100%;
-      overflow:hidden;      /* ページスクロールの固定 */
-    }
-
-    .wrap{
-    height: calc(100vh - var(--header-h));
-    overflow:auto;
-    -webkit-overflow-scrolling: touch;
-
-    max-width:960px;
-    margin:0 auto;
-    padding:12px 16px 40px;
-    }
+.wrap{
+  height: calc(100dvh - var(--header-h));
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+}
 
 .appHeaderCard{
   position:relative;
@@ -107,12 +90,10 @@
     }
 
     header{
-      padding:16px 16px 8px;
+      padding: var(--header-pad-top) var(--header-pad-x) var(--header-pad-bottom);
       background:#fff;
       border-bottom:1px solid #e6e8eb;
       position:relative;
-      top:0;
-      z-index:10;
     }
 
     .helpBtn{
@@ -405,6 +386,245 @@ select.pop{
 .appSwitch a:active{
   transform: translateY(2px) scale(0.97);
 }
+
+:root{
+  /* Light (default) */
+  --bg: #f6f7f9;
+  --text: #111;
+  --muted: #555;
+
+  --panel: #ffffff;
+  --panel2: #f0f2f5;
+  --panel3: #eef0f3;
+
+  --border: #e6e8eb;
+  --border2: #d9dde3;
+
+  --shadow: 0 1px 2px rgba(0,0,0,.04);
+
+  --btnText: #fff;
+  --btnBg: #111;
+
+  --btn2Bg: #fff;
+  --btn2Text: #111;
+
+  --focus: rgba(157,182,255,.35);
+
+  --warnBg: #fff5f5;
+  --warnBd: #ffd2d2;
+
+  --nextBg: #f7f7ff;
+  --nextBd: #d8ddff;
+
+  --doneBg: #f6fbff;
+  --doneBd: #d6e8ff;
+
+  --badgeBg: #f0f2f5;
+  --badgeBd: #e0e4ea;
+  --badgeText: #333;
+
+  --maxw: 960px;
+
+  --pad-x: 16px;
+
+  --pad-top: 12px;
+  --pad-bottom: 40px;
+
+  --header-pad-x: 16px;
+  --header-pad-top: 16px;
+  --header-pad-bottom: 8px;
+
+  --header-h: 90px;
+}
+
+/* Dark */
+html[data-theme="dark"]{
+  --bg: #0b0f19;
+  --text: #e9edf2;
+  --muted: #aab3bf;
+
+  --panel: #121826;
+  --panel2: #191e2e;
+  --panel3: #0f1320;
+
+  --border: rgba(255,255,255,.10);
+  --border2: rgba(255,255,255,.14);
+
+  --shadow: 0 10px 26px rgba(0,0,0,.35);
+
+  --btnText: #0b0c10;
+  --btnBg: #e9edf2;
+
+  --btn2Bg: #121522;
+  --btn2Text: #e9edf2;
+
+  --focus: rgba(120,170,255,.25);
+
+  --warnBg: rgba(255, 80, 80, .10);
+  --warnBd: rgba(255, 80, 80, .28);
+
+  --nextBg: rgba(120, 140, 255, .12);
+  --nextBd: rgba(120, 140, 255, .25);
+
+  --doneBg: rgba(120, 180, 255, .10);
+  --doneBd: rgba(120, 180, 255, .22);
+
+  --badgeBg: rgba(255,255,255,.06);
+  --badgeBd: rgba(255,255,255,.12);
+  --badgeText: #d6dde8;
+}
+
+html::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-1;
+  pointer-events:none;
+
+  background:
+    linear-gradient(rgba(246,247,249,0.60), rgba(246,247,249,0.60)),
+    url("img/consaru.png") center/150% repeat,
+    var(--bg);
+
+  transform: translateZ(0);
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+html[data-theme="dark"]::before{
+  background:
+    linear-gradient(rgba(11,12,16,0.78), rgba(11,12,16,0.78)),
+    url("img/consaru.png") center/150% repeat,
+    var(--bg);
+}
+
+header{
+  background: var(--panel) !important;
+  border-bottom: 1px solid var(--border) !important;
+}
+.title{ color: var(--text) !important; }
+.sub{ color: var(--muted) !important; }
+
+.card{
+  background: var(--panel) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: var(--shadow) !important;
+}
+.muted{ color: var(--muted) !important; }
+label{ color: var(--badgeText) !important; }
+
+/* 入力 */
+select{
+  background: var(--panel) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border2) !important;
+}
+select.isSelected{
+  border-color:#9db6ff !important;
+  box-shadow: 0 0 0 4px var(--focus) !important;
+}
+
+/* ボタン */
+.btn{
+  background: var(--btnBg) !important;
+  color: var(--btnText) !important;
+}
+.btn2{
+  background: var(--btn2Bg) !important;
+  color: var(--btn2Text) !important;
+  border: 1px solid var(--border2) !important;
+}
+.btnDanger{
+  background: var(--warnBg) !important;
+  border: 1px solid var(--warnBd) !important;
+}
+
+/* ステップ/バッジ */
+.step{
+  background: var(--panel2) !important;
+  color: var(--text) !important;
+}
+.badge{
+  background: var(--badgeBg) !important;
+  border: 1px solid var(--badgeBd) !important;
+  color: var(--badgeText) !important;
+}
+
+/* done/warn/next */
+.donebox{
+  background: var(--doneBg) !important;
+  border: 1px solid var(--doneBd) !important;
+}
+.warn{
+  background: var(--warnBg) !important;
+  border: 1px solid var(--warnBd) !important;
+}
+.next{
+  background: var(--nextBg) !important;
+  border: 1px solid var(--nextBd) !important;
+}
+
+/* checklist */
+.checkitem{
+  background: var(--panel) !important;
+  border: 1px solid var(--border) !important;
+}
+.checkitem .csub{ color: var(--muted) !important; }
+
+/* helpボタン */
+.helpBtn{
+  background: var(--panel) !important;
+  color: var(--muted) !important;
+  border: 1px solid var(--border2) !important;
+}
+
+/* appSwitch */
+.appSwitch a{
+  background: var(--panel) !important;
+  border: 1px solid var(--border2) !important;
+}
+.appSwitch a.on{
+  border-color: var(--text) !important;
+}
+
+html[data-theme="dark"] #linebar .step,
+html[data-theme="dark"] #linebarMini .step{
+  filter: saturate(0.95) brightness(0.95);
+}
+
+html[data-theme="dark"] .legal,
+html[data-theme="dark"] .red{
+  color:#ff6b7a !important;
+}
+
+.cardHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  cursor:pointer;
+  user-select:none;
+}
+.cardHead:active{ transform: translateY(1px); }
+
+.chev{
+  font-size:18px;
+  font-weight:900;
+  opacity:.7;
+  transition: transform 160ms ease, opacity 160ms ease;
+}
+
+.hearBody{
+  margin-top:10px;
+}
+
+#hearCard.isClosed .hearBody{
+  display:none;
+}
+#hearCard.isClosed .chev{
+  transform: rotate(-90deg);
+  opacity:.55;
+}
   </style>
   <script src="data.js"></script>
 </head>
@@ -417,7 +637,7 @@ select.pop{
 </header>
 
 <div class="wrap">
-  <div class="card" style="margin-top:12px;">
+  <div class="card" style="margin-top:0;">
   <div class="state">📱回線</div>
   <div class="row" style="gap:8px; align-items:center;">
     <div class="stepbar" id="linebar" style="margin-top:0;"></div>
@@ -426,8 +646,13 @@ select.pop{
   </div>
 </div>
 
-<div class="card">
-  <div class="state">📋ヒアリングシート</div>
+<div class="card" id="hearCard">
+  <div class="cardHead" id="hearToggle" role="button" tabindex="0" aria-expanded="true">
+    <div class="state">📋ヒアリングシート</div>
+    <div class="chev" id="hearChev">▾</div>
+  </div>
+
+  <div class="hearBody" id="hearBody">
 
   <div class="divider"></div>
   <div class="row" style="gap:8px;">
@@ -562,7 +787,9 @@ select.pop{
       <button class="btnDanger" id="wipeAllBtn">全ての回線をリセット</button>
     </div>
   </div>
-</div>
+
+  </div><!-- /hearBody -->
+</div><!-- /hearCard -->
 
   <!-- ステップ内容 -->
   <div class="card" id="stepCard">
@@ -822,6 +1049,68 @@ select.pop{
 </div>
 
 <script>
+
+const APP_THEME_KEY = "APP_THEME_V1";
+
+function getSystemTheme(){
+  return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark" : "light";
+}
+
+function applyTheme(theme){
+  const t = (theme === "dark" || theme === "light") ? theme : getSystemTheme();
+  document.documentElement.setAttribute("data-theme", t);
+}
+
+function loadTheme(){
+  const saved = localStorage.getItem(APP_THEME_KEY);
+  applyTheme(saved || getSystemTheme());
+}
+
+function toggleTheme(){
+  const cur = document.documentElement.getAttribute("data-theme") || getSystemTheme();
+  const next = (cur === "dark") ? "light" : "dark";
+  localStorage.setItem(APP_THEME_KEY, next);
+  applyTheme(next);
+}
+
+/* 起動時 */
+loadTheme();
+
+/* OS側が切り替わった時（保存がなければ追従） */
+if (window.matchMedia){
+  const mq = window.matchMedia("(prefers-color-scheme: dark)");
+  const onChange = () => {
+    const saved = localStorage.getItem(APP_THEME_KEY);
+    if (!saved) applyTheme(getSystemTheme());
+  };
+  if (mq.addEventListener) mq.addEventListener("change", onChange);
+  else if (mq.addListener) mq.addListener(onChange);
+}
+
+/* 手動切替：タイトル長押し（iPad想定）＋PCはダブルクリック */
+window.addEventListener("DOMContentLoaded", ()=>{
+  const title = document.querySelector("header .title");
+  if (!title) return;
+
+  // ダブルクリック
+  title.addEventListener("dblclick", toggleTheme);
+
+  // 長押し（約420ms）
+  let timer = null;
+  const start = () => {
+    timer = setTimeout(()=>{ toggleTheme(); timer=null; }, 420);
+  };
+  const cancel = () => { if (timer){ clearTimeout(timer); timer=null; } };
+
+  title.addEventListener("touchstart", start, {passive:true});
+  title.addEventListener("touchend", cancel, {passive:true});
+  title.addEventListener("touchcancel", cancel, {passive:true});
+
+  title.addEventListener("mousedown", start);
+  title.addEventListener("mouseup", cancel);
+  title.addEventListener("mouseleave", cancel);
+});
 /* =========================
    Utils
    ========================= */
@@ -1821,6 +2110,42 @@ function decideS3StartId(curCtx){
   // lump / 未指定 は通常契約へ
   return "S3";
 }
+
+const HEAR_FOLD_KEY = "contract_navi_hear_fold_v1";
+
+function setHearFold(closed){
+  const card = document.getElementById("hearCard");
+  if(!card) return;
+  card.classList.toggle("isClosed", !!closed);
+
+  const t = document.getElementById("hearToggle");
+  if(t) t.setAttribute("aria-expanded", closed ? "false" : "true");
+
+  localStorage.setItem(HEAR_FOLD_KEY, closed ? "1" : "0");
+}
+
+function toggleHearFold(){
+  const card = document.getElementById("hearCard");
+  if(!card) return;
+  const closed = card.classList.contains("isClosed");
+  setHearFold(!closed);
+}
+
+window.addEventListener("DOMContentLoaded", ()=>{
+  const saved = localStorage.getItem(HEAR_FOLD_KEY);
+  setHearFold(saved === "1");
+
+  const t = document.getElementById("hearToggle");
+  if(!t) return;
+
+  t.addEventListener("click", toggleHearFold);
+  t.addEventListener("keydown", (e)=>{
+    if(e.key === "Enter" || e.key === " "){
+      e.preventDefault();
+      toggleHearFold();
+    }
+  });
+});
 
 /* =========================
    Sync from storage

@@ -1,27 +1,75 @@
 <!-- =========================
-     CarrierPalette.html
+     CarrierPalette.html  (Common Dark Theme / cleaned)
      ========================= -->
 <!doctype html>
 <html lang="ja">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark">
   <title>キャリアパレット</title>
+
   <style>
-body{
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",sans-serif;
-  margin:0;background:var(--bg);color:var(--text);font-size:16px;
+/* =============== Theme tokens (共通) =============== */
+:root{
+  --header-h: 90px;
+
+  /* light */
+  --bg: #f6f7f9;
+  --panel: #ffffff;
+  --text: #111111;
+  --muted: #555555;
+
+  --border: #e6e8eb;
+  --border2:#d9dde3;
+  --soft: #eef0f3;
+
+  --chip: #f8fafc;
+  --chip2:#f3f4f6;
+
+  --noteBg:#f6fbff;
+  --noteBd:#d6e8ff;
+  --noteTx:#223344;
+
+  --dangerBg:#fff5f5;
+  --dangerBd:#ffd2d2;
+  --dangerTx:#b00020;
+
+  --track:#e9ecef;
+
+  /* accent (共通) */
+  --accent:#16a34a;
+  --accent-weak: color-mix(in srgb, var(--accent) 18%, var(--panel));
+  --accent-border: color-mix(in srgb, var(--accent) 45%, var(--border2));
+  --accent-text: color-mix(in srgb, var(--accent) 60%, #0b2a14);
+
+  /* selected surfaces */
+  --selectedBg: color-mix(in srgb, var(--accent) 12%, var(--panel));
+  --selectedBd: color-mix(in srgb, var(--accent) 45%, var(--border2));
+
+  --maxw: 960px;
+
+  /* 左右の基本余白（iPadでもPCでも同じにする基準） */
+  --pad-x: 16px;
+
+  /* 上下の基本余白 */
+  --pad-top: 12px;
+  --pad-bottom: 40px;
+
+  /* header の内側余白 */
+  --header-pad-x: 16px;
+  --header-pad-top: 16px;
+  --header-pad-bottom: 8px;
 }
-body[data-mode="single"] .grid2{ grid-template-columns: 1fr; }
-body[data-mode="single"] .resultGrid{ grid-template-columns: 1fr; }
+
 body[data-theme="dark"]{
   --bg:#0b0f19;
   --panel:#121826;
   --text:#e6e8ef;
   --muted:#aab3c2;
 
-  --border:#43474c;
-  --border2:#43474c;
+  --border:#2b3446;
+  --border2:#3a4660;
   --soft:#1a2435;
 
   --chip:#0f172a;
@@ -35,150 +83,284 @@ body[data-theme="dark"]{
   --dangerBd:#6b1f2a;
   --dangerTx:#ffb4c0;
 
-  --switchTrack:#1d2738;
+  --track:#1d2738;
 
-  --primary:#22c55e;
+  --accent:#22c55e;
+  --accent-weak: color-mix(in srgb, var(--accent) 16%, var(--panel));
+  --accent-border: color-mix(in srgb, var(--accent) 45%, var(--border2));
+  --accent-text: color-mix(in srgb, var(--accent) 70%, #cfeeda);
+
+  --selectedBg: color-mix(in srgb, var(--accent) 12%, var(--panel));
+  --selectedBd: color-mix(in srgb, var(--accent) 55%, var(--border2));
+
+  --bg-img-opacity: .22;
+  --bg-img-tint: rgba(11, 15, 25, .78);
 }
 
-:root{
-  --header-h: 90px;
-
-  --bg: #f6f7f9;
-  --panel: #ffffff;
-  --text: #111111;
-  --muted: #555555;
-
-  --border: #e6e8eb;
-  --border2:#d9dde3;
-  --soft: #eef0f3;
-
-  --chip: #f8fafc;
-  --chip2:#f3f4f6;       
-  --noteBg:#f6fbff;
-  --noteBd:#d6e8ff;
-  --noteTx:#223344;
-
-  --dangerBg:#fff5f5;
-  --dangerBd:#ffd2d2;
-  --dangerTx:#b00020;
-
-  --switchTrack:#e9ecef;
-
-  --primary:#16a34a;
+/* =============== Base =============== */
+html, body{ height:auto; overflow:auto; }
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",sans-serif;
+  margin:0; background: transparent; color:var(--text); font-size:16px; position:relative;
 }
+html::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-1;
+  pointer-events:none;
 
-html, body{
-  height:auto;
-  overflow:auto;
+  background:
+    linear-gradient(rgba(246,247,249,0.60), rgba(246,247,249,0.60)),
+    url("img/consaru.png") center/150% repeat,
+    #f6f7f9;
 }
+html[data-theme="dark"]::before{
+  background:
+    linear-gradient(rgba(11,12,16,0.78), rgba(11,12,16,0.78)),
+    url("img/consaru.png") center/150% repeat,
+    var(--bg);
+}
+.hidden{display:none !important;}
 
 .wrap{
   height: calc(100dvh - var(--header-h));
   overflow:auto;
   -webkit-overflow-scrolling: touch;
-
-  max-width:980px;
-  margin:0 auto;
-  padding:12px 16px 40px;
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
 }
-.card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:12px;}
+
+.card{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:12px;
+}
 .divider{height:1px;background:var(--soft);margin:10px 0;}
-label{font-size:13px;color:color-mix(in srgb, var(--text) 80%, #000 20%);font-weight:900;}
+
+label{
+  font-size:13px;
+  color:color-mix(in srgb, var(--text) 78%, var(--muted));
+  font-weight:900;
+}
 select,input{
-  width:100%;padding:10px 10px;border-radius:10px;border:1px solid var(--border2);
-  font-size:15px;background:var(--panel);color:var(--text);
+  width:100%;
+  padding:10px 10px;
+  border-radius:10px;
+  border:1px solid var(--border2);
+  font-size:15px;
+  background:var(--panel);
+  color:var(--text);
 }
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
 .row.tight{gap:8px}
-.btn2{
-  order:1px solid var(--border2);background:var(--panel);color:var(--text);border-radius:12px;
-  padding:12px 14px;font-size:15px;cursor:pointer;
-}
-.hidden{display:none !important;}
+
 .note{
-  background:var(--panel);border:1px solid var(--border2);border-radius:12px;padding:10px 10px;
-  color:var(--text);font-size:13px; line-height:1.4;
+  background:var(--panel);
+  border:1px solid var(--border2);
+  border-radius:12px;
+  padding:10px;
+  color:var(--text);
+  font-size:13px;
+  line-height:1.4;
 }
 .alert{
-  background:var(--dangerBg);border:1px solid var(--dangerBd);border-radius:12px;padding:10px 10px;
-  color:var(--dangerTx);font-size:14px;font-weight:1000;
+  background:var(--dangerBg);
+  border:1px solid var(--dangerBd);
+  border-radius:12px;
+  padding:10px;
+  color:var(--dangerTx);
+  font-size:14px;
+  font-weight:1000;
 }
 
+/* =============== Header =============== */
 header{
-  padding:16px 16px 8px;
+  padding: var(--header-pad-top) var(--header-pad-x) var(--header-pad-bottom);
   background:var(--panel);
   border-bottom:1px solid var(--border);
   position:relative;
   top:0;
   z-index:10;
 }
-
-.title{font-size:24px;font-weight:800;}
+.title{font-size:24px;font-weight:800; user-select:none;}
 .sub{font-size:15px;color:var(--muted);margin-top:4px;}
-
-.devBadge{
-  position:absolute;
-  top:50%;
-  left:35%;
-  transform:translate(-50%, -50%);
-
-  font-size:15px;
-  font-weight:1100;
-  letter-spacing:.12em;
-
-  color:#fff;
-  background:#d40000;
-
-  padding:7px 16px;
-  border-radius:999px;
-  opacity: 0.8;
-
-  pointer-events:none;
-}
 
 .trialBadge{
   position:absolute;
   top:50%;
   left:35%;
   transform:translate(-50%, -50%);
-
   font-size:15px;
   font-weight:1100;
   letter-spacing:.12em;
-
-  color:#fff;
+  color:color-mix(in srgb, #fff 90%, var(--text));
   background:#d46600;
-
   padding:7px 16px;
   border-radius:999px;
-  opacity: 0.8;
-
+  opacity:0.85;
   pointer-events:none;
 }
 
-  .grid2{
+/* =============== Layout grids =============== */
+.grid2{
   display:grid;
   gap:10px;
   grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
 }
+.resultGrid{
+  display:grid;
+  gap:10px;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+}
+body[data-mode="single"] .grid2{ grid-template-columns: 1fr; }
+body[data-mode="single"] .resultGrid{ grid-template-columns: 1fr; }
 
-    .grid3{
-      display:grid;
-      gap:10px;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      align-items:end;
-    }
-    @media (max-width: 900px){
-      .grid3{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    }
-    @media (max-width: 600px){
-      .grid3{ grid-template-columns: 1fr; }
-    }
-    .grid3 select, .grid3 input{
-      padding:8px 10px;
-      font-size:14px;
-      border-radius:10px;
-    }
+/* =============== Mode switch =============== */
+.modeSwitch{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  user-select:none;
+  padding:10px 12px;
+  border:1px solid var(--border2);
+  border-radius:14px;
+  background:var(--panel);
+  cursor:pointer;
+}
+.modeLabel{
+  font-size:13px;
+  font-weight:1000;
+  color:var(--muted);
+}
+body[data-mode="single"] #modeLabelLeft,
+body[data-mode="compare"] #modeLabelRight{ color:var(--text); }
+
+.modeTrack{
+  width:46px; height:26px;
+  border-radius:999px;
+  background: var(--track);
+  position:relative;
+  flex:0 0 auto;
+  border:1px solid var(--border2);
+}
+.modeThumb{
+  width:22px; height:22px;
+  border-radius:999px;
+  background: var(--accent);
+  position:absolute;
+  left:1px;
+  top:50%;
+  transform: translate(0, -50%);
+  transition: transform 160ms ease;
+}
+body[data-mode="compare"] .modeThumb{ transform: translate(22px, -50%); }
+body[data-mode="compare"] .modeTrack{
+  background:var(--accent-weak);
+  border-color:var(--accent-border);
+}
+
+/* =============== Carrier cards =============== */
+.badgeMini{
+  font-size:11px;
+  font-weight:900;
+  border:1px solid var(--border2);
+  background:var(--panel);
+  border-radius:999px;
+  padding:4px 8px;
+  color:var(--muted);
+  flex:0 0 auto;
+  white-space:nowrap;
+}
+
+.carrierGrid{ display:grid; gap:10px; grid-template-columns:1fr; }
+.carrierGrid.compare{ grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); }
+
+.carrierList{
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap:8px;
+}
+@media (max-width: 640px){
+  .carrierList{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.carrierCard{
+  padding:8px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:var(--panel);
+  cursor:pointer;
+  user-select:none;
+  position:relative;
+  overflow:hidden;
+}
+.carrierCard.on{
+  border-color:var(--selectedBd);
+  background:var(--selectedBg);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+}
+.carrierHeroImg{
+  width:100%;
+  height:96px;
+  border-radius:10px;
+  object-fit:cover;
+  display:block;
+  border:1px solid var(--border);
+  background:var(--chip2);
+}
+.carrierCard:not(.on) .carrierHeroImg,
+.carrierCard:not(.on) .carrierCompareImg{
+  filter: grayscale(100%);
+  opacity:0.55;
+}
+.carrierCard:not(.on)::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:12px;
+  background: color-mix(in srgb, var(--bg) 50%, transparent);
+  pointer-events:none;
+}
+.carrierCard.on::after{ display:none; }
+
+.carrierGrid.compare .carrierCard{
+  aspect-ratio: 1 / 1;
+  padding:8px;
+  display:grid;
+  place-items:center;
+}
+.carrierGrid.compare .carrierCompareImg{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  display:block;
+}
+.carrierGrid:not(.compare) .carrierCompareImg{ display:none; }
+.carrierGrid.compare .carrierHeroImg{ display:none; }
+
+/* =============== Option pills / talk box =============== */
+.sectionTitle{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-top:2px;
+}
+.sectionTitle b{font-size:14px;}
+.mini{font-size:12px;color:var(--muted);line-height:1.35;margin-top:6px;}
+
+.resultCard{
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:10px;
+  background:var(--panel);
+}
+.resultTop{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.brand{font-size:14px;font-weight:1000;}
+.price{font-size:28px;font-weight:1100;letter-spacing:0.02em;margin-top:6px;}
 
 .talkBox{
   margin-top:8px;
@@ -196,30 +378,47 @@ header{
   align-items:center;
   margin-bottom:8px;
 }
-.talkBoxTitle .tag{
-  font-size:11px;
-  font-weight:1000;
-  padding:4px 8px;
-  border-radius:999px;
+.talkRow{display:flex;flex-wrap:wrap;gap:8px;}
+
+.pillRow{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
+.pill{
   border:1px solid var(--border2);
   background:var(--panel);
-  color:var(--muted);
+  border-radius:999px;
+  padding:8px 12px;
+  font-size:13px;
+  font-weight:900;
+  cursor:pointer;
+  user-select:none;
+  color:var(--text);
 }
-.talkRow{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
+.pill.on{
+  background:var(--text);
+  color:var(--panel);
+  border-color:var(--text);
 }
 
+.pill.disc{
+  border-color:var(--accent-border);
+  background:var(--accent-weak);
+  color:var(--accent-text);
+}
+.pill.disc.on{
+  background:var(--accent);
+  border-color:var(--accent);
+  color:#fff;
+}
+
+.pillSelectWrap{ position:relative; display:inline-flex; align-items:center; }
 .pillSelect{
   appearance:none;
   -webkit-appearance:none;
   -moz-appearance:none;
   display:inline-flex;
   align-items:center;
-  border:1px solid #b7e4c7;
-  background:#f3fff7;
-  color:#0f5132;
+  border:1px solid var(--accent-border);
+  background:var(--accent-weak);
+  color:var(--accent-text);
   border-radius:999px;
   padding:8px 34px 8px 12px;
   font-size:13px;
@@ -229,28 +428,21 @@ header{
   position:relative;
   vertical-align:middle;
 }
-.pillSelectWrap{
-  position:relative;
-  display:inline-flex;
-  align-items:center;
-}
 .pillSelectWrap::after{
   content:"▾";
   position:absolute;
   right:12px;
   top:50%;
   transform:translateY(-50%);
-  color:#0f5132;
+  color:var(--accent-text);
   font-size:12px;
   pointer-events:none;
   opacity:0.8;
   line-height:1;
 }
-.pillSelect:disabled{
-  opacity:0.45;
-  cursor:not-allowed;
-}
+.pillSelect:disabled{ opacity:0.45; cursor:not-allowed; }
 
+/* =============== Switch (talk) =============== */
 .switchRow{ display:flex; align-items:center; gap:8px; }
 .switchLabel{ font-size:12px; color:var(--muted); font-weight:1000; }
 .switch{
@@ -259,7 +451,7 @@ header{
   width:46px;
   height:26px;
   border-radius:999px;
-  background: var(--switchTrack);
+  background: var(--track);
   border:1px solid var(--border2);
   position:relative;
   cursor:pointer;
@@ -270,80 +462,35 @@ header{
   appearance:none;
   line-height:0;
 }
-
 .switch .knob{
   width:var(--k);
   height:var(--k);
   border-radius:999px;
-  background: var(--primary);
+  background: var(--accent);
   position:absolute;
   top:50%;
   transform: translateY(-50%);
   left: var(--pad);
-
   transition: left 160ms ease;
 }
-
 .switch[aria-pressed="true"]{
-  background:#dcfce7;
-  border-color:#86efac;
+  background: var(--accent-weak);
+  border-color: var(--accent-border);
 }
 .switch[aria-pressed="true"] .knob{
   left: calc(100% - var(--k) - var(--pad));
 }
-    .sectionTitle{
-      display:flex;align-items:center;justify-content:space-between;gap:10px;
-      margin-top:2px;
-    }
-    .sectionTitle b{font-size:14px;}
-    .mini{font-size:12px;color:var(--muted);line-height:1.35;margin-top:6px;}
 
-    .pillRow{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
-    .pill{
-      border:1px solid var(--border2);background:var(--panel);border-radius:999px;
-      padding:8px 12px;font-size:13px;font-weight:900;cursor:pointer;user-select:none;
-      color:var(--text);
-    }
-    .pill.on{background:var(--text);color:var(--panel);border-color:var(--text);}
-    .pill.gray{background:var(--chip2);border-color:var(--border);color:var(--text);font-weight:800;}
-    .pill.warn{background:#fff5f5;border-color:#ffd2d2;color:#b00020;}
-
-    .pill.disc{
-      border-color:#b7e4c7;
-      background:#f3fff7;
-      color:#0f5132;
-    }
-    .pill.disc.on{
-      background:#198754;
-      border-color:#198754;
-      color:#fff;
-    }
-
-    .resultGrid{
-      display:grid;
-      gap:10px;
-      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-    }
-
-    .resultCard{
-      border:1px solid var(--border);border-radius:14px;padding:10px 10px;background:var(--panel);
-    }
-    .resultTop{display:flex;align-items:center;justify-content:space-between;gap:10px;}
-    .brand{font-size:14px;font-weight:1000;}
-    .price{font-size:28px;font-weight:1100;letter-spacing:0.02em;margin-top:6px;}
-
-.delta{
-  text-align:center;border:1px dashed color-mix(in srgb, var(--border) 80%, #ffffff 20%);background:var(--chip);padding:10px;margin-top:10px;
-}
-.delta b{font-size:16px;}
-
+/* =============== Breakdown / delta =============== */
 .breakdown{
-  margin-top:6px;font-size:12px;
+  margin-top:6px;
+  font-size:12px;
   padding:8px 10px;
   border-radius:12px;
   background:var(--chip);
   border:1px solid var(--border);
-  color:var(--text);line-height:1.45;
+  color:var(--text);
+  line-height:1.45;
 }
 .breakdown .k{color:var(--muted);}
 .breakdown .line{display:flex;justify-content:space-between;gap:10px;}
@@ -354,7 +501,7 @@ details.compact{
   border-radius:12px;
   padding:8px 10px;
   margin-top:10px;
-  background:color-mix(in srgb, var(--panel) 88%, #000 12%);
+  background: color-mix(in srgb, var(--panel) 96%, var(--bg));
 }
 details.compact summary{
   display:flex;
@@ -365,168 +512,35 @@ details.compact summary{
   font-weight:1000;
   font-size:13px;
 }
-.badgeMini{
-      font-size:11px;
-      font-weight:900;
-      border:1px solid #e6e8eb;
-      background:#fff;
-      border-radius:999px;
-      padding:4px 8px;
-      color:#555;
-      flex:0 0 auto;
-      white-space:nowrap;
-    }
+.delta{
+  text-align:center;
+  border:1px dashed color-mix(in srgb, var(--border) 85%, var(--panel));
+  background:var(--chip);
+  padding:10px;
+  margin-top:10px;
+}
+.delta b{font-size:16px;}
 
-    .carrierGrid{
-      display:grid;
-      gap:10px;
-      grid-template-columns: 1fr;
-    }
-    .carrierGrid.compare{
-      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-    }
+/* =============== Small screens =============== */
+@media (max-width: 640px){
+  .grid2, .resultGrid, .carrierGrid.compare{ grid-template-columns: 1fr 1fr; }
+  label{ font-size:11px; }
+  .price{ font-size:20px; }
+  .pill{ padding:6px 11px; font-size:11px; }
+  select,input{ padding:8px 8px; font-size:11px; }
+  .switch{ --k:20px; width:42px; height:24px; }
 
-    @media (max-width: 640px){
-      .grid2, .resultGrid, .carrierGrid.compare{
-        grid-template-columns: 1fr 1fr;
-      }
-      label{ font-size:11px; }
-      .price{ font-size:20px; }
-      .pill{ padding:6px 11px; font-size:11px; }
-      select,input{ padding:8px 8px; font-size:11px; }
-      .switch{
-    --h: 24px;
-    --k: 20px;
-    width: 42px;}
-
-      /* キャリアカード並び替え */
-      .carrierList .carrierCard{ order: 50; }
-
-      .carrierList .carrierCard.docomo   { order: 1; }
-      .carrierList .carrierCard.ahamo    { order: 2; }
-      .carrierList .carrierCard.au       { order: 3; }
-      .carrierList .carrierCard.uq       { order: 4; }
-      .carrierList .carrierCard.softbank { order: 5; }
-      .carrierList .carrierCard.ymobile  { order: 6; }
-    }
-
-    .carrierList{
-      display:grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap:8px;
-    }
-    @media (max-width: 640px){
-      .carrierList{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    }
-
-    .carrierCard{
-      padding:8px;
-      border:1px solid var(--border);
-      border-radius:12px;
-      background:var(--panel);
-      cursor:pointer;
-      user-select:none;
-      position:relative;
-    }
-    .carrierCard.on{
-      border-color:#111;
-      background:#d8dff8;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-    }
-    .carrierHeroImg{
-      width:100%;
-      height:96px;
-      border-radius:10px;
-      object-fit:cover;
-      display:block;
-      border:1px solid var(--border);
-      background:var(--chip2);
-    }
-
-    .carrierCard:not(.on) .carrierHeroImg{
-      filter: grayscale(100%);
-      opacity: 0.55;
-    }
-    .carrierCard:not(.on)::after{
-      content:"";
-      position:absolute;
-      inset:0;
-      border-radius:12px;
-      background: rgba(220,220,220,0.35);
-      pointer-events:none;
-    }
-    .carrierCard:not(.on) .carrierCompareImg{
-      filter: grayscale(100%);
-      opacity: 0.55;
-    }
-    .carrierCard.on::after{ display:none; }
-
-    .carrierGrid.compare .carrierCard{
-      aspect-ratio: 1 / 1;
-      padding: 8px;
-      display: grid;
-      place-items: center;
-    }
-    .carrierGrid.compare .carrierCompareImg{
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      display: block;
+  /* キャリアカード並び替え */
+  .carrierList .carrierCard{ order: 50; }
+  .carrierList .carrierCard.docomo   { order: 1; }
+  .carrierList .carrierCard.ahamo    { order: 2; }
+  .carrierList .carrierCard.au       { order: 3; }
+  .carrierList .carrierCard.uq       { order: 4; }
+  .carrierList .carrierCard.softbank { order: 5; }
+  .carrierList .carrierCard.ymobile  { order: 6; }
 }
 
-.carrierGrid:not(.compare) .carrierCompareImg{ display:none; }
-.carrierGrid.compare .carrierHeroImg{ display:none; }
-
-#recPills{ display:none !important; }
-
-.modeSwitch{
-  display:flex; align-items:center; gap:10px;
-  user-select:none;
-  padding:10px 12px;
-  border:1px solid var(--border2);
-  border-radius:14px;
-  background:var(--panel);
-  cursor:pointer;
-}
-
-.modeLabel{
-  font-size:13px;
-  font-weight:1000;
-  color:var(--muted);
-}
-
-body[data-mode="single"] #modeLabelLeft,
-body[data-mode="compare"] #modeLabelRight{ color:var(--text); }
-
-.modeTrack{
-  width:46px; height:26px;
-  border-radius:999px;
-  background: var(--switchTrack);
-  position:relative;
-  flex:0 0 auto;
-  border:1px solid var(--border2);
-}
-
-.modeThumb{
-  width:22px; height:22px;
-  border-radius:999px;
-  background: var(--primary);
-  position:absolute;
-  left:1px;
-  top:50%;
-  transform: translate(0, -50%);
-  transition: transform 160ms ease;
-}
-
-body[data-mode="compare"] .modeThumb{
-  transform: translate(22px, -50%);
-}
-
-body[data-mode="compare"] .modeTrack{
-  background:#dcfce7;
-  border-color:#86efac;
-}
-
+/* =============== App switch =============== */
 .appSwitch{
   position:fixed;
   right:18px;
@@ -535,15 +549,15 @@ body[data-mode="compare"] .modeTrack{
   gap:14px;
   z-index:9999;
 }
-
 .appSwitch a{
   width:64px;
   height:64px;
   display:grid;
   place-items:center;
   border-radius:22px;
-  border:1px solid #d9dde3;
-  background:#fff;
+  border:1px solid var(--border2);
+  background:var(--panel);
+  color:var(--text);
   text-decoration:none;
   box-shadow: 0 10px 26px rgba(0,0,0,0.18);
   font-size:30px;
@@ -551,460 +565,536 @@ body[data-mode="compare"] .modeTrack{
   -webkit-tap-highlight-color: transparent;
   transition: all 120ms ease;
 }
-
 .appSwitch a.on{
-  border-color:#111;
+  border-color:var(--text);
   box-shadow: 0 12px 30px rgba(0,0,0,0.22);
 }
-
-.appSwitch a:active{
-  transform: translateY(2px) scale(0.97);
-}
+.appSwitch a:active{ transform: translateY(2px) scale(0.97); }
   </style>
 </head>
 
 <body>
   <header>
-  <div class="title">キャリアパレット</div>
-  <div class="sub">料金比較・見積り</div>
+    <div class="title">キャリアパレット</div>
+    <div class="sub">料金比較・見積り</div>
 
-  <div class="trialBadge">⚠ 試験運用中 ⚠</div>
+    <div class="trialBadge">⚠ 試験運用中 ⚠</div>
 
-  <div class="modeSwitch" id="modeToggle" role="button" aria-label="表示モード切替" tabindex="0"
+    <div class="modeSwitch" id="modeToggle" role="button" aria-label="表示モード切替" tabindex="0"
       style="position:absolute; right:16px; top:50%; transform:translateY(-50%);">
-    <span class="modeLabel" id="modeLabelLeft">単体</span>
-    <span class="modeTrack" aria-hidden="true">
-      <span class="modeThumb" id="modeThumb"></span>
-    </span>
-    <span class="modeLabel" id="modeLabelRight">比較</span>
-  </div>
-</header>
+      <span class="modeLabel" id="modeLabelLeft">単体</span>
+      <span class="modeTrack" aria-hidden="true">
+        <span class="modeThumb" id="modeThumb"></span>
+      </span>
+      <span class="modeLabel" id="modeLabelRight">比較</span>
+    </div>
+  </header>
+
   <div class="wrap">
     <div class="card">
-    <div class="divider"></div>
-    <div class="sectionTitle"><b></b></div>
+      <div class="divider"></div>
+      <div class="sectionTitle"><b></b></div>
 
-    <div class="carrierGrid" id="carrierGrid">
-      <div class="resultCard">
-        <select id="carrierA" class="hidden">
-          <option value="" selected>未選択</option>
-          <option value="docomo">docomo</option>
-          <option value="ahamo">ahamo</option>
-          <option value="au">au</option>
-          <option value="uq">UQ mobile</option>
-          <option value="softbank">SoftBank</option>
-          <option value="ymobile">Y!mobile</option>
-        </select>
-        <div id="carrierCardsA" class="carrierList"></div>
-      </div>
-
-      <div class="resultCard hidden" id="carrierBBlock">
-        <select id="carrierB" class="hidden">
-          <option value="" selected>未選択</option>
-          <option value="docomo">docomo</option>
-          <option value="ahamo">ahamo</option>
-          <option value="au">au</option>
-          <option value="uq">UQ mobile</option>
-          <option value="softbank">SoftBank</option>
-          <option value="ymobile">Y!mobile</option>
-        </select>
-        <div id="carrierCardsB" class="carrierList"></div>
-      </div>
-    </div>
-
-    <div class="divider"></div>
-    <div class="sectionTitle"><b>オプション / 割引</b></div>
-
-    <div class="grid2" style="margin-top:8px;">
-      <!-- A -->
-      <div class="resultCard">
-        <div class="resultTop">
-          <div class="brand" id="optTitleA">A：—</div>
+      <div class="carrierGrid" id="carrierGrid">
+        <div class="resultCard">
+          <select id="carrierA" class="hidden">
+            <option value="" selected>未選択</option>
+            <option value="docomo">docomo</option>
+            <option value="ahamo">ahamo</option>
+            <option value="au">au</option>
+            <option value="uq">UQ mobile</option>
+            <option value="softbank">SoftBank</option>
+            <option value="ymobile">Y!mobile</option>
+          </select>
+          <div id="carrierCardsA" class="carrierList"></div>
         </div>
 
-        <div style="margin-top:8px;">
-          <label>プラン</label>
-          <select id="A_planSelect"></select>
+        <div class="resultCard hidden" id="carrierBBlock">
+          <select id="carrierB" class="hidden">
+            <option value="" selected>未選択</option>
+            <option value="docomo">docomo</option>
+            <option value="ahamo">ahamo</option>
+            <option value="au">au</option>
+            <option value="uq">UQ mobile</option>
+            <option value="softbank">SoftBank</option>
+            <option value="ymobile">Y!mobile</option>
+          </select>
+          <div id="carrierCardsB" class="carrierList"></div>
         </div>
+      </div>
 
-        <div class="divider" style="margin:10px 0;"></div>
-        <div class="talkBox">
-        <div class="talkBoxTitle">
-          <span>通話OP</span>
-          <div class="switchRow">
-            <span class="switchLabel">なし</span>
-            <button class="switch" id="A_talkSwitch" type="button" aria-pressed="false">
-              <span class="knob"></span>
-            </button>
-            <span class="switchLabel">あり</span>
+      <div class="divider"></div>
+      <div class="sectionTitle"><b>オプション / 割引</b></div>
+
+      <div class="grid2" style="margin-top:8px;">
+        <!-- A -->
+        <div class="resultCard">
+          <div class="resultTop">
+            <div class="brand" id="optTitleA">A：—</div>
           </div>
-        </div>
 
-        <div class="talkRow" id="A_talkKinds" style="margin-top:8px;">
-          <div class="pill" id="A_kind_short">短時間かけ放題</div>
-          <div class="pill" id="A_kind_unlimited">かけ放題</div>
-          <div class="pill" id="A_kind_senior">かけ放題(60歳以上)</div>
-          <div class="pill" id="A_kind_min60">1ヶ月60分</div>
-        </div>
-      </div>
+          <div style="margin-top:8px;">
+            <label>プラン</label>
+            <select id="A_planSelect"></select>
+          </div>
 
-      <div class="pillRow" style="margin-top:6px;">
-          <div class="pill" id="A_mail">メール持ち運び</div>
-      </div>
+          <div class="divider" style="margin:10px 0;"></div>
+          <div class="talkBox">
+            <div class="talkBoxTitle">
+              <span>通話OP</span>
+              <div class="switchRow">
+                <span class="switchLabel">なし</span>
+                <button class="switch" id="A_talkSwitch" type="button" aria-pressed="false">
+                  <span class="knob"></span>
+                </button>
+                <span class="switchLabel">あり</span>
+              </div>
+            </div>
 
-        <div class="divider" style="margin:10px 0;"></div>
-        <div class="mini" style="margin:0;font-weight:1000;">割引</div>
-        <div class="pillRow" style="margin-top:6px;">
-          <div class="pill disc" id="A_u22">U22割</div>
-          <div class="pill disc" id="A_upgradeUqToAu">アプグレ割</div>
-          <div class="pill disc" id="A_oyako">親子割</div>
-          <div class="pill disc" id="A_support39">39割</div>
-          <div class="pill disc" id="A_upgradeYToSb">アプグレ割</div>
-          <div class="pill disc" id="A_family">家族割</div>
-          <span class="pillSelectWrap" id="A_familyCountWrap">
-            <select id="A_familyCount" class="pillSelect">
-              <option value="2">2回線</option>
-              <option value="3">3回線以上</option>
-            </select>
-          </span>
-          <div class="pill disc" id="A_hikari">光割</div>
-          <div class="pill disc" id="A_denki">でんき割</div>
-          <div class="pill disc" id="A_dcardPill">dカード割</div>
-          <span class="pillSelectWrap hidden" id="A_dcardWrap">
-            <select id="A_dcard" class="pillSelect">
-              <option value="silver">シルバー</option>
-              <option value="gold">ゴールド</option>
-            </select>
-          </span>
-          <div class="pill disc" id="A_aupay">auPAYカード割</div>
-          <div class="pill disc" id="A_paypayPill">PayPayカード割</div>
+            <div class="talkRow" id="A_talkKinds" style="margin-top:8px;">
+              <div class="pill" id="A_kind_short">短時間かけ放題</div>
+              <div class="pill" id="A_kind_unlimited">かけ放題</div>
+              <div class="pill" id="A_kind_senior">かけ放題(60歳以上)</div>
+              <div class="pill" id="A_kind_min60">1ヶ月60分</div>
+            </div>
+          </div>
+
+          <div class="pillRow" style="margin-top:6px;">
+            <div class="pill" id="A_mail">メール持ち運び</div>
+          </div>
+
+          <div class="divider" style="margin:10px 0;"></div>
+          <div class="mini" style="margin:0;font-weight:1000;">割引</div>
+
+          <div class="pillRow" style="margin-top:6px;">
+            <div class="pill disc" id="A_u22">U22割</div>
+            <div class="pill disc" id="A_upgradeUqToAu">アプグレ割</div>
+            <div class="pill disc" id="A_oyako">親子割</div>
+            <div class="pill disc" id="A_support39">39割</div>
+            <div class="pill disc" id="A_upgradeYToSb">アプグレ割</div>
+
+            <div class="pill disc" id="A_family">家族割</div>
+            <span class="pillSelectWrap" id="A_familyCountWrap">
+              <select id="A_familyCount" class="pillSelect">
+                <option value="2">2回線</option>
+                <option value="3">3回線以上</option>
+              </select>
+            </span>
+
+            <div class="pill disc" id="A_hikari">光割</div>
+            <div class="pill disc" id="A_denki">でんき割</div>
+
+            <div class="pill disc" id="A_dcardPill">dカード割</div>
+            <span class="pillSelectWrap hidden" id="A_dcardWrap">
+              <select id="A_dcard" class="pillSelect">
+                <option value="silver">シルバー</option>
+                <option value="gold">ゴールド</option>
+              </select>
+            </span>
+
+            <div class="pill disc" id="A_aupay">auPAYカード割</div>
+
+            <div class="pill disc" id="A_paypayPill">PayPayカード割</div>
             <span class="pillSelectWrap hidden" id="A_paypayWrap">
               <select id="A_paypay" class="pillSelect">
                 <option value="normal">通常</option>
                 <option value="gold">ゴールド</option>
               </select>
-            </span>  
-        </div>
-
-        <details class="compact" id="A_customBox">
-          <summary>
-            <span>任意調整</span>
-            <span class="badgeMini" id="A_customBadge">未設定</span>
-          </summary>
-
-          <div class="row tight" style="margin-top:8px;">
-            <input id="A_customDiscountYen" type="number" step="10" style="max-width:180px;" placeholder="例）-1000 / +330">
-            <div style="font-size:13px;color:#555;font-weight:900;">円 / 月</div>
+            </span>
           </div>
-          <input id="A_customDiscountNote" type="text" placeholder="メモ（任意）" style="margin-top:6px;">
-          <div class="mini">※マイナスは割引、プラスは追加料金扱い</div>
-        </details>
-      </div>
 
-      <!-- B -->
-      <div class="resultCard hidden" id="optBlockB">
-        <div class="resultTop">
-          <div class="brand" id="optTitleB">B：—</div>
+          <details class="compact" id="A_customBox">
+            <summary>
+              <span>任意調整</span>
+              <span class="badgeMini" id="A_customBadge">未設定</span>
+            </summary>
+
+            <div class="row tight" style="margin-top:8px;">
+              <input id="A_customDiscountYen" type="number" step="10" style="max-width:180px;" placeholder="例）-1000 / +330">
+              <div style="font-size:13px;color:var(--muted);font-weight:900;">円 / 月</div>
+            </div>
+            <input id="A_customDiscountNote" type="text" placeholder="メモ（任意）" style="margin-top:6px;">
+            <div class="mini">※マイナスは割引、プラスは追加料金扱い</div>
+          </details>
         </div>
 
-        <div style="margin-top:8px;">
-          <label>プラン</label>
-          <select id="B_planSelect"></select>
-        </div>
-
-        <div class="divider" style="margin:10px 0;"></div>
-        <div class="talkBox">
-        <div class="talkBoxTitle">
-          <span>通話OP</span>
-          <div class="switchRow">
-            <span class="switchLabel">なし</span>
-            <button class="switch" id="B_talkSwitch" type="button" aria-pressed="false">
-              <span class="knob"></span>
-            </button>
-            <span class="switchLabel">あり</span>
+        <!-- B -->
+        <div class="resultCard hidden" id="optBlockB">
+          <div class="resultTop">
+            <div class="brand" id="optTitleB">B：—</div>
           </div>
-        </div>
 
-        <div class="talkRow" id="B_talkKinds" style="margin-top:8px;">
-          <div class="pill" id="B_kind_short">短時間かけ放題</div>
-          <div class="pill" id="B_kind_unlimited">かけ放題</div>
-          <div class="pill" id="B_kind_senior">かけ放題(60歳以上)</div>
-          <div class="pill" id="B_kind_min60">1ヶ月60分</div>
-          
-        </div>
-      </div>
+          <div style="margin-top:8px;">
+            <label>プラン</label>
+            <select id="B_planSelect"></select>
+          </div>
 
-        <div class="pillRow" style="margin-top:6px;">
-          <div class="pill" id="B_mail">メール持ち運び</div>
-        </div>
+          <div class="divider" style="margin:10px 0;"></div>
+          <div class="talkBox">
+            <div class="talkBoxTitle">
+              <span>通話OP</span>
+              <div class="switchRow">
+                <span class="switchLabel">なし</span>
+                <button class="switch" id="B_talkSwitch" type="button" aria-pressed="false">
+                  <span class="knob"></span>
+                </button>
+                <span class="switchLabel">あり</span>
+              </div>
+            </div>
 
-        <div class="divider" style="margin:10px 0;"></div>
-        <div class="mini" style="margin:0;font-weight:1000;">割引</div>
-        <div class="pillRow" style="margin-top:6px;">
-          <div class="pill disc" id="B_u22">U22割</div>
-          <div class="pill disc" id="B_upgradeUqToAu">アプグレ割</div>
-          <div class="pill disc" id="B_oyako">親子割</div>
-          <div class="pill disc" id="B_support39">39割</div>
-          <div class="pill disc" id="B_upgradeYToSb">アプグレ割</div>
-          <div class="pill disc" id="B_family">家族割</div>
-          <span class="pillSelectWrap" id="B_familyCountWrap">
-            <select id="B_familyCount" class="pillSelect">
-              <option value="2">2回線</option>
-              <option value="3">3回線以上</option>
-            </select>
-          </span>
-          <div class="pill disc" id="B_hikari">光割</div>
-          <div class="pill disc" id="B_denki">でんき割</div>
-          <div class="pill disc" id="B_dcardPill">dカード割</div>
+            <div class="talkRow" id="B_talkKinds" style="margin-top:8px;">
+              <div class="pill" id="B_kind_short">短時間かけ放題</div>
+              <div class="pill" id="B_kind_unlimited">かけ放題</div>
+              <div class="pill" id="B_kind_senior">かけ放題(60歳以上)</div>
+              <div class="pill" id="B_kind_min60">1ヶ月60分</div>
+            </div>
+          </div>
+
+          <div class="pillRow" style="margin-top:6px;">
+            <div class="pill" id="B_mail">メール持ち運び</div>
+          </div>
+
+          <div class="divider" style="margin:10px 0;"></div>
+          <div class="mini" style="margin:0;font-weight:1000;">割引</div>
+
+          <div class="pillRow" style="margin-top:6px;">
+            <div class="pill disc" id="B_u22">U22割</div>
+            <div class="pill disc" id="B_upgradeUqToAu">アプグレ割</div>
+            <div class="pill disc" id="B_oyako">親子割</div>
+            <div class="pill disc" id="B_support39">39割</div>
+            <div class="pill disc" id="B_upgradeYToSb">アプグレ割</div>
+
+            <div class="pill disc" id="B_family">家族割</div>
+            <span class="pillSelectWrap" id="B_familyCountWrap">
+              <select id="B_familyCount" class="pillSelect">
+                <option value="2">2回線</option>
+                <option value="3">3回線以上</option>
+              </select>
+            </span>
+
+            <div class="pill disc" id="B_hikari">光割</div>
+            <div class="pill disc" id="B_denki">でんき割</div>
+
+            <div class="pill disc" id="B_dcardPill">dカード割</div>
             <span class="pillSelectWrap hidden" id="B_dcardWrap">
               <select id="B_dcard" class="pillSelect">
                 <option value="silver">シルバー</option>
                 <option value="gold">ゴールド</option>
               </select>
             </span>
-          <div class="pill disc" id="B_aupay">auPAYカード割</div>
-          <div class="pill disc" id="B_paypayPill">PayPayカード割</div>
+
+            <div class="pill disc" id="B_aupay">auPAYカード割</div>
+
+            <div class="pill disc" id="B_paypayPill">PayPayカード割</div>
             <span class="pillSelectWrap hidden" id="B_paypayWrap">
               <select id="B_paypay" class="pillSelect">
                 <option value="normal">通常</option>
                 <option value="gold">ゴールド</option>
               </select>
             </span>
-        </div>
-
-        <details class="compact" id="B_customBox">
-          <summary>
-            <span>任意調整</span>
-            <span class="badgeMini" id="B_customBadge">未設定</span>
-          </summary>
-
-          <div class="row tight" style="margin-top:8px;">
-            <input id="B_customDiscountYen" type="number" step="10" style="max-width:180px;" placeholder="例）-1000 / +330">
-            <div style="font-size:13px;color:#555;font-weight:900;">円 / 月</div>
           </div>
-          <input id="B_customDiscountNote" type="text" placeholder="メモ（任意）" style="margin-top:6px;">
-          <div class="mini">※マイナスは割引、プラスは追加料金扱い</div>
-        </details>
-      </div>
-    </div>
 
-    <!-- 結果 -->
-    <div class="divider"></div>
-    <div class="sectionTitle"><b>月額合計（目安）</b></div>
+          <details class="compact" id="B_customBox">
+            <summary>
+              <span>任意調整</span>
+              <span class="badgeMini" id="B_customBadge">未設定</span>
+            </summary>
 
-    <div class="resultGrid" style="margin-top:8px;">
-      <div class="resultCard" id="resultA">
-        <div class="resultTop">
-          <div class="brand" id="brandA">A：未選択</div>
+            <div class="row tight" style="margin-top:8px;">
+              <input id="B_customDiscountYen" type="number" step="10" style="max-width:180px;" placeholder="例）-1000 / +330">
+              <div style="font-size:13px;color:var(--muted);font-weight:900;">円 / 月</div>
+            </div>
+            <input id="B_customDiscountNote" type="text" placeholder="メモ（任意）" style="margin-top:6px;">
+            <div class="mini">※マイナスは割引、プラスは追加料金扱い</div>
+          </details>
         </div>
-        <div class="price" id="priceA">—</div>
-        <div class="mini" style="margin-top:8px;font-weight:900;">内訳</div>
-        <div class="breakdown" id="bdA"></div>
       </div>
 
-      <div class="resultCard hidden" id="resultB">
-        <div class="resultTop">
-          <div class="brand" id="brandB">B：未選択</div>
+      <!-- 結果 -->
+      <div class="divider"></div>
+      <div class="sectionTitle"><b>月額合計（目安）</b></div>
+
+      <div class="resultGrid" style="margin-top:8px;">
+        <div class="resultCard" id="resultA">
+          <div class="resultTop">
+            <div class="brand" id="brandA">A：未選択</div>
+          </div>
+          <div class="price" id="priceA">—</div>
+          <div class="mini" style="margin-top:8px;font-weight:900;">内訳</div>
+          <div class="breakdown" id="bdA"></div>
         </div>
-        <div class="price" id="priceB">—</div>
-        <div class="mini" style="margin-top:8px;font-weight:900;">内訳</div>
-        <div class="breakdown" id="bdB"></div>
+
+        <div class="resultCard hidden" id="resultB">
+          <div class="resultTop">
+            <div class="brand" id="brandB">B：未選択</div>
+          </div>
+          <div class="price" id="priceB">—</div>
+          <div class="mini" style="margin-top:8px;font-weight:900;">内訳</div>
+          <div class="breakdown" id="bdB"></div>
+        </div>
       </div>
+
+      <details class="compact hidden" id="deltaBox">
+        <summary>
+          <span class="badgeMini" id="deltaBadge">差額を表示</span>
+        </summary>
+        <div class="delta">
+          <div><b id="deltaText">差額：—</b></div>
+        </div>
+      </details>
+
+      <div class="alert hidden" id="priceDbAlert" style="margin-top:10px;"></div>
     </div>
-
-    <details class="compact hidden" id="deltaBox">
-  <summary>
-    <span class="badgeMini" id="deltaBadge">差額を表示</span>
-  </summary>
-  <div class="delta" style="margin-top:10px;">
-    <div><b id="deltaText">差額：—</b></div>
-  </div>
-</details>
-
-    <div class="alert hidden" id="pointAlert" style="margin-top:10px;"></div>
-    <div class="alert hidden" id="priceDbAlert" style="margin-top:10px;"></div>
   </div>
 
   <script src="data.js"></script>
   <script>
-  const THEME_KEY = "cp_theme_v1";
+/* ===============================
+   State / Theme
+   =============================== */
+const APP_THEME_KEY = "APP_THEME_V1";
+const CP_CTX_KEY = "carrier_palette_ctx_v1";
 
-  const CP_CTX_KEY = "carrier_palette_ctx_v1";
+const el = (id) => document.getElementById(id);
+const on = (id, ev, fn) => { const x = el(id); if (x) x.addEventListener(ev, fn); };
+const click = (id, fn) => { const x = el(id); if (x) x.onclick = fn; };
 
-  function readCpCtx(){
-    const raw = localStorage.getItem(CP_CTX_KEY);
-    if (!raw) return { form:{ dataUsage:"lte30" }, consult:{} };
-    try {
-      const obj = JSON.parse(raw) || {};
-      obj.form = obj.form || { dataUsage:"lte30" };
-      obj.consult = obj.consult || {};
-      if (!obj.form.dataUsage) obj.form.dataUsage = "lte30";
-      return obj;
-    } catch(e){
-      return { form:{ dataUsage:"lte30" }, consult:{} };
-    }
-  }
-  function writeCpCtx(obj){
-    localStorage.setItem(CP_CTX_KEY, JSON.stringify(obj));
+function readCpCtx(){
+  const raw = localStorage.getItem(CP_CTX_KEY);
+  if (!raw) return { form:{ dataUsage:"lte30" }, consult:{} };
+  try{
+    const obj = JSON.parse(raw) || {};
+    obj.form = obj.form || { dataUsage:"lte30" };
+    obj.consult = obj.consult || {};
+    if (!obj.form.dataUsage) obj.form.dataUsage = "lte30";
     return obj;
+  }catch(e){
+    return { form:{ dataUsage:"lte30" }, consult:{} };
   }
-  function saveConsultPatch(patch){
-    const s = readCpCtx();
-    s.consult = { ...(s.consult||{}), ...patch };
-    writeCpCtx(s);
-  }
-  function loadCtx(){
-    const s = readCpCtx();
-    return { form: s.form||{}, consult: s.consult||{} };
-  }
+}
+function writeCpCtx(obj){
+  localStorage.setItem(CP_CTX_KEY, JSON.stringify(obj));
+  return obj;
+}
+function saveConsultPatch(patch){
+  const s = readCpCtx();
+  s.consult = { ...(s.consult||{}), ...patch };
+  writeCpCtx(s);
+}
+function loadCtx(){
+  const s = readCpCtx();
+  return { form: s.form||{}, consult: s.consult||{} };
+}
 
 function readTheme(){
-  const saved = localStorage.getItem(THEME_KEY);
+  const saved = localStorage.getItem(APP_THEME_KEY);
   if (saved === "dark" || saved === "light") return saved;
-  // 初期はOS設定に合わせる（好みで "light" 固定でもOK）
   return (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches)
     ? "dark" : "light";
 }
-
 function setTheme(t){
   const theme = (t === "dark") ? "dark" : "light";
-  localStorage.setItem(THEME_KEY, theme);
+  localStorage.setItem(APP_THEME_KEY, theme);
+
+  document.documentElement.setAttribute("data-theme", theme);
+
   document.body.dataset.theme = theme;
-
-  const icon = el("themeIcon");
-  const text = el("themeText");
-  if (icon) icon.textContent = (theme === "dark") ? "🌙" : "☀️";
-  if (text) text.textContent = (theme === "dark") ? "Dark" : "Light";
-
-  const thumb = el("themeThumb");
-  if (thumb){
-    thumb.style.transform = (theme === "dark")
-      ? "translate(22px, -50%)"
-      : "translate(0, -50%)";
-  }
-  const track = icon?.parentElement?.querySelector?.(".modeTrack");
-  if (track){
-    track.style.background = (theme === "dark") ? "#dcfce7" : "";
-    track.style.borderColor = (theme === "dark") ? "#86efac" : "";
-  }
 }
-
 function toggleTheme(){
-  const cur = document.body.dataset.theme === "dark" ? "dark" : "light";
+  const cur = (document.body.dataset.theme === "dark") ? "dark" : "light";
   setTheme(cur === "dark" ? "light" : "dark");
 }
-
 function bindSecretThemeToggle(){
   const title = document.querySelector("header .title");
   if (!title) return;
 
   let timer = null;
-  let moved = false;
 
   const start = () => {
-    moved = false;
-    timer = setTimeout(() => {
-      toggleTheme();
-    }, 700); // 0.7秒
+    timer = setTimeout(() => { toggleTheme(); }, 700);
   };
-
   const cancel = () => {
-    if (timer){
-      clearTimeout(timer);
-      timer = null;
-    }
+    if (timer){ clearTimeout(timer); timer = null; }
   };
 
-  const markMove = () => { moved = true; cancel(); };
-
+  // touch
   title.addEventListener("touchstart", start, { passive:true });
   title.addEventListener("touchend", cancel, { passive:true });
   title.addEventListener("touchcancel", cancel, { passive:true });
-  title.addEventListener("touchmove", markMove, { passive:true });
+  title.addEventListener("touchmove", cancel, { passive:true });
 
+  // mouse
   title.addEventListener("mousedown", start);
   title.addEventListener("mouseup", cancel);
   title.addEventListener("mouseleave", cancel);
-  title.addEventListener("mousemove", () => { if (timer) markMove(); });
+  title.addEventListener("mousemove", cancel);
 }
-  const el = (id) => document.getElementById(id);
 
-  const on = (id, ev, fn) => { const x = el(id); if (x) x.addEventListener(ev, fn); };
-  const click = (id, fn) => { const x = el(id); if (x) x.onclick = fn; };
+/* ===============================
+   UI helpers / constants
+   =============================== */
+const CARRIER_ICON = {
+  docomo:   "icons/docomo_H.png",
+  ahamo:    "icons/ahamo_H.png",
+  au:       "icons/au_H.png",
+  uq:       "icons/uq_H.png",
+  softbank: "icons/sb_H.png",
+  ymobile:  "icons/y_H.png",
+};
+const CARRIER_COMPARE = {
+  docomo:   "icons/docomo_C.png",
+  ahamo:    "icons/ahamo_C.png",
+  au:       "icons/au_C.png",
+  uq:       "icons/uq_C.png",
+  softbank: "icons/sb_C.png",
+  ymobile:  "icons/y_C.png",
+};
+const CARRIER_ORDER = ["docomo","au","softbank","ahamo","uq","ymobile"];
 
-  const CARRIER_ICON = {
-    docomo:   "icons/docomo_H.png",
-    ahamo:    "icons/ahamo_H.png",
-    au:       "icons/au_H.png",
-    uq:       "icons/uq_H.png",
-    softbank: "icons/sb_H.png",
-    ymobile:  "icons/y_H.png",
-  };
-  const CARRIER_COMPARE = {
-    docomo:   "icons/docomo_C.png",
-    ahamo:    "icons/ahamo_C.png",
-    au:       "icons/au_C.png",
-    uq:       "icons/uq_C.png",
-    softbank: "icons/sb_C.png",
-    ymobile:  "icons/y_C.png",
-  };
-  const CARRIER_ORDER = ["docomo","au","softbank","ahamo","uq","ymobile"];
+function carrierLabel(v){
+  return ({
+    docomo:"docomo", ahamo:"ahamo", au:"au", uq:"UQ mobile",
+    softbank:"SoftBank", ymobile:"Y!mobile"
+  })[v] || v || "未選択";
+}
+function yen(n){
+  if (!Number.isFinite(n)) return "—";
+  return "¥" + Math.round(n).toLocaleString("ja-JP");
+}
 
-  function carrierLabel(v){
-    return ({
-      docomo:"docomo", ahamo:"ahamo", au:"au", uq:"UQ mobile",
-      softbank:"SoftBank", ymobile:"Y!mobile"
-    })[v] || v || "未選択";
+function getKey(side, name){ return `${side}_${name}`; }
+function getConsult(consult, side, name, def){
+  const k = getKey(side, name);
+  return (k in consult) ? consult[k] : def;
+}
+function setConsultPatch(side, patch){
+  const out = {};
+  Object.keys(patch).forEach(name=>{ out[getKey(side,name)] = patch[name]; });
+  saveConsultPatch(out);
+}
+
+function readMode(){
+  const { consult } = loadCtx();
+  return consult.viewMode === "compare" ? "compare" : "single";
+}
+function setMode(mode){
+  saveConsultPatch({ viewMode: (mode === "compare" ? "compare" : "single") });
+}
+
+function pillSet(elm, on){
+  if (!elm) return;
+  elm.classList.toggle("on", !!on);
+}
+
+function renderBreakdown(targetId, lines){
+  const box = el(targetId);
+  if (!box) return;
+  box.innerHTML = "";
+  (lines || []).forEach(it => {
+    const row = document.createElement("div");
+    row.className = "line";
+    const k = document.createElement("div");
+    k.className = "k";
+    k.textContent = it.k;
+    const v = document.createElement("div");
+    v.textContent = yen(it.v);
+    row.appendChild(k); row.appendChild(v);
+    box.appendChild(row);
+  });
+}
+
+function showPriceDbAlert(msg){
+  const box = el("priceDbAlert");
+  if (!box) return;
+  if (!msg){
+    box.classList.add("hidden");
+    box.textContent = "";
+    return;
   }
+  box.textContent = msg;
+  box.classList.remove("hidden");
+}
 
-  function yen(n){
-    if (!Number.isFinite(n)) return "—";
-    return "¥" + Math.round(n).toLocaleString("ja-JP");
-  }
+/* ===============================
+   Carrier cards
+   =============================== */
+function renderCarrierCards(side){
+  const host = el(side === "A" ? "carrierCardsA" : "carrierCardsB");
+  if (!host) return;
 
-  function getKey(side, name){ return `${side}_${name}`; }
-  function getConsult(consult, side, name, def){
-    const k = getKey(side, name);
-    return (k in consult) ? consult[k] : def;
-  }
-  function setConsultPatch(side, patch){
-    const out = {};
-    Object.keys(patch).forEach(name=>{
-      out[getKey(side,name)] = patch[name];
-    });
-    saveConsultPatch(out);
-  }
+  const sel = el(side === "A" ? "carrierA" : "carrierB");
+  const current = sel ? sel.value : "";
+  const mode = readMode();
 
-  function readMode(){
-    const { consult } = loadCtx();
-    return consult.viewMode === "compare" ? "compare" : "single";
-  }
-  function setMode(mode){
-    saveConsultPatch({ viewMode: (mode === "compare" ? "compare" : "single") });
-  }
+  host.innerHTML = "";
 
-  /* UQ/Y: 家族割と光割は併用不可（光割優先）*/
+  CARRIER_ORDER.forEach(key=>{
+    const card = document.createElement("div");
+    card.className = "carrierCard " + key + (current === key ? " on" : "");
+
+    if (mode === "single"){
+      const img = document.createElement("img");
+      img.className = "carrierHeroImg";
+      img.src = CARRIER_ICON[key] || "";
+      img.alt = carrierLabel(key);
+      card.appendChild(img);
+    } else {
+      const img = document.createElement("img");
+      img.className = "carrierCompareImg";
+      img.src = CARRIER_COMPARE[key] || "";
+      img.alt = carrierLabel(key);
+      card.appendChild(img);
+    }
+
+    card.onclick = () => {
+      if (sel) sel.value = key;
+      saveConsultPatch(side === "A" ? { carrierA:key } : { carrierB:key });
+
+      const isAhamo = (key === "ahamo");
+
+      // キャリア変更時：状態初期化
+      setConsultPatch(side, {
+        planKey: "",
+        discFamily:false, discHikari:false, discOyako:false, discAupay:false,
+        discPaypay:false, paypayKind:"normal",
+        discDcard:false, dcardKind:"silver",
+        discDenki:false, discU22:false,
+        optUpgradeUqToAu:false, optUpgradeYToSb:false,
+        optMailCarry:false,
+        talkEnabled:isAhamo ? true : false,
+        talkKind:"short",
+        discFamilyCount: 2,
+        customDiscountYen: 0,
+        customDiscountNote: "",
+      });
+
+      renderAll();
+    };
+
+    host.appendChild(card);
+  });
+}
+
+/* ===============================
+   Discount rules
+   =============================== */
+/* UQ/Y: 家族割と光割は併用不可（光割優先） */
 function isHikariFamilyExclusiveCarrier(carrier){
   return (carrier === "uq" || carrier === "ymobile");
 }
-
 function enforceHikariFamilyRule(side, carrier, consult){
   if (!isHikariFamilyExclusiveCarrier(carrier)) return;
-
   const famOn = !!getConsult(consult, side, "discFamily", false);
   const hikOn = !!getConsult(consult, side, "discHikari", false);
   if (famOn && hikOn){
-    // 光割優先
     setConsultPatch(side, { discFamily:false, discHikari:true });
   }
 }
-
 function toggleDiscountWithHikariFamilyRule(side, carrier, kind){
   const { consult } = loadCtx();
   const famOn = !!getConsult(consult, side, "discFamily", false);
   const hikOn = !!getConsult(consult, side, "discHikari", false);
 
-  // UQ/Y以外は通常トグル
   if (!isHikariFamilyExclusiveCarrier(carrier)){
     if (kind === "family") setConsultPatch(side, { discFamily: !famOn });
     else if (kind === "hikari") setConsultPatch(side, { discHikari: !hikOn });
@@ -1020,7 +1110,7 @@ function toggleDiscountWithHikariFamilyRule(side, carrier, kind){
     setConsultPatch(side, { discHikari: next, discFamily: next ? false : famOn });
   } else if (kind === "family"){
     if (hikOn){
-      setConsultPatch(side, { discFamily:false, discHikari:true }); // 光割優先
+      setConsultPatch(side, { discFamily:false, discHikari:true });
     } else {
       setConsultPatch(side, { discFamily: !famOn, discHikari:false });
     }
@@ -1030,121 +1120,12 @@ function toggleDiscountWithHikariFamilyRule(side, carrier, kind){
   }
 }
 
-  function renderCarrierCards(side){
-    const host = el(side === "A" ? "carrierCardsA" : "carrierCardsB");
-    if (!host) return;
-
-    const sel = el(side === "A" ? "carrierA" : "carrierB");
-    const current = sel ? sel.value : "";
-    const mode = readMode();
-
-    host.innerHTML = "";
-
-    CARRIER_ORDER.forEach(key=>{
-      const card = document.createElement("div");
-      card.className = "carrierCard " + key + (current === key ? " on" : "");
-
-      if (mode === "single"){
-        const img = document.createElement("img");
-        img.className = "carrierHeroImg";
-        img.src = CARRIER_ICON[key] || "";
-        img.alt = carrierLabel(key);
-        card.appendChild(img);
-      } else {
-        const img = document.createElement("img");
-        img.className = "carrierCompareImg";
-        img.src = CARRIER_COMPARE[key] || "";
-        img.alt = carrierLabel(key);
-        card.appendChild(img);
-      }
-
-      card.onclick = () => {
-        if (sel) sel.value = key;
-        saveConsultPatch(side === "A" ? { carrierA:key } : { carrierB:key });
-
-        const isAhamo = (key === "ahamo");
-
-        setConsultPatch(side, {
-          planKey: "",
-          discFamily:false, discHikari:false, discOyako:false, discAupay:false,
-          discPaypay:false, paypayKind:"normal",
-          discDcard:false, dcardKind:"silver",
-          talkEnabled:isAhamo ? true : false,
-          talkKind:"short",
-          
-        });
-
-        renderAll();
-      };
-
-      host.appendChild(card);
-    });
-  }
-
-  function pillSet(elm, on){
-    if (!elm) return;
-    elm.classList.toggle("on", !!on);
-  }
-
-  function shortTalkLabel(carrier, planKey){
-    // 5分
-    if (carrier === "docomo" || carrier === "ahamo" || carrier === "au" || carrier === "softbank") return "5分以内";
-    // 10分
-    if (carrier === "uq" || carrier === "ymobile") return "10分以内";
-  }
-
-  function updateCustomBadge(side, consult){
-    const v = Number(getConsult(consult, side, "customDiscountYen", 0) || 0) || 0;
-    const note = (getConsult(consult, side, "customDiscountNote", "") || "").trim();
-    const badge = el(side + "_customBadge");
-    if (!badge) return;
-
-    if (v === 0 && !note){
-      badge.textContent = "未設定";
-    } else {
-      const vv = (v > 0 ? "+" : "") + Math.round(v) + "円";
-      badge.textContent = vv + (note ? " / メモ" : "");
-    }
-  }
-
-  function renderBreakdown(targetId, lines){
-    const box = el(targetId);
-    if (!box) return;
-    box.innerHTML = "";
-    (lines || []).forEach(it => {
-      const row = document.createElement("div");
-      row.className = "line";
-      const k = document.createElement("div");
-      k.className = "k";
-      k.textContent = it.k;
-      const v = document.createElement("div");
-      v.textContent = yen(it.v);
-      row.appendChild(k); row.appendChild(v);
-      box.appendChild(row);
-    });
-  }
-
-  function showPriceDbAlert(msg){
-    const box = el("priceDbAlert");
-    if (!box) return;
-    if (!msg){
-      box.classList.add("hidden");
-      box.textContent = "";
-      return;
-    }
-    box.textContent = msg;
-    box.classList.remove("hidden");
-  }
-
-  function needsFamilyCount(carrier, planKey){
+/* 家族回線数UI（au/SoftBank、docomo MAXのみ） */
+function needsFamilyCount(carrier, planKey){
   if (carrier === "au" || carrier === "softbank") return true;
-
-  if (carrier === "docomo"){
-    return String(planKey || "").toLowerCase().includes("max");
-  }
+  if (carrier === "docomo") return String(planKey || "").toLowerCase().includes("max");
   return false;
 }
-
 function applyFamilyCountUI(side, carrier, consult){
   const planKey = getConsult(consult, side, "planKey", "");
   const famOn = !!getConsult(consult, side, "discFamily", false);
@@ -1153,16 +1134,8 @@ function applyFamilyCountUI(side, carrier, consult){
   const sel  = el(side + "_familyCount");
   if (!wrap || !sel) return;
 
-  const hikOn = (carrier === "uq") && !!getConsult(consult, side, "discHikari", false);
-  if (hikOn){
-    wrap.classList.add("hidden");
-    sel.disabled = true;
-    return;
-  }
-
   const need = needsFamilyCount(carrier, planKey);
   wrap.classList.toggle("hidden", !need);
-
   if (!need) return;
 
   sel.disabled = !famOn;
@@ -1171,239 +1144,65 @@ function applyFamilyCountUI(side, carrier, consult){
   cur = (cur >= 3) ? 3 : 2;
 
   sel.value = String(cur);
-
   if (Number(getConsult(consult, side, "discFamilyCount", 2) || 2) !== cur){
     setConsultPatch(side, { discFamilyCount: cur });
   }
 }
 
-  function syncPlanSelect(side, carrier, form, consult){
-    const sel = el(side + "_planSelect");
-    if (!sel) return;
-
-    if (!window.PRICE_DB){
-      sel.innerHTML = "<option value=''>data.js（PRICE_DB）が読み込めていません</option>";
-      sel.disabled = true;
-      showPriceDbAlert("【エラー】data.js が読み込めていないか、PRICE_DB が未定義です。ファイル名・パス・読み込み順を確認してください。");
-      return;
-    } else {
-      showPriceDbAlert("");
-    }
-
-    const c = window.PRICE_DB.getCarrier ? window.PRICE_DB.getCarrier(carrier) : null;
-    sel.innerHTML = "";
-
-    if (!carrier || !c || !c.plans){
-      const opt = document.createElement("option");
-      opt.value = "";
-      opt.textContent = "キャリアを選択してください";
-      sel.appendChild(opt);
-      sel.disabled = true;
-      return;
-    }
-    sel.disabled = false;
-
-    const savedKey = getConsult(consult, side, "planKey", "");
-    const fallback = window.PRICE_DB.getDefaultPlanKey ? window.PRICE_DB.getDefaultPlanKey(carrier, form.dataUsage || "lte30") : "";
-    const currentKey =
-      (savedKey && c.plans[savedKey]) ? savedKey :
-      (fallback && c.plans[fallback]) ? fallback : "";
-
-    Object.keys(c.plans).forEach(k=>{
-      const p = c.plans[k];
-      const opt = document.createElement("option");
-      opt.value = k;
-      opt.textContent = p.label;
-      sel.appendChild(opt);
-    });
-
-    sel.value = currentKey || Object.keys(c.plans)[0] || "";
-    setConsultPatch(side, { planKey: sel.value });
-  }
-
-  function applyDiscountEligibilityUI(side, carrier, consult){
-    if (!window.PRICE_DB) return;
-
-    const planKey = getConsult(consult, side, "planKey", "");
-    const famBtn = el(side + "_family");
-    const hikBtn = el(side + "_hikari");
-    const apyBtn = el(side + "_aupay");
-    const oyaBtn = el(side + "_oyako");
-    const s39Btn = el(side + "_support39");
-    const denBtn  = el(side + "_denki");
-    const dcdPill = el(side + "_dcardPill"); 
-    const u22Btn = el(side + "_u22");
-
-    const uqNoDiscount = (carrier === "uq" && planKey === "komikomi_value");
-
-    const applyOne = (btn, kind, stateKey) => {
-      if (!btn) return;
-
-      if (carrier === "ahamo"){
-        btn.classList.add("hidden");
-        if (getConsult(consult, side, stateKey, false)) setConsultPatch(side, { [stateKey]: false });
-        return;
-      }
-
-      if (carrier === "uq" && kind === "support39"){
-        const isKomikomi = (planKey === "komikomi_value");
-        btn.classList.toggle("hidden", !isKomikomi);
-        if (!isKomikomi && getConsult(consult, side, stateKey, false)){
-          setConsultPatch(side, { [stateKey]: false });
-        }
-        return;
-      }
-
-      const ok = window.PRICE_DB.isDiscountEligible
-  ? window.PRICE_DB.isDiscountEligible(carrier, kind, planKey, {
-      discHikari: getConsult(consult, side, "discHikari", false)
-    })
-  : true;
-      btn.classList.toggle("hidden", !ok);
-      if (!ok && getConsult(consult, side, stateKey, false)){
-        setConsultPatch(side, { [stateKey]: false });
-      }
-    };
-
-    applyOne(u22Btn, "u22", "discU22");
-    applyOne(famBtn, "family", "discFamily");
-    applyOne(hikBtn, "hikari", "discHikari");
-    applyOne(apyBtn, "aupay",  "discAupay");
-    applyOne(oyaBtn, "oyako",  "discOyako");
-    applyOne(s39Btn, "support39", "discSupport39");
-    applyOne(denBtn, "denki", "discDenki");
-
-    if (carrier === "uq" || carrier === "ymobile"){
-    const hikOn = !!getConsult(consult, side, "discHikari", false);
-    const famWrap = el(side + "_familyCountWrap");
-
-    if (hikOn){
-      famBtn && famBtn.classList.add("hidden");
-      famWrap && famWrap.classList.add("hidden");
-
-      if (getConsult(consult, side, "discFamily", false)){
-        setConsultPatch(side, { discFamily:false });
-      }
-    }
-  }
-
-  const upUqAu = el(side + "_upgradeUqToAu");
-  const upYSb  = el(side + "_upgradeYToSb");
-
-  if (upUqAu){
-    const ok = (carrier === "au");
-    upUqAu.classList.toggle("hidden", !ok);
-    if (!ok && getConsult(consult, side, "optUpgradeUqToAu", false)){
-      setConsultPatch(side, { optUpgradeUqToAu:false });
-    }
-  }
-
-  if (upYSb){
-    const ok = (carrier === "softbank");
-    upYSb.classList.toggle("hidden", !ok);
-    if (!ok && getConsult(consult, side, "optUpgradeYToSb", false)){
-      setConsultPatch(side, { optUpgradeYToSb:false });
-    }
-  }
-}
-
-  function enforceDefaultsAfterPlan(side, carrier, consult){
-      const planKey = getConsult(consult, side, "planKey", "");
-      const enabledExists = (getKey(side, "talkEnabled") in consult);
-      const kindExists    = (getKey(side, "talkKind") in consult);
-
-      if (carrier === "uq" && planKey === "komikomi_value"){
-        if (!enabledExists || !kindExists){
-          setConsultPatch(side, { talkEnabled:true, talkKind:"short" });
-        }
-        return;
-      }
-
-      if (carrier === "ahamo"){
-        if (!enabledExists || !kindExists){
-          setConsultPatch(side, { talkEnabled:true, talkKind:"short" });
-        }
-        return;
-      }
-}
-
-function isUqKomikomi(carrier, consult, side){
-  if (carrier !== "uq") return false;
-  const planKey = getConsult(consult, side, "planKey", "");
-  return planKey === "komikomi_value";
-}
-
-function forceKomikomiTalkOn(side){
-  setConsultPatch(side, { talkEnabled:true, talkKind:"short" });
-}
-
-function isYmobileSimple3L(carrier, consult, side){
-  if (carrier !== "ymobile") return false;
-  const planKey = getConsult(consult, side, "planKey", "");
-  return planKey === "simple3_l";
-}
-
-function forceYmobileSimple3LTalkOn(side){
-  setConsultPatch(side, { talkEnabled:true, talkKind:"short" });
-}
-
-function isAhamo(carrier){ return carrier === "ahamo"; }
-
-function forceAhamoTalkOn(side){
-  setConsultPatch(side, { talkEnabled:true, talkKind:"short" });
-}
-
+/* dカード UI */
 function applyDcardUI(side, carrier, consult){
   const pill = el(side + "_dcardPill");
   const wrap = el(side + "_dcardWrap");
   const sel  = el(side + "_dcard");
   if (!pill || !wrap || !sel) return;
 
-  const on = !!getConsult(consult, side, "discDcard", false);
+  const onV = !!getConsult(consult, side, "discDcard", false);
 
   if (carrier !== "docomo"){
     pill.classList.add("hidden");
     wrap.classList.add("hidden");
-    if (on) setConsultPatch(side, { discDcard:false, dcardKind:"silver" });
+    if (onV) setConsultPatch(side, { discDcard:false, dcardKind:"silver" });
     return;
   }
 
   pill.classList.remove("hidden");
-  pillSet(pill, on);
+  pillSet(pill, onV);
 
-  wrap.classList.toggle("hidden", !on);
-  sel.disabled = !on;
+  wrap.classList.toggle("hidden", !onV);
+  sel.disabled = !onV;
 
   const kind = getConsult(consult, side, "dcardKind", "silver") || "silver";
   sel.value = (kind === "gold") ? "gold" : "silver";
 }
 
+/* PayPay UI */
 function applyPaypayUI(side, carrier, consult){
   const pill = el(side + "_paypayPill");
   const wrap = el(side + "_paypayWrap");
   const sel  = el(side + "_paypay");
   if (!pill || !wrap || !sel) return;
 
-  const on = !!getConsult(consult, side, "discPaypay", false);
-
+  const onV = !!getConsult(consult, side, "discPaypay", false);
   const okCarrier = (carrier === "ymobile" || carrier === "softbank");
+
   if (!okCarrier){
     pill.classList.add("hidden");
     wrap.classList.add("hidden");
-    if (on) setConsultPatch(side, { discPaypay:false, paypayKind:"normal" });
+    if (onV) setConsultPatch(side, { discPaypay:false, paypayKind:"normal" });
     return;
   }
 
   pill.classList.remove("hidden");
-  pillSet(pill, on);
+  pillSet(pill, onV);
 
-  wrap.classList.toggle("hidden", !on);
-  sel.disabled = !on;
+  wrap.classList.toggle("hidden", !onV);
+  sel.disabled = !onV;
 
   const kind = getConsult(consult, side, "paypayKind", "normal") || "normal";
   sel.value = (kind === "gold") ? "gold" : "normal";
 }
 
+/* 任意調整（au/SoftBankのみ） */
 function applyCustomBoxVisibility(side, carrier, consult){
   const box = el(side + "_customBox");
   if (!box) return;
@@ -1415,31 +1214,170 @@ function applyCustomBoxVisibility(side, carrier, consult){
     const v = Number(getConsult(consult, side, "customDiscountYen", 0) || 0) || 0;
     const note = (getConsult(consult, side, "customDiscountNote", "") || "").trim();
     if (v !== 0 || note){
-      setConsultPatch(side, { customDiscountYen: 0, customDiscountNote: "" });
+      setConsultPatch(side, { customDiscountYen:0, customDiscountNote:"" });
     }
   }
 }
 
+/* docomo U22：MAX以外は強制OFF */
 function enforceU22Policy(side, carrier, consult){
   if (carrier !== "docomo"){
-    if (getConsult(consult, side, "discU22", false)){
-      setConsultPatch(side, { discU22:false });
-    }
+    if (getConsult(consult, side, "discU22", false)) setConsultPatch(side, { discU22:false });
     return;
   }
-
   const planKey = getConsult(consult, side, "planKey", "");
   const isMax = String(planKey || "").toLowerCase().includes("max");
-
-  if (!isMax){
-    if (getConsult(consult, side, "discU22", false)){
-      setConsultPatch(side, { discU22:false });
-    }
-    return;
+  if (!isMax && getConsult(consult, side, "discU22", false)){
+    setConsultPatch(side, { discU22:false });
   }
 }
 
-  function calcMonthly(carrier, form, consult, side){
+/* プラン選択反映 */
+function syncPlanSelect(side, carrier, form, consult){
+  const sel = el(side + "_planSelect");
+  if (!sel) return;
+
+  if (!window.PRICE_DB){
+    sel.innerHTML = "<option value=''>data.js（PRICE_DB）が読み込めていません</option>";
+    sel.disabled = true;
+    showPriceDbAlert("【エラー】data.js が読み込めていないか、PRICE_DB が未定義です。ファイル名・パス・読み込み順を確認してください。");
+    return;
+  } else {
+    showPriceDbAlert("");
+  }
+
+  const c = window.PRICE_DB.getCarrier ? window.PRICE_DB.getCarrier(carrier) : null;
+  sel.innerHTML = "";
+
+  if (!carrier || !c || !c.plans){
+    const opt = document.createElement("option");
+    opt.value = "";
+    opt.textContent = "キャリアを選択してください";
+    sel.appendChild(opt);
+    sel.disabled = true;
+    return;
+  }
+  sel.disabled = false;
+
+  const savedKey = getConsult(consult, side, "planKey", "");
+  const fallback = window.PRICE_DB.getDefaultPlanKey
+    ? window.PRICE_DB.getDefaultPlanKey(carrier, form.dataUsage || "lte30")
+    : "";
+  const currentKey =
+    (savedKey && c.plans[savedKey]) ? savedKey :
+    (fallback && c.plans[fallback]) ? fallback : "";
+
+  Object.keys(c.plans).forEach(k=>{
+    const p = c.plans[k];
+    const opt = document.createElement("option");
+    opt.value = k;
+    opt.textContent = p.label;
+    sel.appendChild(opt);
+  });
+
+  sel.value = currentKey || Object.keys(c.plans)[0] || "";
+  setConsultPatch(side, { planKey: sel.value });
+}
+
+/* 割引の表示/非表示（data.jsの isDiscountEligible があれば尊重） */
+function applyDiscountEligibilityUI(side, carrier, consult){
+  if (!window.PRICE_DB) return;
+
+  const planKey = getConsult(consult, side, "planKey", "");
+
+  const u22Btn = el(side + "_u22");
+  const famBtn = el(side + "_family");
+  const hikBtn = el(side + "_hikari");
+  const apyBtn = el(side + "_aupay");
+  const oyaBtn = el(side + "_oyako");
+  const s39Btn = el(side + "_support39");
+  const denBtn = el(side + "_denki");
+
+  const applyOne = (btn, kind, stateKey) => {
+    if (!btn) return;
+
+    if (carrier === "ahamo"){
+      btn.classList.add("hidden");
+      if (getConsult(consult, side, stateKey, false)) setConsultPatch(side, { [stateKey]: false });
+      return;
+    }
+
+    if (carrier === "uq" && kind === "support39"){
+      const isKomikomi = (planKey === "komikomi_value");
+      btn.classList.toggle("hidden", !isKomikomi);
+      if (!isKomikomi && getConsult(consult, side, stateKey, false)){
+        setConsultPatch(side, { [stateKey]: false });
+      }
+      return;
+    }
+
+    const ok = window.PRICE_DB.isDiscountEligible
+      ? window.PRICE_DB.isDiscountEligible(carrier, kind, planKey, {
+          discHikari: getConsult(consult, side, "discHikari", false)
+        })
+      : true;
+
+    btn.classList.toggle("hidden", !ok);
+    if (!ok && getConsult(consult, side, stateKey, false)){
+      setConsultPatch(side, { [stateKey]: false });
+    }
+  };
+
+  applyOne(u22Btn, "u22", "discU22");
+  applyOne(famBtn, "family", "discFamily");
+  applyOne(hikBtn, "hikari", "discHikari");
+  applyOne(apyBtn, "aupay",  "discAupay");
+  applyOne(oyaBtn, "oyako",  "discOyako");
+  applyOne(s39Btn, "support39", "discSupport39");
+  applyOne(denBtn, "denki", "discDenki");
+
+  // アプグレ割：au / softbank のみ
+  const upUqAu = el(side + "_upgradeUqToAu");
+  const upYSb  = el(side + "_upgradeYToSb");
+  if (upUqAu){
+    const ok = (carrier === "au");
+    upUqAu.classList.toggle("hidden", !ok);
+    if (!ok && getConsult(consult, side, "optUpgradeUqToAu", false)) setConsultPatch(side, { optUpgradeUqToAu:false });
+  }
+  if (upYSb){
+    const ok = (carrier === "softbank");
+    upYSb.classList.toggle("hidden", !ok);
+    if (!ok && getConsult(consult, side, "optUpgradeYToSb", false)) setConsultPatch(side, { optUpgradeYToSb:false });
+  }
+}
+
+/* 通話：UQコミコミ / Y! simple3_l / ahamo は short固定ON */
+function isUqKomikomi(carrier, consult, side){
+  if (carrier !== "uq") return false;
+  return getConsult(consult, side, "planKey", "") === "komikomi_value";
+}
+function isYmobileSimple3L(carrier, consult, side){
+  if (carrier !== "ymobile") return false;
+  return getConsult(consult, side, "planKey", "") === "simple3_l";
+}
+function forceTalkOnShort(side){
+  setConsultPatch(side, { talkEnabled:true, talkKind:"short" });
+}
+
+/* 任意調整バッジ */
+function updateCustomBadge(side, consult){
+  const v = Number(getConsult(consult, side, "customDiscountYen", 0) || 0) || 0;
+  const note = (getConsult(consult, side, "customDiscountNote", "") || "").trim();
+  const badge = el(side + "_customBadge");
+  if (!badge) return;
+
+  if (v === 0 && !note){
+    badge.textContent = "未設定";
+  } else {
+    const vv = (v > 0 ? "+" : "") + Math.round(v) + "円";
+    badge.textContent = vv + (note ? " / メモ" : "");
+  }
+}
+
+/* ===============================
+   Calc
+   =============================== */
+function calcMonthly(carrier, form, consult, side){
   if (!carrier) return { total: NaN, lines: [] };
   if (!window.PRICE_DB) return { total: NaN, lines: [] };
 
@@ -1476,8 +1414,6 @@ function enforceU22Policy(side, carrier, consult){
       if (!includesCallShort){
         const v = window.PRICE_DB.getVoice ? window.PRICE_DB.getVoice(carrier, "short") : null;
         talkYen = v ? v.price : 0;
-      } else {
-        talkYen = 0;
       }
     } else if (talkKind === "unlimited"){
       const v = window.PRICE_DB.getVoice ? window.PRICE_DB.getVoice(carrier, "unlimited") : null;
@@ -1497,73 +1433,62 @@ function enforceU22Policy(side, carrier, consult){
       window.PRICE_DB.isDiscountEligible(carrier, "family", planKey, {
         discHikari: getConsult(consult, side, "discHikari", false)
       })) {
-
     const d = window.PRICE_DB.getDiscount
       ? window.PRICE_DB.getDiscount(carrier, "family", {
           discFamilyCount: getConsult(consult, side, "discFamilyCount", 2),
           planKey
         })
       : null;
-
     family = d ? d.amount : 0;
   }
 
   let hikari = 0;
   if (getConsult(consult, side, "discHikari", false) &&
-      window.PRICE_DB.isDiscountEligible && window.PRICE_DB.isDiscountEligible(carrier, "hikari", planKey)){
+      window.PRICE_DB.isDiscountEligible &&
+      window.PRICE_DB.isDiscountEligible(carrier, "hikari", planKey)){
     const d = window.PRICE_DB.getDiscount ? window.PRICE_DB.getDiscount(carrier, "hikari") : null;
     hikari = d ? d.amount : 0;
   }
 
-  let oyako_now = 0; 
+  // 親子割
+  let oyako_now = 0;
   const oyakoOn = !!getConsult(consult, side, "discOyako", false);
 
-  // UQ
+  // UQ（とくとく系だけ year1 を優先）
   const isTokutoku = (carrier === "uq" && String(planKey||"").startsWith("tokutoku_"));
   if (oyakoOn && isTokutoku){
     const oy = window.PRICE_DB.getDiscount ? window.PRICE_DB.getDiscount(carrier, "oyako") : null;
-    if (oy){
-      oyako_now = Number(oy.year1 ?? oy.amount ?? 0) || 0;
-    }
+    if (oy) oyako_now = Number(oy.year1 ?? oy.amount ?? 0) || 0;
   }
-
   // Y!
-  if (oyakoOn && carrier === "ymobile" &&
-      (planKey === "simple3_m" || planKey === "simple3_l")) {
-
+  if (oyakoOn && carrier === "ymobile" && (planKey === "simple3_m" || planKey === "simple3_l")) {
     const oy = window.PRICE_DB.getDiscount ? window.PRICE_DB.getDiscount("ymobile", "oyako") : null;
-    if (oy){
-      oyako_now = Number(oy.amount ?? 0) || 0; 
+    if (oy) oyako_now = Number(oy.amount ?? 0) || 0;
+  }
+
+  // 39割（UQコミコミは特例で許可）
+  let support39 = 0;
+  const support39On = !!getConsult(consult, side, "discSupport39", false);
+  if (support39On){
+    const uqKomikomi = (carrier === "uq" && planKey === "komikomi_value");
+    const eligible = uqKomikomi || !window.PRICE_DB?.isDiscountEligible || window.PRICE_DB.isDiscountEligible(carrier, "support39", planKey);
+    if (eligible){
+      const d = window.PRICE_DB?.getDiscount?.(carrier, "support39");
+      support39 = d ? d.amount : 0;
     }
   }
-
-  let support39 = 0;
-const support39On = !!getConsult(consult, side, "discSupport39", false);
-
-if (support39On){
-  const uqKomikomi = (carrier === "uq" && planKey === "komikomi_value");
-
-  const eligible =
-    uqKomikomi ||
-    !window.PRICE_DB?.isDiscountEligible ||
-    window.PRICE_DB.isDiscountEligible(carrier, "support39", planKey);
-
-  if (eligible){
-    const d = window.PRICE_DB?.getDiscount?.(carrier, "support39");
-    support39 = d ? d.amount : 0;
-  }
-}
 
   let aupay = 0;
   if (getConsult(consult, side, "discAupay", false) &&
-      window.PRICE_DB.isDiscountEligible && window.PRICE_DB.isDiscountEligible(carrier, "aupay", planKey)){
+      window.PRICE_DB.isDiscountEligible &&
+      window.PRICE_DB.isDiscountEligible(carrier, "aupay", planKey)){
     const d = window.PRICE_DB.getDiscount ? window.PRICE_DB.getDiscount(carrier, "aupay") : null;
     aupay = d ? d.amount : 0;
   }
 
   let dcard = 0;
   if (carrier === "docomo" && !!getConsult(consult, side, "discDcard", false)){
-    const kind = getConsult(consult, side, "dcardKind", "silver"); // silver|gold
+    const kind = getConsult(consult, side, "dcardKind", "silver");
     const key = (kind === "gold") ? "dcard_gold" : "dcard_silver";
     const d = window.PRICE_DB.getDiscount ? window.PRICE_DB.getDiscount("docomo", key) : null;
     dcard = d ? d.amount : 0;
@@ -1571,9 +1496,8 @@ if (support39On){
 
   let paypay = 0;
   if (!!getConsult(consult, side, "discPaypay", false)) {
-    const kind = getConsult(consult, side, "paypayKind", "normal"); // normal|gold
+    const kind = getConsult(consult, side, "paypayKind", "normal");
     const key = (kind === "gold") ? "paypay_gold" : "paypay_normal";
-
     const d = window.PRICE_DB.getDiscount ? window.PRICE_DB.getDiscount(carrier, key) : null;
     paypay = d ? (Number(d.amount) || 0) : 0;
   }
@@ -1587,33 +1511,27 @@ if (support39On){
     denki = d ? d.amount : 0;
   }
 
-    let u22 = 0;
-    if (carrier === "docomo" &&
-        getConsult(consult, side, "discU22", false) &&
-        window.PRICE_DB.isDiscountEligible &&
-        window.PRICE_DB.isDiscountEligible(carrier, "u22", planKey)) {
+  let u22 = 0;
+  if (carrier === "docomo" &&
+      getConsult(consult, side, "discU22", false) &&
+      window.PRICE_DB.isDiscountEligible &&
+      window.PRICE_DB.isDiscountEligible(carrier, "u22", planKey)){
+    const d = window.PRICE_DB.getDiscount
+      ? window.PRICE_DB.getDiscount("docomo", "u22", { dataUsage, planKey })
+      : null;
+    u22 = d ? d.amount : 0;
+  }
 
-      const d = window.PRICE_DB.getDiscount
-        ? window.PRICE_DB.getDiscount("docomo", "u22", { dataUsage, planKey })
-        : null;
-
-      u22 = d ? d.amount : 0;
-    }
-
-    let upgradeAdd = 0;
-    const upUqAuOn = !!getConsult(consult, side, "optUpgradeUqToAu", false);
-    const upYSbOn  = !!getConsult(consult, side, "optUpgradeYToSb", false);
-
-    if (carrier === "au" && upUqAuOn) upgradeAdd -= 2640;
-    if (carrier === "softbank" && upYSbOn) upgradeAdd -= 2750;
+  let upgradeAdd = 0;
+  if (carrier === "au" && !!getConsult(consult, side, "optUpgradeUqToAu", false)) upgradeAdd -= 2640;
+  if (carrier === "softbank" && !!getConsult(consult, side, "optUpgradeYToSb", false)) upgradeAdd -= 2750;
 
   const mailOn = !!getConsult(consult, side, "optMailCarry", false);
   const mail = mailOn ? (window.PRICE_DB.getMailCarry ? (window.PRICE_DB.getMailCarry(carrier)?.price || 0) : 0) : 0;
 
   const custom = Number(getConsult(consult, side, "customDiscountYen", 0) || 0) || 0;
 
-  const total = base + talkYen + mail + family + hikari
-  + aupay + oyako_now + support39 + dcard + paypay + denki + u22 + upgradeAdd + custom;
+  const total = base + talkYen + mail + family + hikari + aupay + oyako_now + support39 + dcard + paypay + denki + u22 + upgradeAdd + custom;
 
   const lines = [];
   lines.push({ k:"基本料金", v: base });
@@ -1632,8 +1550,9 @@ if (support39On){
     }
   }
 
-  if (mail !== 0)     lines.push({ k:"メール持ち運び", v: mail });
+  if (mail !== 0) lines.push({ k:"メール持ち運び", v: mail });
   if (u22 !== 0) lines.push({ k:"U22割（7か月）", v: u22 });
+
   if (upgradeAdd !== 0){
     const label =
       (carrier === "au") ? "UQ→au アップグレード（12ヶ月）" :
@@ -1641,48 +1560,53 @@ if (support39On){
       "アップグレード（12ヶ月）";
     lines.push({ k: label, v: upgradeAdd });
   }
+
   if (oyako_now !== 0){
-    const label =
-      (carrier === "ymobile") ? "親子割（13か月）" :
-      "親子割(1年間)";
+    const label = (carrier === "ymobile") ? "親子割（13か月）" : "親子割(1年間)";
     lines.push({ k: label, v: oyako_now });
   }
+
   if (support39 !== 0) lines.push({ k:"39割", v: support39 });
-  if (hikari !== 0)   lines.push({ k:"光割", v: hikari });
+  if (hikari !== 0) lines.push({ k:"光割", v: hikari });
+
   if (family !== 0){
-  if (carrier === "uq"){
-    lines.push({ k:"家族割", v: family });
-  } 
-  else if (carrier === "ymobile"){
-    lines.push({ k:"家族割(2回線目以降)", v: family });
-  } else {
-    const fc = Number(getConsult(consult, side, "discFamilyCount", 2) || 2) || 2;
-    const tag = (fc >= 3) ? "3回線以上" : "2回線";
-    lines.push({ k:`家族割（${tag}）`, v: family });
-  }
-}
-  if (denki !== 0) lines.push({ k:"でんき割", v: denki });
-  if (aupay !== 0)    lines.push({ k:"auPAYカード割", v: aupay });
-  if (dcard !== 0){
-    const kind = getConsult(consult, side, "dcardKind", "silver") === "gold" ? "ゴールド" : "シルバー";
-    lines.push({ k:`dカード割（${kind}）`, v: dcard });
-  }
-  if (paypay !== 0){
-    const kind = (getConsult(consult, side, "paypayKind", "normal") === "gold") ? "ゴールド" : "通常";
-    if (carrier === "ymobile"){
-    lines.push({ k:`PayPayカード割（${kind}）`, v: paypay });
+    if (carrier === "uq"){
+      lines.push({ k:"家族割", v: family });
+    } else if (carrier === "ymobile"){
+      lines.push({ k:"家族割(2回線目以降)", v: family });
     } else {
-      lines.push({ k:`PayPayカード割（一律）`, v: paypay });
+      const fc = Number(getConsult(consult, side, "discFamilyCount", 2) || 2) || 2;
+      const tag = (fc >= 3) ? "3回線以上" : "2回線";
+      lines.push({ k:`家族割（${tag}）`, v: family });
     }
   }
-  if (custom !== 0)   lines.push({ k:"任意調整", v: custom });
+
+  if (denki !== 0) lines.push({ k:"でんき割", v: denki });
+  if (aupay !== 0) lines.push({ k:"auPAYカード割", v: aupay });
+
+  if (dcard !== 0){
+    const kind = (getConsult(consult, side, "dcardKind", "silver") === "gold") ? "ゴールド" : "シルバー";
+    lines.push({ k:`dカード割（${kind}）`, v: dcard });
+  }
+
+  if (paypay !== 0){
+    const kind = (getConsult(consult, side, "paypayKind", "normal") === "gold") ? "ゴールド" : "通常";
+    if (carrier === "ymobile") lines.push({ k:`PayPayカード割（${kind}）`, v: paypay });
+    else lines.push({ k:`PayPayカード割（一律）`, v: paypay });
+  }
+
+  if (custom !== 0) lines.push({ k:"任意調整", v: custom });
 
   return { total, lines, planKey };
 }
 
+/* ===============================
+   Render
+   =============================== */
 function renderAll(){
   let { form, consult } = loadCtx();
   const mode = readMode();
+
   el("carrierGrid")?.classList.toggle("compare", mode === "compare");
   document.body.dataset.mode = mode;
 
@@ -1705,13 +1629,8 @@ function renderAll(){
 
   ({ form, consult } = loadCtx());
 
-  enforceDefaultsAfterPlan("A", a, consult);
-  enforceDefaultsAfterPlan("B", b, consult);
-
-  ({ form, consult } = loadCtx());
-
-enforceHikariFamilyRule("A", a, consult);
-enforceHikariFamilyRule("B", b, consult);
+  enforceHikariFamilyRule("A", a, consult);
+  enforceHikariFamilyRule("B", b, consult);
   ({ form, consult } = loadCtx());
 
   applyDiscountEligibilityUI("A", a, consult);
@@ -1719,112 +1638,6 @@ enforceHikariFamilyRule("B", b, consult);
 
   applyFamilyCountUI("A", a, consult);
   applyFamilyCountUI("B", b, consult);
-
-  const aPlanKey = getConsult(consult, "A", "planKey", "");
-  const bPlanKey = getConsult(consult, "B", "planKey", "");
-
-  const setShortKindLabel = (side, carrier, planKey) => {
-    const btn = el(side + "_kind_short");
-    if (!btn) return;
-
-    const plan = window.PRICE_DB?.getPlan ? window.PRICE_DB.getPlan(carrier, planKey) : null;
-    const includes = !!plan?.includes?.callShort;
-    const mins = Number(plan?.includes?.callShortMinutes || 0) || 0;
-
-    if (includes && mins){
-      btn.textContent = `${mins}分以内`;
-      return;
-    }
-    if (carrier === "docomo" || carrier === "ahamo" || carrier === "au" || carrier === "softbank"){
-      btn.textContent = "5分以内";
-    } else {
-      btn.textContent = "10分以内";
-    }
-  };
-  setShortKindLabel("A", a, aPlanKey);
-  setShortKindLabel("B", b, bPlanKey);
-
-  const hasVoice = (carrier, kind) =>
-    !!(window.PRICE_DB && window.PRICE_DB.getVoice && window.PRICE_DB.getVoice(carrier, kind));
-
-const applyTalkKindVisibility = (side, carrier, planKey) => {
-  const komi = (carrier === "uq" && planKey === "komikomi_value");
-  const ySimple3L = (carrier === "ymobile" && planKey === "simple3_l");
-  el(side + "_kind_unlimited")?.classList.toggle("hidden", !hasVoice(carrier, "unlimited"));
-
-  el(side + "_kind_min60")?.classList.toggle(
-    "hidden",
-    komi || ySimple3L || !hasVoice(carrier, "min60")
-  );
-
-  el(side + "_kind_senior")?.classList.toggle(
-    "hidden",
-    komi || ySimple3L || !hasVoice(carrier, "senior")
-  );
-};
-  applyTalkKindVisibility("A", a, aPlanKey);
-  applyTalkKindVisibility("B", b, bPlanKey);
-
-const applyTalkState = (side, carrier, consult) => {
-  const planKey = getConsult(consult, side, "planKey", "");
-
-  const komi = (carrier === "uq" && planKey === "komikomi_value");
-  const y3l  = (carrier === "ymobile" && planKey === "simple3_l");
-  const isAh = (carrier === "ahamo");
-
-  let enabled = !!getConsult(consult, side, "talkEnabled", false);
-  let kind    = getConsult(consult, side, "talkKind", "short");
-
-  if (komi || y3l || isAh) {
-    if (!enabled || kind !== "short") {
-      setConsultPatch(side, { talkEnabled:true, talkKind:"short" });
-    }
-    enabled = true;
-    kind = "short";
-  }
-
-  const sw = el(side + "_talkSwitch");
-  if (sw) sw.setAttribute("aria-pressed", enabled ? "true" : "false");
-
-  el(side + "_talkKinds")?.classList.toggle("hidden", !enabled);
-
-  pillSet(el(side + "_kind_short"),     enabled && kind === "short");
-  pillSet(el(side + "_kind_unlimited"), enabled && kind === "unlimited");
-  pillSet(el(side + "_kind_min60"),     enabled && kind === "min60");
-  pillSet(el(side + "_kind_senior"),    enabled && kind === "senior");
-};
-  applyTalkState("A", a, consult);
-  applyTalkState("B", b, consult);
-
-  pillSet(el("A_mail"),   !!getConsult(consult,"A","optMailCarry",false));
-  pillSet(el("A_family"), !!getConsult(consult,"A","discFamily",false));
-  pillSet(el("A_hikari"), !!getConsult(consult,"A","discHikari",false));
-  pillSet(el("A_oyako"),  !!getConsult(consult,"A","discOyako",false));
-  pillSet(el("A_support39"), !!getConsult(consult,"A","discSupport39",false));
-  pillSet(el("A_aupay"),  !!getConsult(consult,"A","discAupay",false));
-  pillSet(el("A_denki"), !!getConsult(consult,"A","discDenki",false));
-  pillSet(el("A_u22"), !!getConsult(consult,"A","discU22",false));
-  pillSet(el("A_upgradeUqToAu"), !!getConsult(consult,"A","optUpgradeUqToAu",false));
-  pillSet(el("A_upgradeYToSb"),  !!getConsult(consult,"A","optUpgradeYToSb",false));
-
-  pillSet(el("B_mail"),   !!getConsult(consult,"B","optMailCarry",false));
-  pillSet(el("B_family"), !!getConsult(consult,"B","discFamily",false));
-  pillSet(el("B_hikari"), !!getConsult(consult,"B","discHikari",false));
-  pillSet(el("B_oyako"),  !!getConsult(consult,"B","discOyako",false));
-  pillSet(el("B_support39"), !!getConsult(consult,"B","discSupport39",false));
-  pillSet(el("B_aupay"),  !!getConsult(consult,"B","discAupay",false));
-  pillSet(el("B_denki"), !!getConsult(consult,"B","discDenki",false));
-  pillSet(el("B_u22"), !!getConsult(consult,"B","discU22",false));
-  pillSet(el("B_upgradeUqToAu"), !!getConsult(consult,"B","optUpgradeUqToAu",false));
-  pillSet(el("B_upgradeYToSb"),  !!getConsult(consult,"B","optUpgradeYToSb",false));
-
-  if (el("A_customDiscountYen")) el("A_customDiscountYen").value = String(Number(getConsult(consult,"A","customDiscountYen",0) || 0) || 0);
-  if (el("A_customDiscountNote")) el("A_customDiscountNote").value = getConsult(consult,"A","customDiscountNote","") || "";
-  if (el("B_customDiscountYen")) el("B_customDiscountYen").value = String(Number(getConsult(consult,"B","customDiscountYen",0) || 0) || 0);
-  if (el("B_customDiscountNote")) el("B_customDiscountNote").value = getConsult(consult,"B","customDiscountNote","") || "";
-
-  updateCustomBadge("A", consult);
-  updateCustomBadge("B", consult);
 
   applyDcardUI("A", a, consult);
   applyDcardUI("B", b, consult);
@@ -1834,23 +1647,126 @@ const applyTalkState = (side, carrier, consult) => {
 
   applyCustomBoxVisibility("A", a, consult);
   applyCustomBoxVisibility("B", b, consult);
+
   enforceU22Policy("A", a, consult);
   enforceU22Policy("B", b, consult);
+
   ({ form, consult } = loadCtx());
   updateCustomBadge("A", consult);
   updateCustomBadge("B", consult);
+
+  // 通話の強制（UQコミコミ / Y! simple3_l / ahamo）
+  const forceTalkIfNeeded = (side, carrier) => {
+    const { consult } = loadCtx();
+    if (carrier === "ahamo") { forceTalkOnShort(side); return; }
+    if (isUqKomikomi(carrier, consult, side)) { forceTalkOnShort(side); return; }
+    if (isYmobileSimple3L(carrier, consult, side)) { forceTalkOnShort(side); return; }
+  };
+  forceTalkIfNeeded("A", a);
+  forceTalkIfNeeded("B", b);
+
+  ({ form, consult } = loadCtx());
+
+  // 通話 UI
+  const hasVoice = (carrier, kind) =>
+    !!(window.PRICE_DB && window.PRICE_DB.getVoice && window.PRICE_DB.getVoice(carrier, kind));
+
+  const setShortKindLabel = (side, carrier, planKey) => {
+    const btn = el(side + "_kind_short");
+    if (!btn) return;
+
+    const plan = window.PRICE_DB?.getPlan ? window.PRICE_DB.getPlan(carrier, planKey) : null;
+    const includes = !!plan?.includes?.callShort;
+    const mins = Number(plan?.includes?.callShortMinutes || 0) || 0;
+
+    if (includes && mins){ btn.textContent = `${mins}分以内`; return; }
+    if (carrier === "docomo" || carrier === "ahamo" || carrier === "au" || carrier === "softbank") btn.textContent = "5分以内";
+    else btn.textContent = "10分以内";
+  };
+
+  const aPlanKey = getConsult(consult, "A", "planKey", "");
+  const bPlanKey = getConsult(consult, "B", "planKey", "");
+  setShortKindLabel("A", a, aPlanKey);
+  setShortKindLabel("B", b, bPlanKey);
+
+  const applyTalkKindVisibility = (side, carrier, planKey) => {
+    const komi = (carrier === "uq" && planKey === "komikomi_value");
+    const ySimple3L = (carrier === "ymobile" && planKey === "simple3_l");
+    el(side + "_kind_unlimited")?.classList.toggle("hidden", !hasVoice(carrier, "unlimited"));
+    el(side + "_kind_min60")?.classList.toggle("hidden", komi || ySimple3L || !hasVoice(carrier, "min60"));
+    el(side + "_kind_senior")?.classList.toggle("hidden", komi || ySimple3L || !hasVoice(carrier, "senior"));
+  };
+  applyTalkKindVisibility("A", a, aPlanKey);
+  applyTalkKindVisibility("B", b, bPlanKey);
+
+  const applyTalkState = (side, carrier) => {
+    const { consult } = loadCtx();
+    const planKey = getConsult(consult, side, "planKey", "");
+
+    const komi = (carrier === "uq" && planKey === "komikomi_value");
+    const y3l  = (carrier === "ymobile" && planKey === "simple3_l");
+    const isAh = (carrier === "ahamo");
+
+    let enabled = !!getConsult(consult, side, "talkEnabled", false);
+    let kind    = getConsult(consult, side, "talkKind", "short");
+
+    if (komi || y3l || isAh){
+      enabled = true;
+      kind = "short";
+    }
+
+    const sw = el(side + "_talkSwitch");
+    if (sw) sw.setAttribute("aria-pressed", enabled ? "true" : "false");
+
+    el(side + "_talkKinds")?.classList.toggle("hidden", !enabled);
+
+    pillSet(el(side + "_kind_short"),     enabled && kind === "short");
+    pillSet(el(side + "_kind_unlimited"), enabled && kind === "unlimited");
+    pillSet(el(side + "_kind_min60"),     enabled && kind === "min60");
+    pillSet(el(side + "_kind_senior"),    enabled && kind === "senior");
+  };
+  applyTalkState("A", a);
+  applyTalkState("B", b);
+
+  // pill on/off
+  pillSet(el("A_mail"),   !!getConsult(consult,"A","optMailCarry",false));
+  pillSet(el("A_family"), !!getConsult(consult,"A","discFamily",false));
+  pillSet(el("A_hikari"), !!getConsult(consult,"A","discHikari",false));
+  pillSet(el("A_oyako"),  !!getConsult(consult,"A","discOyako",false));
+  pillSet(el("A_support39"), !!getConsult(consult,"A","discSupport39",false));
+  pillSet(el("A_aupay"),  !!getConsult(consult,"A","discAupay",false));
+  pillSet(el("A_denki"),  !!getConsult(consult,"A","discDenki",false));
+  pillSet(el("A_u22"),    !!getConsult(consult,"A","discU22",false));
+  pillSet(el("A_upgradeUqToAu"), !!getConsult(consult,"A","optUpgradeUqToAu",false));
+  pillSet(el("A_upgradeYToSb"),  !!getConsult(consult,"A","optUpgradeYToSb",false));
+
+  pillSet(el("B_mail"),   !!getConsult(consult,"B","optMailCarry",false));
+  pillSet(el("B_family"), !!getConsult(consult,"B","discFamily",false));
+  pillSet(el("B_hikari"), !!getConsult(consult,"B","discHikari",false));
+  pillSet(el("B_oyako"),  !!getConsult(consult,"B","discOyako",false));
+  pillSet(el("B_support39"), !!getConsult(consult,"B","discSupport39",false));
+  pillSet(el("B_aupay"),  !!getConsult(consult,"B","discAupay",false));
+  pillSet(el("B_denki"),  !!getConsult(consult,"B","discDenki",false));
+  pillSet(el("B_u22"),    !!getConsult(consult,"B","discU22",false));
+  pillSet(el("B_upgradeUqToAu"), !!getConsult(consult,"B","optUpgradeUqToAu",false));
+  pillSet(el("B_upgradeYToSb"),  !!getConsult(consult,"B","optUpgradeYToSb",false));
+
+  // custom inputs
+  if (el("A_customDiscountYen"))  el("A_customDiscountYen").value  = String(Number(getConsult(consult,"A","customDiscountYen",0) || 0) || 0);
+  if (el("A_customDiscountNote")) el("A_customDiscountNote").value = getConsult(consult,"A","customDiscountNote","") || "";
+  if (el("B_customDiscountYen"))  el("B_customDiscountYen").value  = String(Number(getConsult(consult,"B","customDiscountYen",0) || 0) || 0);
+  if (el("B_customDiscountNote")) el("B_customDiscountNote").value = getConsult(consult,"B","customDiscountNote","") || "";
 
   // 結果
   el("brandA") && (el("brandA").textContent = carrierLabel(a));
   el("brandB") && (el("brandB").textContent = carrierLabel(b));
 
   const rA = calcMonthly(a, form, consult, "A");
-  el("priceA").textContent = yen(rA.total);
-  renderBreakdown("bdA", rA.lines || []);
   const rB = calcMonthly(b, form, consult, "B");
 
   el("priceA") && (el("priceA").textContent = yen(rA.total));
   renderBreakdown("bdA", rA.lines || []);
+
   el("priceB") && (el("priceB").textContent = yen(rB.total));
   renderBreakdown("bdB", rB.lines || []);
 
@@ -1865,431 +1781,350 @@ const applyTalkState = (side, carrier, consult) => {
   if (readMode() === "compare") renderCarrierCards("B");
 }
 
-  function bind(){
-    const toggleMode = () => {
-      const mode = readMode();
-      setMode(mode === "single" ? "compare" : "single");
-      renderAll();
-    };
-    click("modeToggle", toggleMode);
-    on("modeToggle","keydown",(e)=>{
-      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleMode(); }
-    });
+/* ===============================
+   Bind
+   =============================== */
+function bind(){
+  const toggleMode = () => {
+    const mode = readMode();
+    setMode(mode === "single" ? "compare" : "single");
+    renderAll();
+  };
+  click("modeToggle", toggleMode);
+  on("modeToggle","keydown",(e)=>{
+    if (e.key === "Enter" || e.key === " "){ e.preventDefault(); toggleMode(); }
+  });
 
-    on("carrierA", "change", ()=>{
-      saveConsultPatch({ carrierA: el("carrierA")?.value || "" });
-      const next = el("carrierA")?.value || "";
-      setConsultPatch("A", {
-        planKey: "",
-        discFamily:false, discHikari:false, discOyako:false, discAupay:false,
-        talkEnabled: (next === "ahamo") ? true : false,
-        talkKind:"short",
-      });
-      renderAll();
-    });
-    on("carrierB", "change", ()=>{
-      saveConsultPatch({ carrierB: el("carrierB")?.value || "" });
-      const next = el("carrierB")?.value || "";
-      setConsultPatch("B", {
-        planKey: "",
-        discFamily:false, discHikari:false, discOyako:false, discAupay:false,
-        talkEnabled: (next === "ahamo") ? true : false,
-        talkKind:"short",
-      });
-      renderAll();
-    });
+  on("carrierA", "change", ()=>{
+    saveConsultPatch({ carrierA: el("carrierA")?.value || "" });
+    renderAll();
+  });
+  on("carrierB", "change", ()=>{
+    saveConsultPatch({ carrierB: el("carrierB")?.value || "" });
+    renderAll();
+  });
 
-      on("A_planSelect", "change", ()=>{
+  on("A_planSelect", "change", ()=>{
     const v = el("A_planSelect")?.value || "";
-    setConsultPatch("A", { planKey: v });
-
+    setConsultPatch("A", { planKey:v });
+    // docomo MAX を選んだら U22 をON（ルール維持）
     const { consult } = loadCtx();
     const carrier = el("carrierA")?.value || consult.carrierA || "";
-    if (carrier === "docomo" && (v === "max_28" || v === "max_30")){
-      setConsultPatch("A", { discU22: true });
+    if (carrier === "docomo" && String(v||"").toLowerCase().includes("max")){
+      setConsultPatch("A", { discU22:true });
     }
-
     renderAll();
   });
-  
-    on("B_planSelect", "change", ()=>{
+  on("B_planSelect", "change", ()=>{
     const v = el("B_planSelect")?.value || "";
-    setConsultPatch("B", { planKey: v });
-
+    setConsultPatch("B", { planKey:v });
     const { consult } = loadCtx();
     const carrier = el("carrierB")?.value || consult.carrierB || "";
-    if (carrier === "docomo" && (v === "max_28" || v === "max_30")){
-      setConsultPatch("B", { discU22: true });
+    if (carrier === "docomo" && String(v||"").toLowerCase().includes("max")){
+      setConsultPatch("B", { discU22:true });
     }
-
     renderAll();
   });
 
-    on("A_familyCount", "change", ()=>{
-      const v = (el("A_familyCount")?.value === "3") ? 3 : 2;
-      setConsultPatch("A", { discFamilyCount: v });
-      renderAll();
-    });
-    on("B_familyCount", "change", ()=>{
-      const v = (el("B_familyCount")?.value === "3") ? 3 : 2;
-      setConsultPatch("B", { discFamilyCount: v });
-      renderAll();
-    });
-
-    const setTalkEnabled = (side, on) => { setConsultPatch(side, { talkEnabled: !!on }); renderAll(); };
-      const setTalkKind = (side, kind) => {
-      const { consult } = loadCtx();
-      const carrier = (side === "A")
-        ? (el("carrierA")?.value || consult.carrierA || "")
-        : (el("carrierB")?.value || consult.carrierB || "");
-
-      if (carrier === "uq"){
-        const planKey = getConsult(consult, side, "planKey", "");
-        const komi = (planKey === "komikomi_value");
-        if (komi && (kind === "min60" || kind === "senior")){
-          return;
-        }
-      }
-
-      if (carrier === "ymobile"){
-        const planKey = getConsult(consult, side, "planKey", "");
-        const ySimple3L = (planKey === "simple3_l");
-        if (ySimple3L && (kind === "min60" || kind === "senior")) return;
-      }
-
-      setConsultPatch(side, { talkEnabled:true, talkKind: kind });
-      renderAll();
-    };
-
-    click("A_talkSwitch", () => {
-      const { consult } = loadCtx();
-      const carrier = el("carrierA")?.value || consult.carrierA || "";
-      const enabled = !!getConsult(consult,"A","talkEnabled",false);
-
-      if (isUqKomikomi(carrier, consult, "A")){
-        forceKomikomiTalkOn("A");
-      } else if (isYmobileSimple3L(carrier, consult, "A")){
-        forceYmobileSimple3LTalkOn("A");
-      } else {
-        setConsultPatch("A", { talkEnabled: !enabled });
-      }
-      renderAll();
-    });
-    click("A_kind_short",     () => setTalkKind("A","short"));
-    click("A_kind_unlimited", () => setTalkKind("A","unlimited"));
-    click("A_kind_min60",     () => setTalkKind("A","min60"));
-    click("A_kind_senior",    () => setTalkKind("A","senior"));
-
-    click("B_talkSwitch", () => {
-      const { consult } = loadCtx();
-      const carrier = el("carrierB")?.value || consult.carrierB || "";
-      const enabled = !!getConsult(consult,"B","talkEnabled",false);
-
-      if (isUqKomikomi(carrier, consult, "B")){
-        forceKomikomiTalkOn("B");
-      } else if (isYmobileSimple3L(carrier, consult, "B")){
-        forceYmobileSimple3LTalkOn("B");
-      } else {
-        setConsultPatch("B", { talkEnabled: !enabled });
-      }
-      renderAll();
-    });
-    click("B_kind_short",     () => setTalkKind("B","short"));
-    click("B_kind_unlimited", () => setTalkKind("B","unlimited"));
-    click("B_kind_min60",     () => setTalkKind("B","min60"));
-    click("B_kind_senior",    () => setTalkKind("B","senior"));
-
-    click("A_mail", () => {
-      const { consult } = loadCtx();
-      setConsultPatch("A", { optMailCarry: !getConsult(consult,"A","optMailCarry",false) });
-      renderAll();
-    });
-    click("B_mail", () => {
-      const { consult } = loadCtx();
-      setConsultPatch("B", { optMailCarry: !getConsult(consult,"B","optMailCarry",false) });
-      renderAll();
-    });
-
-    click("A_family", () => {
-      const { consult } = loadCtx();
-      const carrier = el("carrierA")?.value || consult.carrierA || "";
-      toggleDiscountWithHikariFamilyRule("A", carrier, "family");
-
-      renderAll();
-    });
-    click("A_hikari", () => {
-      const { consult } = loadCtx();
-      const carrier = el("carrierA")?.value || consult.carrierA || "";
-      toggleDiscountWithHikariFamilyRule("A", carrier, "hikari");
-      renderAll();
-    });
-
-    click("A_oyako", () => {
-      const { consult } = loadCtx();
-      const carrier = el("carrierA")?.value || consult.carrierA || "";
-      const planKey = getConsult(consult, "A", "planKey", "");
-      const cur = !!getConsult(consult, "A", "discOyako", false);
-
-      const ok = window.PRICE_DB?.isDiscountEligible
-      ? window.PRICE_DB.isDiscountEligible(carrier, "oyako", planKey)
-      : false;
-      if (!ok){
-        if (cur) setConsultPatch("A", { discOyako:false });
-        renderAll();
-        return;
-      }
-
-      const famOn = !!getConsult(consult, "A", "discFamily", false);
-
-      if (carrier === "uq"){
-        setConsultPatch("A", { discOyako: !cur, discFamily: (!cur ? false : famOn) });
-      } else {
-        setConsultPatch("A", { discOyako: !cur });
-      }
-
-      renderAll();
-    });
-
-    click("A_support39", () => {
-      const { consult } = loadCtx();
-      const cur = !!getConsult(consult, "A", "discSupport39", false);
-      setConsultPatch("A", { discSupport39: !cur });
-      renderAll();
-    });
-    click("A_aupay", () => {
-      const { consult } = loadCtx();
-      const carrier = el("carrierA")?.value || consult.carrierA || "";
-      toggleDiscountWithHikariFamilyRule("A", carrier, "aupay");
-      renderAll();
-    });
-
-    click("A_dcardPill", () => {
-  const { consult } = loadCtx();
-  const carrier = el("carrierA")?.value || consult.carrierA || "";
-  if (carrier !== "docomo") return;
-
-  const cur = !!getConsult(consult, "A", "discDcard", false);
-  setConsultPatch("A", { discDcard: !cur });
-  renderAll();
-});
-
-on("A_dcard", "change", () => {
-  const v = el("A_dcard")?.value === "gold" ? "gold" : "silver";
-  setConsultPatch("A", { dcardKind: v, discDcard: true });
-  renderAll();
-});
-
-click("A_u22", () => {
-  const { consult } = loadCtx();
-  const carrier = el("carrierA")?.value || consult.carrierA || "";
-  if (carrier !== "docomo") return;
-  const cur = !!getConsult(consult, "A", "discU22", false);
-  setConsultPatch("A", { discU22: !cur });
-  renderAll();
-});
-
-click("A_denki", () => {
-  const { consult } = loadCtx();
-  const carrier = el("carrierA")?.value || consult.carrierA || "";
-  if (carrier !== "docomo") return;
-  const cur = !!getConsult(consult, "A", "discDenki", false);
-  setConsultPatch("A", { discDenki: !cur });
-  renderAll();
-});
-
-click("A_upgradeUqToAu", () => {
-  const { consult } = loadCtx();
-  const cur = !!getConsult(consult, "A", "optUpgradeUqToAu", false);
-  setConsultPatch("A", { optUpgradeUqToAu: !cur });
-  renderAll();
-});
-click("A_upgradeYToSb", () => {
-  const { consult } = loadCtx();
-  const cur = !!getConsult(consult, "A", "optUpgradeYToSb", false);
-  setConsultPatch("A", { optUpgradeYToSb: !cur });
-  renderAll();
-});
-
-click("A_paypayPill", () => {
-  const { consult } = loadCtx();
-  const carrier = el("carrierA")?.value || consult.carrierA || "";
-  if (!(carrier === "ymobile" || carrier === "softbank")) return;
-
-  const cur = !!getConsult(consult, "A", "discPaypay", false);
-  setConsultPatch("A", { discPaypay: !cur });
-  renderAll();
-});
-
-on("A_paypay", "change", () => {
-  const v = el("A_paypay")?.value === "gold" ? "gold" : "normal";
-  setConsultPatch("A", { paypayKind: v, discPaypay: true });
-  renderAll();
-});
-
-click("B_paypayPill", () => {
-  const { consult } = loadCtx();
-  const carrier = el("carrierB")?.value || consult.carrierB || "";
-  if (!(carrier === "ymobile" || carrier === "softbank")) return;
-
-  const cur = !!getConsult(consult, "B", "discPaypay", false);
-  setConsultPatch("B", { discPaypay: !cur });
-  renderAll();
-});
-
-on("B_paypay", "change", () => {
-  const v = el("B_paypay")?.value === "gold" ? "gold" : "normal";
-  setConsultPatch("B", { paypayKind: v, discPaypay: true });
-  renderAll();
-});
-
-click("B_upgradeUqToAu", () => {
-  const { consult } = loadCtx();
-  const cur = !!getConsult(consult, "B", "optUpgradeUqToAu", false);
-  setConsultPatch("B", { optUpgradeUqToAu: !cur });
-  renderAll();
-});
-click("B_upgradeYToSb", () => {
-  const { consult } = loadCtx();
-  const cur = !!getConsult(consult, "B", "optUpgradeYToSb", false);
-  setConsultPatch("B", { optUpgradeYToSb: !cur });
-  renderAll();
-});
-
-click("B_denki", () => {
-  const { consult } = loadCtx();
-  const carrier = el("carrierB")?.value || consult.carrierB || "";
-  if (carrier !== "docomo") return;
-  const cur = !!getConsult(consult, "B", "discDenki", false);
-  setConsultPatch("B", { discDenki: !cur });
-  renderAll();
-});
-
-    click("B_family", () => {
-      const { consult } = loadCtx();
-      const carrier = el("carrierB")?.value || consult.carrierB || "";
-      toggleDiscountWithHikariFamilyRule("B", carrier, "family");
-      renderAll();
-    });
-    click("B_hikari", () => {
-      const { consult } = loadCtx();
-      const carrier = el("carrierB")?.value || consult.carrierB || "";
-      toggleDiscountWithHikariFamilyRule("B", carrier, "hikari");
-      renderAll();
-    });
-    click("B_oyako", () => {
-      const { consult } = loadCtx();
-      const carrier = el("carrierB")?.value || consult.carrierB || "";
-      const planKey = getConsult(consult, "B", "planKey", "");
-      const cur = !!getConsult(consult, "B", "discOyako", false);
-
-      const ok = window.PRICE_DB?.isDiscountEligible
-      ? window.PRICE_DB.isDiscountEligible(carrier, "oyako", planKey)
-      : false;
-      if (!ok){
-        if (cur) setConsultPatch("B", { discOyako:false });
-        renderAll();
-        return;
-      }
-
-      const famOn = !!getConsult(consult, "B", "discFamily", false);
-      setConsultPatch("B", { discOyako: !cur, discFamily: (!cur ? false : famOn) });
-
-      renderAll();
-    });
-
-    click("B_support39", () => {
-      const { consult } = loadCtx();
-      const cur = !!getConsult(consult, "B", "discSupport39", false);
-      setConsultPatch("B", { discSupport39: !cur });
-      renderAll();
-    });
-    click("B_aupay", () => {
-      const { consult } = loadCtx();
-      const carrier = el("carrierB")?.value || consult.carrierB || "";
-      toggleDiscountWithHikariFamilyRule("B", carrier, "aupay");
-      renderAll();
-    });
-
-    click("B_dcardPill", () => {
-  const { consult } = loadCtx();
-  const carrier = el("carrierB")?.value || consult.carrierB || "";
-  if (carrier !== "docomo") return;
-
-  const cur = !!getConsult(consult, "B", "discDcard", false);
-  setConsultPatch("B", { discDcard: !cur });
-  renderAll();
-});
-
-on("B_dcard", "change", () => {
-  const v = el("B_dcard")?.value === "gold" ? "gold" : "silver";
-  setConsultPatch("B", { dcardKind: v, discDcard: true });
-  renderAll();
-});
-
-click("B_u22", () => {
-  const { consult } = loadCtx();
-  const carrier = el("carrierB")?.value || consult.carrierB || "";
-  if (carrier !== "docomo") return;
-  const cur = !!getConsult(consult, "B", "discU22", false);
-  setConsultPatch("B", { discU22: !cur });
-  renderAll();
-});
-
-    on("A_customDiscountYen", "change", ()=>{
-      let v = Number(el("A_customDiscountYen")?.value || 0) || 0;
-      if (el("A_customDiscountYen")) el("A_customDiscountYen").value = String(v);
-      setConsultPatch("A", { customDiscountYen: v });
-      renderAll();
-    });
-    on("A_customDiscountNote", "change", ()=>{
-      setConsultPatch("A", { customDiscountNote: el("A_customDiscountNote")?.value || "" });
-      renderAll();
-    });
-
-    on("B_customDiscountYen", "change", ()=>{
-      let v = Number(el("B_customDiscountYen")?.value || 0) || 0;
-      if (el("B_customDiscountYen")) el("B_customDiscountYen").value = String(v);
-      setConsultPatch("B", { customDiscountYen: v });
-      renderAll();
-    });
-    on("B_customDiscountNote", "change", ()=>{
-      setConsultPatch("B", { customDiscountNote: el("B_customDiscountNote")?.value || "" });
-      renderAll();
-    });
-    click("backToContractBtn", () => {
-      window.location.href = "ContractNavigator.html";
-    });
-  }
-
-  function init(){
-    const { consult } = loadCtx();
-    setTheme(readTheme());
-
-    if (!consult.viewMode) saveConsultPatch({ viewMode:"single" });
-
-    if (el("payType")) el("payType").value = consult.payType || "";
-    if (el("needDataTransfer")) el("needDataTransfer").value = consult.needDataTransfer || "no";
-    if (el("needTradeInReception")) el("needTradeInReception").value = consult.needTradeInReception || "no";
-
-    if (!("A_talkEnabled" in consult)) setConsultPatch("A", { talkEnabled:false, talkKind:"short" });
-    if (!("B_talkEnabled" in consult)) setConsultPatch("B", { talkEnabled:false, talkKind:"short" });
-
-    const a0 = consult.carrierA || "";
-    const b0 = consult.carrierB || "";
-    if (a0 === "ahamo") setConsultPatch("A", { talkEnabled:true, talkKind:"short" });
-    if (b0 === "ahamo") setConsultPatch("B", { talkEnabled:true, talkKind:"short" });
-
-    bind();
-    bindSecretThemeToggle();
+  on("A_familyCount", "change", ()=>{
+    const v = (el("A_familyCount")?.value === "3") ? 3 : 2;
+    setConsultPatch("A", { discFamilyCount:v });
     renderAll();
-  }
+  });
+  on("B_familyCount", "change", ()=>{
+    const v = (el("B_familyCount")?.value === "3") ? 3 : 2;
+    setConsultPatch("B", { discFamilyCount:v });
+    renderAll();
+  });
 
-  init();
+  const setTalkKind = (side, kind) => {
+    const { consult } = loadCtx();
+    const carrier = (side === "A")
+      ? (el("carrierA")?.value || consult.carrierA || "")
+      : (el("carrierB")?.value || consult.carrierB || "");
+
+    // UQコミコミ / Y! simple3_l / ahamo は short 固定
+    if (carrier === "ahamo" || isUqKomikomi(carrier, consult, side) || isYmobileSimple3L(carrier, consult, side)){
+      forceTalkOnShort(side);
+      renderAll();
+      return;
+    }
+
+    setConsultPatch(side, { talkEnabled:true, talkKind: kind });
+    renderAll();
+  };
+
+  click("A_talkSwitch", () => {
+    const { consult } = loadCtx();
+    const carrier = el("carrierA")?.value || consult.carrierA || "";
+    const enabled = !!getConsult(consult,"A","talkEnabled",false);
+    if (carrier === "ahamo" || isUqKomikomi(carrier, consult, "A") || isYmobileSimple3L(carrier, consult, "A")){
+      forceTalkOnShort("A");
+    } else {
+      setConsultPatch("A", { talkEnabled: !enabled });
+    }
+    renderAll();
+  });
+  click("A_kind_short",     () => setTalkKind("A","short"));
+  click("A_kind_unlimited", () => setTalkKind("A","unlimited"));
+  click("A_kind_min60",     () => setTalkKind("A","min60"));
+  click("A_kind_senior",    () => setTalkKind("A","senior"));
+
+  click("B_talkSwitch", () => {
+    const { consult } = loadCtx();
+    const carrier = el("carrierB")?.value || consult.carrierB || "";
+    const enabled = !!getConsult(consult,"B","talkEnabled",false);
+    if (carrier === "ahamo" || isUqKomikomi(carrier, consult, "B") || isYmobileSimple3L(carrier, consult, "B")){
+      forceTalkOnShort("B");
+    } else {
+      setConsultPatch("B", { talkEnabled: !enabled });
+    }
+    renderAll();
+  });
+  click("B_kind_short",     () => setTalkKind("B","short"));
+  click("B_kind_unlimited", () => setTalkKind("B","unlimited"));
+  click("B_kind_min60",     () => setTalkKind("B","min60"));
+  click("B_kind_senior",    () => setTalkKind("B","senior"));
+
+  // mail
+  click("A_mail", () => {
+    const { consult } = loadCtx();
+    setConsultPatch("A", { optMailCarry: !getConsult(consult,"A","optMailCarry",false) });
+    renderAll();
+  });
+  click("B_mail", () => {
+    const { consult } = loadCtx();
+    setConsultPatch("B", { optMailCarry: !getConsult(consult,"B","optMailCarry",false) });
+    renderAll();
+  });
+
+  // discounts
+  click("A_family", () => {
+    const { consult } = loadCtx();
+    const carrier = el("carrierA")?.value || consult.carrierA || "";
+    toggleDiscountWithHikariFamilyRule("A", carrier, "family");
+    renderAll();
+  });
+  click("A_hikari", () => {
+    const { consult } = loadCtx();
+    const carrier = el("carrierA")?.value || consult.carrierA || "";
+    toggleDiscountWithHikariFamilyRule("A", carrier, "hikari");
+    renderAll();
+  });
+  click("A_aupay", () => {
+    const { consult } = loadCtx();
+    const carrier = el("carrierA")?.value || consult.carrierA || "";
+    toggleDiscountWithHikariFamilyRule("A", carrier, "aupay");
+    renderAll();
+  });
+  click("A_oyako", () => {
+    const { consult } = loadCtx();
+    const cur = !!getConsult(consult, "A", "discOyako", false);
+    setConsultPatch("A", { discOyako: !cur });
+    renderAll();
+  });
+  click("A_support39", () => {
+    const { consult } = loadCtx();
+    const cur = !!getConsult(consult, "A", "discSupport39", false);
+    setConsultPatch("A", { discSupport39: !cur });
+    renderAll();
+  });
+
+  click("A_dcardPill", () => {
+    const { consult } = loadCtx();
+    const carrier = el("carrierA")?.value || consult.carrierA || "";
+    if (carrier !== "docomo") return;
+    const cur = !!getConsult(consult, "A", "discDcard", false);
+    setConsultPatch("A", { discDcard: !cur });
+    renderAll();
+  });
+  on("A_dcard", "change", () => {
+    const v = (el("A_dcard")?.value === "gold") ? "gold" : "silver";
+    setConsultPatch("A", { dcardKind: v, discDcard:true });
+    renderAll();
+  });
+
+  click("A_paypayPill", () => {
+    const { consult } = loadCtx();
+    const carrier = el("carrierA")?.value || consult.carrierA || "";
+    if (!(carrier === "ymobile" || carrier === "softbank")) return;
+    const cur = !!getConsult(consult, "A", "discPaypay", false);
+    setConsultPatch("A", { discPaypay: !cur });
+    renderAll();
+  });
+  on("A_paypay", "change", () => {
+    const v = (el("A_paypay")?.value === "gold") ? "gold" : "normal";
+    setConsultPatch("A", { paypayKind: v, discPaypay:true });
+    renderAll();
+  });
+
+  click("A_denki", () => {
+    const { consult } = loadCtx();
+    const carrier = el("carrierA")?.value || consult.carrierA || "";
+    if (carrier !== "docomo") return;
+    const cur = !!getConsult(consult, "A", "discDenki", false);
+    setConsultPatch("A", { discDenki: !cur });
+    renderAll();
+  });
+  click("A_u22", () => {
+    const { consult } = loadCtx();
+    const carrier = el("carrierA")?.value || consult.carrierA || "";
+    if (carrier !== "docomo") return;
+    const cur = !!getConsult(consult, "A", "discU22", false);
+    setConsultPatch("A", { discU22: !cur });
+    renderAll();
+  });
+
+  click("A_upgradeUqToAu", () => {
+    const { consult } = loadCtx();
+    const cur = !!getConsult(consult, "A", "optUpgradeUqToAu", false);
+    setConsultPatch("A", { optUpgradeUqToAu: !cur });
+    renderAll();
+  });
+  click("A_upgradeYToSb", () => {
+    const { consult } = loadCtx();
+    const cur = !!getConsult(consult, "A", "optUpgradeYToSb", false);
+    setConsultPatch("A", { optUpgradeYToSb: !cur });
+    renderAll();
+  });
+
+  // B side
+  click("B_family", () => {
+    const { consult } = loadCtx();
+    const carrier = el("carrierB")?.value || consult.carrierB || "";
+    toggleDiscountWithHikariFamilyRule("B", carrier, "family");
+    renderAll();
+  });
+  click("B_hikari", () => {
+    const { consult } = loadCtx();
+    const carrier = el("carrierB")?.value || consult.carrierB || "";
+    toggleDiscountWithHikariFamilyRule("B", carrier, "hikari");
+    renderAll();
+  });
+  click("B_aupay", () => {
+    const { consult } = loadCtx();
+    const carrier = el("carrierB")?.value || consult.carrierB || "";
+    toggleDiscountWithHikariFamilyRule("B", carrier, "aupay");
+    renderAll();
+  });
+  click("B_oyako", () => {
+    const { consult } = loadCtx();
+    const cur = !!getConsult(consult, "B", "discOyako", false);
+    setConsultPatch("B", { discOyako: !cur });
+    renderAll();
+  });
+  click("B_support39", () => {
+    const { consult } = loadCtx();
+    const cur = !!getConsult(consult, "B", "discSupport39", false);
+    setConsultPatch("B", { discSupport39: !cur });
+    renderAll();
+  });
+
+  click("B_dcardPill", () => {
+    const { consult } = loadCtx();
+    const carrier = el("carrierB")?.value || consult.carrierB || "";
+    if (carrier !== "docomo") return;
+    const cur = !!getConsult(consult, "B", "discDcard", false);
+    setConsultPatch("B", { discDcard: !cur });
+    renderAll();
+  });
+  on("B_dcard", "change", () => {
+    const v = (el("B_dcard")?.value === "gold") ? "gold" : "silver";
+    setConsultPatch("B", { dcardKind: v, discDcard:true });
+    renderAll();
+  });
+
+  click("B_paypayPill", () => {
+    const { consult } = loadCtx();
+    const carrier = el("carrierB")?.value || consult.carrierB || "";
+    if (!(carrier === "ymobile" || carrier === "softbank")) return;
+    const cur = !!getConsult(consult, "B", "discPaypay", false);
+    setConsultPatch("B", { discPaypay: !cur });
+    renderAll();
+  });
+  on("B_paypay", "change", () => {
+    const v = (el("B_paypay")?.value === "gold") ? "gold" : "normal";
+    setConsultPatch("B", { paypayKind: v, discPaypay:true });
+    renderAll();
+  });
+
+  click("B_denki", () => {
+    const { consult } = loadCtx();
+    const carrier = el("carrierB")?.value || consult.carrierB || "";
+    if (carrier !== "docomo") return;
+    const cur = !!getConsult(consult, "B", "discDenki", false);
+    setConsultPatch("B", { discDenki: !cur });
+    renderAll();
+  });
+  click("B_u22", () => {
+    const { consult } = loadCtx();
+    const carrier = el("carrierB")?.value || consult.carrierB || "";
+    if (carrier !== "docomo") return;
+    const cur = !!getConsult(consult, "B", "discU22", false);
+    setConsultPatch("B", { discU22: !cur });
+    renderAll();
+  });
+
+  click("B_upgradeUqToAu", () => {
+    const { consult } = loadCtx();
+    const cur = !!getConsult(consult, "B", "optUpgradeUqToAu", false);
+    setConsultPatch("B", { optUpgradeUqToAu: !cur });
+    renderAll();
+  });
+  click("B_upgradeYToSb", () => {
+    const { consult } = loadCtx();
+    const cur = !!getConsult(consult, "B", "optUpgradeYToSb", false);
+    setConsultPatch("B", { optUpgradeYToSb: !cur });
+    renderAll();
+  });
+
+  // custom
+  on("A_customDiscountYen", "change", ()=>{
+    let v = Number(el("A_customDiscountYen")?.value || 0) || 0;
+    el("A_customDiscountYen").value = String(v);
+    setConsultPatch("A", { customDiscountYen: v });
+    renderAll();
+  });
+  on("A_customDiscountNote", "change", ()=>{
+    setConsultPatch("A", { customDiscountNote: el("A_customDiscountNote")?.value || "" });
+    renderAll();
+  });
+
+  on("B_customDiscountYen", "change", ()=>{
+    let v = Number(el("B_customDiscountYen")?.value || 0) || 0;
+    el("B_customDiscountYen").value = String(v);
+    setConsultPatch("B", { customDiscountYen: v });
+    renderAll();
+  });
+  on("B_customDiscountNote", "change", ()=>{
+    setConsultPatch("B", { customDiscountNote: el("B_customDiscountNote")?.value || "" });
+    renderAll();
+  });
+}
+
+/* ===============================
+   Init
+   =============================== */
+function init(){
+  const { consult } = loadCtx();
+
+  setTheme(readTheme());
+  if (!consult.viewMode) saveConsultPatch({ viewMode:"single" });
+
+  if (!("A_talkEnabled" in consult)) setConsultPatch("A", { talkEnabled:false, talkKind:"short" });
+  if (!("B_talkEnabled" in consult)) setConsultPatch("B", { talkEnabled:false, talkKind:"short" });
+
+  bind();
+  bindSecretThemeToggle();
+  renderAll();
+}
+init();
   </script>
+
   <nav class="appSwitch" aria-label="アプリ切替">
-  <a href="ContractNavigator.html" title="契約ナビ">📋</a>
-  <a href="CarrierPalette.html" class="on" title="キャリアパレット">📱</a>
-  <a href="BBNavigator.html" title="BBナビ">🏠</a>
-</nav>
+    <a href="ContractNavigator.html" title="契約ナビ">📋</a>
+    <a href="CarrierPalette.html" class="on" title="キャリアパレット">📱</a>
+    <a href="BBNavigator.html" title="BBナビ">🏠</a>
+  </nav>
 </body>
 </html>
