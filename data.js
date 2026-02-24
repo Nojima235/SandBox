@@ -253,12 +253,6 @@ C.isDiscountEligible = function(carrier, kind, planKey, ctx){
     if (kind === "oyako"){
       return planKey === "tokutoku_gt5";
     }
-
-    // 家族割より光割優先
-    if (ctx){
-      const hik = !!ctx.discHikari;
-      if (kind === "family" && hik) return false;
-    }
   }
 
   //【Y!mobile】

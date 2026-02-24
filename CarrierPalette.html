@@ -38,7 +38,7 @@
   --track:#e9ecef;
 
   /* accent (共通) */
-  --accent:#16a34a;
+  --accent:#198754;
   --accent-weak: color-mix(in srgb, var(--accent) 18%, var(--panel));
   --accent-border: color-mix(in srgb, var(--accent) 45%, var(--border2));
   --accent-text: color-mix(in srgb, var(--accent) 60%, #0b2a14);
@@ -85,7 +85,7 @@ body[data-theme="dark"]{
 
   --track:#1d2738;
 
-  --accent:#22c55e;
+  --accent:#198754;
   --accent-weak: color-mix(in srgb, var(--accent) 16%, var(--panel));
   --accent-border: color-mix(in srgb, var(--accent) 45%, var(--border2));
   --accent-text: color-mix(in srgb, var(--accent) 70%, #cfeeda);
@@ -1279,7 +1279,6 @@ function syncPlanSelect(side, carrier, form, consult){
   setConsultPatch(side, { planKey: sel.value });
 }
 
-/* 割引の表示/非表示（data.jsの isDiscountEligible があれば尊重） */
 function applyDiscountEligibilityUI(side, carrier, consult){
   if (!window.PRICE_DB) return;
 
@@ -1344,9 +1343,17 @@ function applyDiscountEligibilityUI(side, carrier, consult){
     upYSb.classList.toggle("hidden", !ok);
     if (!ok && getConsult(consult, side, "optUpgradeYToSb", false)) setConsultPatch(side, { optUpgradeYToSb:false });
   }
+
+  const hikariOn = !!getConsult(consult, side, "discHikari", false);
+  if ((carrier === "uq" || carrier === "ymobile") && hikariOn){
+    const famBtn = el(side + "_family");
+    if (famBtn) famBtn.classList.add("hidden");
+    if (getConsult(consult, side, "discFamily", false)){
+      setConsultPatch(side, { discFamily:false });
+    }
+  }
 }
 
-/* 通話：UQコミコミ / Y! simple3_l / ahamo は short固定ON */
 function isUqKomikomi(carrier, consult, side){
   if (carrier !== "uq") return false;
   return getConsult(consult, side, "planKey", "") === "komikomi_value";
@@ -1354,9 +1361,6 @@ function isUqKomikomi(carrier, consult, side){
 function isYmobileSimple3L(carrier, consult, side){
   if (carrier !== "ymobile") return false;
   return getConsult(consult, side, "planKey", "") === "simple3_l";
-}
-function forceTalkOnShort(side){
-  setConsultPatch(side, { talkEnabled:true, talkKind:"short" });
 }
 
 /* 任意調整バッジ */
@@ -1656,14 +1660,19 @@ function renderAll(){
   updateCustomBadge("B", consult);
 
   // 通話の強制（UQコミコミ / Y! simple3_l / ahamo）
-  const forceTalkIfNeeded = (side, carrier) => {
-    const { consult } = loadCtx();
-    if (carrier === "ahamo") { forceTalkOnShort(side); return; }
-    if (isUqKomikomi(carrier, consult, side)) { forceTalkOnShort(side); return; }
-    if (isYmobileSimple3L(carrier, consult, side)) { forceTalkOnShort(side); return; }
+  const ensureTalkEnabledIfLocked = (side, carrier) => {
+  const { consult } = loadCtx();
+  const planKey = getConsult(consult, side, "planKey", "");
+  const locked = (carrier === "ahamo") || isUqKomikomi(carrier, consult, side) || isYmobileSimple3L(carrier, consult, side);
+    if (!locked) return;
+
+    const enabled = !!getConsult(consult, side, "talkEnabled", false);
+    if (!enabled){
+      setConsultPatch(side, { talkEnabled:true }); // kindは触らない
+    }
   };
-  forceTalkIfNeeded("A", a);
-  forceTalkIfNeeded("B", b);
+  ensureTalkEnabledIfLocked("A", a);
+  ensureTalkEnabledIfLocked("B", b);
 
   ({ form, consult } = loadCtx());
 
@@ -1705,14 +1714,12 @@ function renderAll(){
 
     const komi = (carrier === "uq" && planKey === "komikomi_value");
     const y3l  = (carrier === "ymobile" && planKey === "simple3_l");
-    const isAh = (carrier === "ahamo");
 
     let enabled = !!getConsult(consult, side, "talkEnabled", false);
     let kind    = getConsult(consult, side, "talkKind", "short");
 
-    if (komi || y3l || isAh){
+    if (komi || y3l || carrier === "ahamo"){
       enabled = true;
-      kind = "short";
     }
 
     const sw = el(side + "_talkSwitch");
@@ -1807,11 +1814,12 @@ function bind(){
   on("A_planSelect", "change", ()=>{
     const v = el("A_planSelect")?.value || "";
     setConsultPatch("A", { planKey:v });
-    // docomo MAX を選んだら U22 をON（ルール維持）
     const { consult } = loadCtx();
     const carrier = el("carrierA")?.value || consult.carrierA || "";
-    if (carrier === "docomo" && String(v||"").toLowerCase().includes("max")){
+    if (carrier === "docomo" && (v === "max_28" || v === "max_30")){
       setConsultPatch("A", { discU22:true });
+    } else if (v === "max_unlimited"){
+      setConsultPatch("A", { discU22:false });
     }
     renderAll();
   });
@@ -1820,8 +1828,10 @@ function bind(){
     setConsultPatch("B", { planKey:v });
     const { consult } = loadCtx();
     const carrier = el("carrierB")?.value || consult.carrierB || "";
-    if (carrier === "docomo" && String(v||"").toLowerCase().includes("max")){
+    if (carrier === "docomo" && (v === "max_28" || v === "max_30")){
       setConsultPatch("B", { discU22:true });
+    } else if (v === "max_unlimited"){
+      setConsultPatch("B", { discU22:false });
     }
     renderAll();
   });
@@ -1843,26 +1853,34 @@ function bind(){
       ? (el("carrierA")?.value || consult.carrierA || "")
       : (el("carrierB")?.value || consult.carrierB || "");
 
-    // UQコミコミ / Y! simple3_l / ahamo は short 固定
     if (carrier === "ahamo" || isUqKomikomi(carrier, consult, side) || isYmobileSimple3L(carrier, consult, side)){
-      forceTalkOnShort(side);
+      setConsultPatch(side, { talkEnabled:true, talkKind: kind });
       renderAll();
       return;
     }
 
-    setConsultPatch(side, { talkEnabled:true, talkKind: kind });
-    renderAll();
+  setConsultPatch(side, { talkEnabled:true, talkKind: kind });
+  renderAll();
   };
 
   click("A_talkSwitch", () => {
     const { consult } = loadCtx();
     const carrier = el("carrierA")?.value || consult.carrierA || "";
-    const enabled = !!getConsult(consult,"A","talkEnabled",false);
-    if (carrier === "ahamo" || isUqKomikomi(carrier, consult, "A") || isYmobileSimple3L(carrier, consult, "A")){
-      forceTalkOnShort("A");
-    } else {
-      setConsultPatch("A", { talkEnabled: !enabled });
+    const planKey = getConsult(consult, "A", "planKey", "");
+
+    const lockOn =
+      (carrier === "ahamo") ||
+      (carrier === "uq" && planKey === "komikomi_value") ||
+      (carrier === "ymobile" && planKey === "simple3_l");
+
+    if (lockOn){
+      setConsultPatch("A", { talkEnabled:true });
+      renderAll();
+      return;
     }
+
+    const enabled = !!getConsult(consult,"A","talkEnabled",false);
+    setConsultPatch("A", { talkEnabled: !enabled });
     renderAll();
   });
   click("A_kind_short",     () => setTalkKind("A","short"));
@@ -1873,12 +1891,21 @@ function bind(){
   click("B_talkSwitch", () => {
     const { consult } = loadCtx();
     const carrier = el("carrierB")?.value || consult.carrierB || "";
-    const enabled = !!getConsult(consult,"B","talkEnabled",false);
-    if (carrier === "ahamo" || isUqKomikomi(carrier, consult, "B") || isYmobileSimple3L(carrier, consult, "B")){
-      forceTalkOnShort("B");
-    } else {
-      setConsultPatch("B", { talkEnabled: !enabled });
+    const planKey = getConsult(consult, "B", "planKey", "");
+
+    const lockOn =
+      (carrier === "ahamo") ||
+      (carrier === "uq" && planKey === "komikomi_value") ||
+      (carrier === "ymobile" && planKey === "simple3_l");
+
+    if (lockOn){
+      setConsultPatch("B", { talkEnabled:true });
+      renderAll();
+      return;
     }
+
+    const enabled = !!getConsult(consult,"B","talkEnabled",false);
+    setConsultPatch("B", { talkEnabled: !enabled });
     renderAll();
   });
   click("B_kind_short",     () => setTalkKind("B","short"));
