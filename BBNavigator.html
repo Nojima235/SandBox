@@ -943,7 +943,7 @@ function render(){
       .filter(k => k !== fromKey)
       .forEach(key=>{
         const c = document.createElement("div");
-        c.className = "typeCard" + (key === toKey ? " on" : "");
+        c.className = "typeCard"                                                                                                                                                                                                   (key === toKey ? " on" : "");
         const img = document.createElement("img");
         img.src = BB_ICON[key] || "";
         img.alt = BB_LABEL[key] || key;

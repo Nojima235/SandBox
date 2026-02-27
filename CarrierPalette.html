@@ -399,14 +399,17 @@ body[data-mode="compare"] .modeTrack{
 }
 
 .pill.disc{
-  border-color:var(--accent-border);
-  background:var(--accent-weak);
-  color:var(--accent-text);
+  border-color: color-mix(in srgb, var(--border2) 92%, var(--text));
+  background: color-mix(in srgb, var(--panel) 88%, var(--bg));
+  color: color-mix(in srgb, var(--text) 72%, var(--muted));
+  opacity: 1.;
 }
+
 .pill.disc.on{
-  background:var(--accent);
-  border-color:var(--accent);
+  background: var(--accent);
+  border-color: var(--accent);
   color:#fff;
+  opacity: 1;
 }
 
 .pillSelectWrap{ position:relative; display:inline-flex; align-items:center; }
@@ -592,9 +595,7 @@ details.compact summary{
 
   <div class="wrap">
     <div class="card">
-      <div class="divider"></div>
       <div class="sectionTitle"><b></b></div>
-
       <div class="carrierGrid" id="carrierGrid">
         <div class="resultCard">
           <select id="carrierA" class="hidden">
@@ -634,11 +635,9 @@ details.compact summary{
           </div>
 
           <div style="margin-top:8px;">
-            <label>プラン</label>
+            <div class="mini" style="margin:0;font-weight:1000;">プラン</div>
             <select id="A_planSelect"></select>
           </div>
-
-          <div class="divider" style="margin:10px 0;"></div>
           <div class="talkBox">
             <div class="talkBoxTitle">
               <span>通話OP</span>
@@ -725,11 +724,9 @@ details.compact summary{
           </div>
 
           <div style="margin-top:8px;">
-            <label>プラン</label>
+            <div class="mini" style="margin:0;font-weight:1000;">プラン</div>
             <select id="B_planSelect"></select>
           </div>
-
-          <div class="divider" style="margin:10px 0;"></div>
           <div class="talkBox">
             <div class="talkBoxTitle">
               <span>通話OP</span>
@@ -836,7 +833,7 @@ details.compact summary{
 
       <details class="compact hidden" id="deltaBox">
         <summary>
-          <span class="badgeMini" id="deltaBadge">差額を表示</span>
+          <div class="mini" style="margin:0;font-weight:1000;">差額を表示</div>
         </summary>
         <div class="delta">
           <div><b id="deltaText">差額：—</b></div>
@@ -1543,13 +1540,13 @@ function calcMonthly(carrier, form, consult, side){
   if (talkEnabled){
     if (talkKind === "short" && includesCallShort){
       const m = includesMinutes ? `${includesMinutes}分` : "短時間";
-      lines.push({ k:`短時間かけ放題（内包${m}）`, v: 0 });
+      lines.push({ k:`通話OP（短時間）`, v: 0 });
     } else if (talkYen !== 0){
       const name =
-        talkKind === "short" ? "短時間以内" :
-        talkKind === "unlimited" ? "かけ放題" :
-        talkKind === "min60" ? "1ヶ月60分" :
-        talkKind === "senior" ? "60歳以上 24時間" : "通話OP";
+        talkKind === "short" ? "通話OP（短時間）" :
+        talkKind === "unlimited" ? "通話OP（かけ放題）" :
+        talkKind === "min60" ? "通話OP（1ヶ月60分）" :
+        talkKind === "senior" ? "通話OP（かけ放題：60歳以上）" : "通話OP";
       lines.push({ k:name, v: talkYen });
     }
   }

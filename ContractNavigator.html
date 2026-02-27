@@ -277,74 +277,74 @@ select.pop{
     }
 
     /* ===== 回線1：紫 ===== */
-    #linebar .step:nth-child(1),
-    #linebarMini .step:nth-child(1){
-      background:#f3f1fb;
-      border:1px solid #d9d3f2;
-      color:#4a3f7a;
-    }
-    #linebar .step:nth-child(1).current,
-    #linebarMini .step:nth-child(1).current{
-      background:#e6defa;
-      border:2px solid #7a5ce6;
-      color:#2f1c6b;
-    }
+#linebar .step:nth-child(1),
+#linebarMini .step:nth-child(1){
+  background:#f3f1fb !important;
+  border:1px solid #d9d3f2 !important;
+  color:#4a3f7a !important;
+}
+#linebar .step:nth-child(1).current,
+#linebarMini .step:nth-child(1).current{
+  background:#e6defa !important;
+  border:2px solid #7a5ce6 !important;
+  color:#2f1c6b !important;
+}
 
-    /* ===== 回線2：オレンジ ===== */
-    #linebar .step:nth-child(2),
-    #linebarMini .step:nth-child(2){
-      background:#fff3e6;
-      border:1px solid #ffd7b5;
-      color:#8a4b00;
-    }
-    #linebar .step:nth-child(2).current,
-    #linebarMini .step:nth-child(2).current{
-      background:#ffe1c2;
-      border:2px solid #ff9800;
-      color:#5a2f00;
-    }
+/* ===== 回線2：オレンジ ===== */
+#linebar .step:nth-child(2),
+#linebarMini .step:nth-child(2){
+  background:#fff3e6 !important;
+  border:1px solid #ffd7b5 !important;
+  color:#8a4b00 !important;
+}
+#linebar .step:nth-child(2).current,
+#linebarMini .step:nth-child(2).current{
+  background:#ffe1c2 !important;
+  border:2px solid #ff9800 !important;
+  color:#5a2f00 !important;
+}
 
-    /* ===== 回線3：ピンク ===== */
-    #linebar .step:nth-child(3),
-    #linebarMini .step:nth-child(3){
-      background:#fff0f6;
-      border:1px solid #f5c2d8;
-      color:#7a294e;
-    }
-    #linebar .step:nth-child(3).current,
-    #linebarMini .step:nth-child(3).current{
-      background:#ffd6e8;
-      border:2px solid #e91e63;
-      color:#4a102b;
-    }
+/* ===== 回線3：ピンク ===== */
+#linebar .step:nth-child(3),
+#linebarMini .step:nth-child(3){
+  background:#fff0f6 !important;
+  border:1px solid #f5c2d8 !important;
+  color:#7a294e !important;
+}
+#linebar .step:nth-child(3).current,
+#linebarMini .step:nth-child(3).current{
+  background:#ffd6e8 !important;
+  border:2px solid #e91e63 !important;
+  color:#4a102b !important;
+}
 
-    /* ===== 回線4：ブラウン ===== */
-    #linebar .step:nth-child(4),
-    #linebarMini .step:nth-child(4){
-      background:#f6efe9;
-      border:1px solid #d8c7b7;
-      color:#5c3b1e;
-    }
-    #linebar .step:nth-child(4).current,
-    #linebarMini .step:nth-child(4).current{
-      background:#eadfd5;
-      border:2px solid #8d6e63;
-      color:#3e2614;
-    }
+/* ===== 回線4：ブラウン ===== */
+#linebar .step:nth-child(4),
+#linebarMini .step:nth-child(4){
+  background:#f6efe9 !important;
+  border:1px solid #d8c7b7 !important;
+  color:#5c3b1e !important;
+}
+#linebar .step:nth-child(4).current,
+#linebarMini .step:nth-child(4).current{
+  background:#eadfd5 !important;
+  border:2px solid #8d6e63 !important;
+  color:#3e2614 !important;
+}
 
-    /* ===== 回線5：ダークグレー ===== */
-    #linebar .step:nth-child(5),
-    #linebarMini .step:nth-child(5){
-      background:#f1f1f1;
-      border:1px solid #cfcfcf;
-      color:#333;
-    }
-    #linebar .step:nth-child(5).current,
-    #linebarMini .step:nth-child(5).current{
-      background:#e0e0e0;
-      border:2px solid #555;
-      color:#111;
-    }
+/* ===== 回線5：ダークグレー ===== */
+#linebar .step:nth-child(5),
+#linebarMini .step:nth-child(5){
+  background:#f1f1f1 !important;
+  border:1px solid #cfcfcf !important;
+  color:#333 !important;
+}
+#linebar .step:nth-child(5).current,
+#linebarMini .step:nth-child(5).current{
+  background:#e0e0e0 !important;
+  border:2px solid #555 !important;
+  color:#111 !important;
+}
 
     /* ===== 現在選択回線の強調 ===== */
     #linebar .step.current::before,
@@ -352,6 +352,15 @@ select.pop{
       content:"▶";
       margin-right:6px;
     }
+
+    select:required:invalid{
+  border-color: rgba(255,120,120,.85) !important;
+  box-shadow: 0 0 0 4px rgba(255,120,120,.18) !important;
+}
+
+select:required:invalid{
+  background: rgba(255,120,120,.06) !important;
+}
 
 .appSwitch{
   position:fixed;
@@ -385,6 +394,85 @@ select.pop{
 
 .appSwitch a:active{
   transform: translateY(2px) scale(0.97);
+}
+
+/* ===== Stamp Rally Checklist ===== */
+.stampList{
+  position: relative;
+  margin-top: 8px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  padding-left: 10px;
+}
+
+/* 縦ライン */
+.stampList::before{
+  content:"";
+  position:absolute;
+  left: 18px;
+  top: 6px;
+  bottom: 6px;
+  width: 3px;
+  border-radius: 999px;
+  background: rgba(157,182,255,.55);
+}
+
+/* 1アイテム */
+.stampItem{
+  position: relative;
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px 12px 12px 12px;
+  box-shadow: var(--shadow);
+}
+
+/* 丸ノード（チェック状況で変化） */
+.stampDot{
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  margin-top: 2px;
+
+  border: 2px solid rgba(157,182,255,.9);
+  background: var(--panel);
+  box-shadow: 0 0 0 4px rgba(157,182,255,.18);
+
+  flex: 0 0 auto;
+  position: relative;
+  left: -2px;
+}
+
+/* 完了したらドットを塗る */
+.stampItem.isDone .stampDot{
+  background: rgba(157,182,255,.95);
+  border-color: rgba(157,182,255,.95);
+}
+
+/* チェックボックスは“スタンプ”として少し大きく */
+.stampItem input[type="checkbox"]{
+  transform: scale(1.25);
+  margin-top: 1px;
+}
+
+/* タイトル・説明 */
+.stampText .ctitle{
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text);
+}
+.stampText .csub{
+  font-size: 13px;
+  color: var(--text);
+  color: var(--muted);
+  margin-top: 2px;
+  opacity: .78;
+  line-height: 1.35;
 }
 
 :root{
@@ -606,7 +694,27 @@ html[data-theme="dark"] .red{
   user-select:none;
 }
 .cardHead:active{ transform: translateY(1px); }
+.cardHead{
+  border-radius: 12px;
+  padding: 10px 10px;
+  transition: background 160ms ease, box-shadow 160ms ease, transform 120ms ease;
+}
 
+/* “タップして開く” ヒント（閉じてる時だけ出す） */
+#hearCard.isClosed .cardHead::after{
+  content:"タップして開く";
+  margin-left:auto;
+  font-size:12px;
+  font-weight:900;
+  color: var(--muted);
+  opacity:.85;
+}
+
+/* シェブロンは回転をもう少し分かりやすく */
+#hearCard.isClosed .chev{
+  transform: rotate(-90deg);
+  opacity:.75;
+}
 .chev{
   font-size:18px;
   font-weight:900;
@@ -625,6 +733,114 @@ html[data-theme="dark"] .red{
   transform: rotate(-90deg);
   opacity:.55;
 }
+
+html[data-theme="dark"] #linebar .step:nth-child(1),
+html[data-theme="dark"] #linebarMini .step:nth-child(1){
+  background: rgba(155,134,255,.14) !important;
+  border: 1px solid rgba(155,134,255,.28) !important;
+  color: #e9e3ff !important;
+}
+html[data-theme="dark"] #linebar .step:nth-child(1).current,
+html[data-theme="dark"] #linebarMini .step:nth-child(1).current{
+  background: rgba(155,134,255,.22) !important;
+  border: 2px solid #9b86ff !important;
+  color:#ffffff !important;
+}
+
+html[data-theme="dark"] #linebar .step:nth-child(2),
+html[data-theme="dark"] #linebarMini .step:nth-child(2){
+  background: rgba(255,177,74,.14) !important;
+  border: 1px solid rgba(255,177,74,.26) !important;
+  color: #ffe8cc !important;
+}
+html[data-theme="dark"] #linebar .step:nth-child(2).current,
+html[data-theme="dark"] #linebarMini .step:nth-child(2).current{
+  background: rgba(255,177,74,.22) !important;
+  border: 2px solid #ffb14a !important;
+  color:#ffffff !important;
+}
+
+:root{
+  --stampDot: 18px;      /* ドット直径 */
+  --stampDotBorder: 2px; /* ドット枠 */
+  --stampGap: 12px;      /* ドットと本文の隙間 */
+  --stampPad: 12px;      /* カードの左右padding（stampItemと連動） */
+}
+
+/* リストは余白でズラさない（←ここ重要） */
+.stampList{
+  position: relative;
+  margin-top: 8px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  padding-left: 0; /* ← 前の padding-left は消す */
+}
+
+/* 縦ラインは「カード左padding + ドット中心」に固定 */
+.stampList::before{
+  content:"";
+  position:absolute;
+  left: calc(var(--stampPad) + (var(--stampDot) / 2));
+  width: px;
+  border-radius: 999px;
+  background: var(--lineRail, rgba(157,182,255,.55));
+  opacity: .95;
+  top: var(--stampPad);
+  bottom: var(--stampPad);
+}
+
+/* アイテム：flexやgapじゃなく、2列グリッドでドット位置を固定 */
+.stampItem{
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--stampDot) 1fr; /* ← ドット列固定 */
+  column-gap: var(--stampGap);
+  align-items: center;
+
+  width:100%;
+  text-align:left;
+  cursor:pointer;
+
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: var(--stampPad);
+  box-shadow: var(--shadow);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.stampItem:active{ transform: translateY(1px); }
+
+/* ドット（列の先頭にピタッと置かれる） */
+.stampDot{
+  width: var(--stampDot);
+  height: var(--stampDot);
+  border-radius: 999px;
+  margin-top: 0px;
+
+  border: var(--stampDotBorder) solid var(--lineAccent, rgba(157,182,255,.9));
+  background: var(--panel);
+  box-shadow: 0 0 0 4px var(--lineGlow, rgba(157,182,255,.18));
+}
+
+/* 完了 */
+.stampItem.isDone .stampDot{
+  background: var(--lineAccent, rgba(157,182,255,.95));
+  border-color: var(--lineAccent, rgba(157,182,255,.95));
+}
+
+/* テキスト */
+.stampText .ctitle{
+  font-size: 15px;
+  font-weight: 900;
+}
+.stampText .csub{
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 2px;
+  line-height: 1.35;
+}
   </style>
   <script src="data.js"></script>
 </head>
@@ -635,17 +851,7 @@ html[data-theme="dark"] .red{
   <button id="helpBtn" class="helpBtn">i</button>
   <div class="devBadge">⚠ 開発中 ⚠</div>
 </header>
-
 <div class="wrap">
-  <div class="card" style="margin-top:0;">
-  <div class="state">📱回線</div>
-  <div class="row" style="gap:8px; align-items:center;">
-    <div class="stepbar" id="linebar" style="margin-top:0;"></div>
-    <button class="btn2" id="addLineBtn">＋回線追加</button>
-    <button class="btn2" id="removeLineBtn">－削除</button>
-  </div>
-</div>
-
 <div class="card" id="hearCard">
   <div class="cardHead" id="hearToggle" role="button" tabindex="0" aria-expanded="true">
     <div class="state">📋ヒアリングシート</div>
@@ -653,6 +859,12 @@ html[data-theme="dark"] .red{
   </div>
 
   <div class="hearBody" id="hearBody">
+
+<div class="row" style="gap:8px; align-items:center;">
+  <div class="stepbar" id="linebar" style="margin-top:0;"></div>
+  <button class="btn2" id="addLineBtn">＋回線追加</button>
+  <button class="btn2" id="removeLineBtn">－削除</button>
+</div>
 
   <div class="divider"></div>
   <div class="row" style="gap:8px;">
@@ -662,7 +874,7 @@ html[data-theme="dark"] .red{
   <div class="grid">
     <div>
       <label>契約タイプ</label>
-      <select id="contractType">
+      <select id="contractType" required>
         <option value="" selected disabled>選択してください</option>
         <option value="mnpDevice">MNP（端末あり）</option>
         <option value="mnpSim">MNP（SIMのみ）</option>
@@ -673,7 +885,7 @@ html[data-theme="dark"] .red{
 
     <div>
       <label>契約者様（名義）</label>
-      <select id="contractHolder">
+      <select id="contractHolder" required>
         <option value="self" selected>ご本人</option>
         <option value="spouse">配偶者</option>
         <option value="child">お子様</option>
@@ -685,7 +897,7 @@ html[data-theme="dark"] .red{
     <div>
       <label>現在お使いのキャリア</label>
       <div class="carrierRow">
-        <select id="carrier" class="carrierSel">
+        <select id="carrier" class="carrierSel" required>
           <option value="" selected disabled>選択してください</option>
           <option value="docomo">docomo</option>
           <option value="ahamo">ahamo</option>
@@ -711,7 +923,7 @@ html[data-theme="dark"] .red{
 
     <div>
       <label>月のデータ使用量（目安）</label>
-      <select id="dataUsage">
+      <select id="dataUsage" required>
         <option value="" selected disabled>選択してください</option>
         <option value="lte5">〜5GB</option>
         <option value="lte30">〜30GB</option>
@@ -721,7 +933,7 @@ html[data-theme="dark"] .red{
 
     <div>
       <label>ご自宅のインターネット回線</label>
-      <select id="homeNetType">
+      <select id="homeNetType" required>
         <option value="" selected disabled>選択してください</option>
         <option value="fletshikari">フレッツ光</option>
         <option value="nurohikari">NURO光</option>
@@ -806,7 +1018,7 @@ html[data-theme="dark"] .red{
     <div class="donebox hidden" id="s2Box">
   <div id="s2LineSummary" class="muted"></div>
 
-  <b>🧾 端末 / データ移行 / 下取り</b>
+  <b>端末 / データ移行 / 下取り</b>
   <div class="grid" style="margin-top:10px;">
     <div id="s2ToCarrierWrap">
       <label>乗り換え先</label>
@@ -869,41 +1081,40 @@ html[data-theme="dark"] .red{
       <div id="nextAction" style="margin-top:6px;"></div>
     </div>
 
-<!-- MNP(SIMのみ）契約 チェックリスト -->
 <div class="donebox hidden" id="s3SimChecklist">
-  <div class="checklist" style="margin-top:8px;">
+  <div class="stampList" id="s3SimStamp">
 
-    <div class="checkitem">
-      <input type="checkbox" id="chk_s3sim_mnp" />
-      <div>
+    <button type="button" class="stampItem" data-key="chk_s3sim_mnp">
+      <div class="stampDot"></div>
+      <div class="stampText">
         <div class="ctitle">MNP予約番号の取得</div>
         <div class="csub">取得済みならOK　複雑な場合は電話で</div>
       </div>
-    </div>
+    </button>
 
-    <div class="checkitem">
-      <input type="checkbox" id="chk_s3sim_docs" />
-      <div>
+    <button type="button" class="stampItem" data-key="chk_s3sim_docs">
+      <div class="stampDot"></div>
+      <div class="stampText">
         <div class="ctitle">ご本人確認書類・カードのお預かり</div>
         <div class="csub">契約情報入力のため</div>
       </div>
-    </div>
+    </button>
 
-    <div class="checkitem">
-      <input type="checkbox" id="chk_s3sim_input" />
-      <div>
+    <button type="button" class="stampItem" data-key="chk_s3sim_input">
+      <div class="stampDot"></div>
+      <div class="stampText">
         <div class="ctitle">契約情報を入力</div>
         <div class="csub">氏名や生年月日などの入力ミスに注意</div>
       </div>
-    </div>
+    </button>
 
-    <div class="checkitem">
-      <input type="checkbox" id="chk_s3sim_notice" />
-      <div>
+    <button type="button" class="stampItem" data-key="chk_s3sim_notice">
+      <div class="stampDot"></div>
+      <div class="stampText">
         <div class="ctitle">重要事項説明動画のご案内</div>
         <div class="csub">契約情報入力中にご覧いただくとスムーズ</div>
       </div>
-    </div>
+    </button>
 
   </div>
 </div>
@@ -1737,8 +1948,11 @@ function requiredDoneIds(curCtx){
   return ids;
 }
 function isS3SimChecklistComplete(curCtx){
+  const shared = ensureLines();
+  const line = shared.lines[activeLine];
+  const s3 = line.s3 || {};
   const ids = ["chk_s3sim_mnp","chk_s3sim_docs","chk_s3sim_input","chk_s3sim_notice"];
-  return ids.every(id => el(id) && el(id).checked);
+  return ids.every(k => !!s3[k]);
 }
 function isS3NChecklistComplete(curCtx){
   const ids = ["chk_s3n_apply","chk_s3n_prepare","chk_s3n_input","chk_s3n_video","chk_s3n_result"];
@@ -1749,11 +1963,60 @@ function isDoneChecklistComplete(curCtx){
   const ids = requiredDoneIds(curCtx);
   return ids.every(id => el(id) && el(id).checked);
 }
+function applyStampUI(containerId, storeName){
+  const box = document.getElementById(containerId);
+  if (!box) return;
+
+  const shared = ensureLines();
+  const line = shared.lines[activeLine];
+  line[storeName] = line[storeName] || {};
+
+  const items = box.querySelectorAll(".stampItem[data-key]");
+
+  // 初期反映
+  items.forEach(btn=>{
+    const key = btn.getAttribute("data-key");
+    const done = !!line[storeName][key];
+    btn.classList.toggle("isDone", done);
+    btn.setAttribute("aria-pressed", done ? "true" : "false");
+  });
+
+  // クリックでトグル
+  items.forEach(btn=>{
+    btn.onclick = () => {
+      const key = btn.getAttribute("data-key");
+      const next = !btn.classList.contains("isDone");
+      btn.classList.toggle("isDone", next);
+      btn.setAttribute("aria-pressed", next ? "true" : "false");
+
+      // 保存
+      line[storeName][key] = next;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(shared));
+
+      // “次へ”の活性制御を更新（今のrender仕様に合わせる）
+      if (steps[idx] && steps[idx].id === "S3" && ctx && ctx.contractType === "mnpSim"){
+        render();
+      }
+      if (steps[idx] && steps[idx].id === "S3N"){
+        render();
+      }
+      if (steps[idx] && steps[idx].id === "S4"){
+        render();
+      }
+    };
+  });
+}
 
 /* =========================
    Render
    ========================= */
 function render(){
+  if (el("finishBox")) el("finishBox").classList.add("hidden");
+  if (el("multiFinishBox")) el("multiFinishBox").classList.add("hidden");
+
+  el("s2Box")?.classList.add("hidden");
+  el("s2PointAlert")?.classList.add("hidden");
+
   if (el("finishBox")) el("finishBox").classList.add("hidden");
   if (el("multiFinishBox")) el("multiFinishBox").classList.add("hidden");
   const bar = el("stepbar");
@@ -1790,8 +2053,9 @@ function render(){
   });
 
   const step = steps[idx];
-  const navRow = el("navRow");
-  if (navRow) navRow.classList.toggle("hiddenRow", step.id === "S2");
+   if (step.id === "S2"){
+    setHearFold(true);
+  }
   el("stepTitle").textContent = step.name;
 
 
@@ -1957,6 +2221,7 @@ setVal("userRelation", data.userRelation ?? "self");
 
   syncNewDeviceLocks();
   updateStartEnabled();
+  refreshSelectVisual();
 }
 
 /* =========================
@@ -2046,6 +2311,35 @@ function gotoLine(i){
   syncFromStorage();
 }
 
+function applyLineAccent(){
+  const theme = document.documentElement.getAttribute("data-theme") || getSystemTheme();
+
+  // 回線1..5
+  const light = [
+    { accent:"#7a5ce6", rail:"rgba(122,92,230,.35)", glow:"rgba(122,92,230,.18)" }, // purple
+    { accent:"#ff9800", rail:"rgba(255,152,0,.35)",  glow:"rgba(255,152,0,.18)"  }, // orange
+    { accent:"#e91e63", rail:"rgba(233,30,99,.35)",   glow:"rgba(233,30,99,.18)"   }, // pink
+    { accent:"#8d6e63", rail:"rgba(141,110,99,.35)",  glow:"rgba(141,110,99,.18)"  }, // brown
+    { accent:"#555555", rail:"rgba(85,85,85,.35)",    glow:"rgba(85,85,85,.18)"    }, // gray
+  ];
+
+  // ダークでは「塗り」を少し深く＆線を見やすく
+  const dark = [
+    { accent:"#9b86ff", rail:"rgba(155,134,255,.35)", glow:"rgba(155,134,255,.20)" },
+    { accent:"#ffb14a", rail:"rgba(255,177,74,.32)",  glow:"rgba(255,177,74,.18)"  },
+    { accent:"#ff5fa2", rail:"rgba(255,95,162,.30)",  glow:"rgba(255,95,162,.18)"  },
+    { accent:"#c5a28b", rail:"rgba(197,162,139,.28)", glow:"rgba(197,162,139,.16)" },
+    { accent:"#bdbdbd", rail:"rgba(189,189,189,.22)", glow:"rgba(189,189,189,.12)" },
+  ];
+
+  const pal = (theme === "dark") ? dark : light;
+  const p = pal[Math.min(activeLine, pal.length-1)];
+
+  document.documentElement.style.setProperty("--lineAccent", p.accent);
+  document.documentElement.style.setProperty("--lineRail",   p.rail);
+  document.documentElement.style.setProperty("--lineGlow",   p.glow);
+}
+
 /* =========================
    Multi line bar
    ========================= */
@@ -2080,6 +2374,7 @@ function renderLinebar(){
   }
   renderLinebarMini();
   updateContractHolderOptions();
+  applyLineAccent();
 }
 
 function renderLinebarMini(){
@@ -2097,6 +2392,7 @@ function renderLinebarMini(){
     d.onclick = () => gotoLine(i);
     bar.appendChild(d);
   });
+  applyLineAccent();
 }
 
 function decideS3StartId(curCtx){
@@ -2146,6 +2442,13 @@ window.addEventListener("DOMContentLoaded", ()=>{
     }
   });
 });
+
+function refreshSelectVisual(){
+  document.querySelectorAll("select").forEach(node=>{
+    const empty = ((node.value || "").trim() === "");
+    node.classList.toggle("isSelected", !empty);
+  });
+}
 
 /* =========================
    Sync from storage
@@ -2203,6 +2506,7 @@ if (hasConsultDecision){
   renderLinebar();
   updateContractHolderOptions();
   updateS2UI();
+  applyStampUI("s3SimStamp", "s3");
 }
 
 const watchIds = [
@@ -2415,6 +2719,7 @@ syncNewDeviceLocks();
 updateStartEnabled();
 syncFromStorage();
 </script>
+</div>
 <nav class="appSwitch" aria-label="アプリ切替">
   <a href="ContractNavigator.html" class="on" title="契約ナビ">📋</a>
   <a href="CarrierPalette.html" title="キャリアパレット">📱</a>
