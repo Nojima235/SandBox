@@ -11,9 +11,9 @@
       items: {
         mini_4:  { label:"ドコモ mini（4GB）",  price: 2750 },
         mini_10: { label: "ドコモ mini（10GB）", price: 3850 },
-        max_28: { label: "【U22】ドコモ MAX(28GB)", price: 5698 },
-        max_30:     { label:"【U22】ドコモ MAX(30GB)", price: 6798 },
-        max_unlimited:     { label:"ドコモ MAX(無制限)", price: 8448 }
+        max_28: { label: "【U22】ドコモ MAX（28GB）", price: 5698 },
+        max_30:     { label:"【U22】ドコモ MAX（30GB）", price: 6798 },
+        max_unlimited:     { label:"ドコモ MAX（無制限）", price: 8448 }
       }
     },
 
@@ -21,14 +21,14 @@
       map: { lte5:"30gb", lte30:"30gb", unlimited:"110gb" },
       items:{
         "30gb":  { label:"ahamo（30GB）",  price: 2970, includes:{ callShort:true } },
-        "110gb": { label:"ahamo（110GB）", price: 4950, includes:{ callShort:true } }
+        "110gb": { label:"ahamo大盛り（110GB）", price: 4950, includes:{ callShort:true } }
       }
     },
 
     au: {
       map: { lte5:null, lte30:null, unlimited:"value_link" },
       items:{
-        value_link: { label:"auバリューリンクプラン", price: 8008 }
+        value_link: { label:"auバリューリンクプラン（無制限）", price: 8008 }
       }
     },
 
@@ -38,7 +38,7 @@
         tokutoku_le5: { label:"トクトクプラン2（5GB）", price: 2948 },
         tokutoku_gt5: { label:"トクトクプラン2（30GB）", price: 4048 },
         komikomi_value: {
-          label: "コミコミプランバリュー(35GB)",
+          label: "コミコミプランバリュー（35GB）",
           price: 3828,
           includes:{ callShort:true, callShortMinutes:10 }
         }
@@ -82,7 +82,7 @@
       senior:   { label:"24時間かけ放題(60歳以上)", price: 880 }
     },
     softbank: {
-      short:    { label:"準定額オプション＋", price: 880 },     // 公式FAQで 880/1980 が確認できる
+      short:    { label:"準定額オプション＋", price: 880 },
       unlimited:{ label:"定額オプション＋",  price: 1980 }
     },
     ymobile: {
