@@ -767,6 +767,12 @@ html[data-theme="dark"] #linebarMini .step:nth-child(2).current{
   transform:scale(0.99);
 }
 
+select.isInvalid{
+  border-color: rgba(255,120,120,.85) !important;
+  box-shadow: 0 0 0 4px rgba(255,120,120,.18) !important;
+  background: rgba(255,120,120,.06) !important;
+}
+
 .lineCards{
   display:flex;
   flex-direction:column;
@@ -834,6 +840,37 @@ html[data-theme="dark"] #linebarMini .step:nth-child(2).current{
   display:flex;
   gap:6px;
   flex-wrap:wrap;
+}
+
+#contractTypeIcons.isInvalid{
+  border: 2px solid rgba(255,120,120,.9);
+  border-radius: 16px;
+  padding: 10px;
+  background: rgba(255,120,120,.06);
+  box-shadow: 0 0 0 5px rgba(255,120,120,.12);
+}
+
+#contractTypeIcons.isInvalid .iconBtn{
+  border-color: rgba(255,120,120,.5) !important;
+}
+
+#contractTypeIcons .iconBtn{
+  transition: transform 140ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+
+#contractTypeIcons.isInvalid .iconBtn:not(.isOn){
+  animation: ctPulse 1.2s ease-in-out infinite;
+}
+
+#contractTypeIcons{
+  border:2px solid transparent;
+  border-radius:16px;
+  padding:10px;
+}
+
+@keyframes ctPulse{
+  0%,100%{ transform: scale(1); }
+  50%{ transform: scale(1.02); }
 }
 
 .miniTag{
@@ -920,7 +957,7 @@ html[data-theme="dark"] .lineEditTag{
   .iconChoice{ grid-template-columns: repeat(2, 1fr); }
 }
 .iconBtn{
-  border:1px solid var(--border2);
+  border:2px solid var(--border2);
   background: var(--panel);
   color: var(--text);
   border-radius:14px;
@@ -930,15 +967,16 @@ html[data-theme="dark"] .lineEditTag{
   user-select:none;
   -webkit-tap-highlight-color: transparent;
   box-shadow: var(--shadow);
-  transition: transform 120ms ease, box-shadow 160ms ease, border-color 160ms ease;
+  transition: transform 120ms ease, box-shadow 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+.iconBtn.isOn{
+  border-color: var(--accentBd);
+  box-shadow: 0 0 0 4px var(--focus);
 }
 .iconBtn:active{ transform: translateY(1px) scale(0.99); }
 .iconBtn .ico{ font-size:26px; line-height:1; display:block; }
 .iconBtn .lbl{ font-size:13px; font-weight:900; margin-top:6px; opacity:.92; }
-.iconBtn.isOn{
-  border:2px solid var(--accentBd);
-  box-shadow: 0 0 0 4px var(--focus);
-}
 
 /* ===== Survey bar (data/talk usage) ===== */
 .surveyWrap{
@@ -1250,7 +1288,7 @@ html[data-theme="dark"] .lineEditTag{
         <div>
           <label>月のデータ使用量（目安）</label>
 
-          <select id="dataUsage" required class="hiddenRow">
+          <select id="dataUsage" class="hiddenRow">
             <option value="" selected disabled>選択してください</option>
             <option value="lte5">〜5GB</option>
             <option value="lte30">〜30GB</option>
@@ -1288,53 +1326,6 @@ html[data-theme="dark"] .lineEditTag{
         </div>
       </div>
 
-      <div class="checklist">
-        <label>契約前チェック</label>
-
-        <div class="checkitem">
-          <input type="checkbox" id="chk_id_confirmed" />
-          <div>
-            <div class="ctitle">【契約者】の確認書類をチェックしました</div>
-            <div class="csub">運転免許証／マイナンバーカード／在留カード+外国発行パスポート</div>
-          </div>
-        </div>
-
-        <div class="checkitem hidden" id="userIdBlock">
-          <input type="checkbox" id="chk_user_id_confirmed" />
-          <div>
-            <div class="ctitle">【利用者】の確認書類をチェックしました</div>
-            <div class="csub">マイナンバーカード／学生証など</div>
-          </div>
-        </div>
-
-        <div class="checkitem">
-          <input type="checkbox" id="chk_homeNet_asked" />
-          <div>
-            <div class="ctitle">キャリアおよび光回線の利用年数を確認しました</div>
-            <div class="csub">キャリアは半年，光回線は1年未満の場合，施策が適用できない場合も</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 端末ありのときだけ：下取り確認 -->
-      <div class="checklist hidden" id="tradeinBlock">
-        <div class="checkitem">
-          <input type="checkbox" id="chk_tradein" />
-          <div style="flex:1;">
-            <div class="ctitle">端末下取りの可否を確認しました</div>
-            <div class="csub">分割プログラムをご利用の場合、端末の残債に注意してください</div>
-          </div>
-
-          <select id="tradeinResult" style="width:140px; padding:10px 10px; border-radius:10px;">
-            <option value="" selected>未選択</option>
-            <option value="ok">下取りOK</option>
-            <option value="ng">下取りNG</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="alert hidden" id="preAlert"></div>
-
       <div class="row" style="margin-top:12px; align-items:center; width:100%;">
         <div class="row" style="gap:10px;">
           <button class="btn" id="startBtn" disabled>この条件で設定</button>
@@ -1347,10 +1338,10 @@ html[data-theme="dark"] .lineEditTag{
          パネル：S2（結果入力）
          ========================= -->
     <div id="panelS2" class="hidden">
-            <div class="next" id="s2Guide" style="margin-top:10px;">
-        <b>📱「キャリアパレット」でキャリアのコンサルを行ってください</b>
+        <div class="next" id="s2Guide" style="margin-top:10px;">
+        <b>「キャリアパレット」を使用してコンサルを行ってください</b>
         <div style="margin-top:6px; line-height:1.5;">
-          → 決定した乗り換え先，プラン，購入方法などを入力して次へ進みます
+          →　決定した乗り換え先，プラン，購入方法などを入力して次へ進みます
         </div>
         <div class="row" style="margin-top:10px;">
           <a class="btn" href="CarrierPalette.html" style="display:inline-block; text-decoration:none;">
@@ -1359,6 +1350,52 @@ html[data-theme="dark"] .lineEditTag{
         </div>
       </div>
       <!-- 既存のS2 UI（中身ほぼそのまま） -->
+            <div class="donebox" id="s2CheckBox" style="margin-top:10px;">
+        <b>契約前チェック</b>
+
+        <div class="checklist" style="margin-top:8px;">
+          <div class="checkitem">
+            <input type="checkbox" id="chk_id_confirmed" />
+            <div>
+              <div class="ctitle">【契約者】の確認書類をチェックしました</div>
+              <div class="csub">運転免許証／マイナンバーカード／在留カード+外国発行パスポート</div>
+            </div>
+          </div>
+
+          <div class="checkitem hidden" id="userIdBlock">
+            <input type="checkbox" id="chk_user_id_confirmed" />
+            <div>
+              <div class="ctitle">【利用者】の確認書類をチェックしました</div>
+              <div class="csub">マイナンバーカード／学生証など</div>
+            </div>
+          </div>
+
+          <div class="checkitem">
+            <input type="checkbox" id="chk_homeNet_asked" />
+            <div>
+              <div class="ctitle">キャリアおよび光回線の利用年数を確認しました</div>
+              <div class="csub">キャリアは半年，光回線は1年未満の場合，施策が適用できない場合も</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="checklist hidden" id="tradeinBlock">
+          <div class="checkitem">
+            <input type="checkbox" id="chk_tradein" />
+            <div style="flex:1;">
+              <div class="ctitle">端末下取りの可否を確認しました</div>
+              <div class="csub">分割プログラムをご利用の場合，端末の残債に注意してください</div>
+            </div>
+
+            <select id="tradeinResult" style="width:140px; padding:10px 10px; border-radius:10px;">
+              <option value="" selected>未選択</option>
+              <option value="ok">下取りOK</option>
+              <option value="ng">下取りNG</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
       <div class="donebox" id="s2Box" style="margin-top:10px;">
         <div id="s2LineSummary" class="muted"></div>
 
@@ -1410,6 +1447,7 @@ html[data-theme="dark"] .lineEditTag{
           </div>
         </div>
 
+        <!-- <div class="alert hidden" id="s2PreAlert" style="margin-top:10px;"></div> -->
         <div class="alert hidden" id="s2PointAlert" style="margin-top:10px;"></div>
       </div>
 
@@ -1421,7 +1459,7 @@ html[data-theme="dark"] .lineEditTag{
     <div id="panelS3" class="hidden">
       <div class="donebox hidden" id="s3nChecklist">
         <div class="checklist" style="margin-top:8px;">
-          <div class="checkitem">
+          <div class="checkitem" id="s3nMnpItem">
             <input type="checkbox" id="chk_s3n_mnp" />
             <div>
               <div class="ctitle">MNP予約番号の取得</div>
@@ -1449,7 +1487,7 @@ html[data-theme="dark"] .lineEditTag{
             <input type="checkbox" id="chk_s3n_input" />
             <div>
               <div class="ctitle">契約情報の入力</div>
-              <div class="csub">氏名や生年月日，住所などの入力ミスに注意　<span class="legal">審査結果が出るまでは確定しない</span></div>
+              <div class="csub">氏名や生年月日，住所などの入力ミス，オプションの追加漏れに注意　<span class="legal">審査結果が出るまでは確定しない</span></div>
             </div>
           </div>
 
@@ -1477,7 +1515,7 @@ html[data-theme="dark"] .lineEditTag{
       <div class="donebox hidden" id="s3cChecklist">
         <div class="checklist" style="margin-top:8px;">
 
-          <div class="checkitem">
+          <div class="checkitem" id="s3cMnpItem">
             <input type="checkbox" id="chk_s3c_mnp" />
             <div>
               <div class="ctitle">MNP予約番号の取得</div>
@@ -1534,7 +1572,7 @@ html[data-theme="dark"] .lineEditTag{
       <div class="donebox hidden" id="s3sChecklist">
         <div class="checklist" style="margin-top:8px;">
 
-          <div class="checkitem">
+          <div class="checkitem" id="s3sMnpItem">
             <input type="checkbox" id="chk_s3s_mnp" />
             <div>
               <div class="ctitle">MNP予約番号の取得</div>
@@ -1591,7 +1629,7 @@ html[data-theme="dark"] .lineEditTag{
       <div class="donebox hidden" id="s3lChecklist">
         <div class="checklist" style="margin-top:8px;">
 
-          <div class="checkitem">
+          <div class="checkitem" id="s3lMnpItem">
             <input type="checkbox" id="chk_s3l_mnp" />
             <div>
               <div class="ctitle">MNP予約番号の取得</div>
@@ -1706,6 +1744,9 @@ html[data-theme="dark"] .lineEditTag{
             alt="お疲れさまでした"
             onerror="this.style.display='none'; document.getElementById('finishFallback').classList.remove('hidden');"
           />
+          <div id="finishFallback" class="hidden" style="padding:40px 12px; color:#fff; font-size:28px; font-weight:900; text-align:center;">
+            お疲れさまでした！
+          </div>
         </div>
       </div>
 
@@ -1719,8 +1760,8 @@ html[data-theme="dark"] .lineEditTag{
         <button class="btn" id="nextBtn">次へ →</button>
       </div>
       <div style="flex:1;"></div>
+      <button class="btnDanger hidden" id="finishResetBtn">全ての回線をリセット</button>
     </div>
-
   </div><!-- /stepCard -->
 
 </div><!-- /wrap -->
@@ -1835,6 +1876,7 @@ function syncContractTypeIcons(){
   box.querySelectorAll(".iconBtn[data-value]").forEach(btn=>{
     btn.classList.toggle("isOn", btn.getAttribute("data-value") === v);
   });
+  syncContractTypeAttention();
 }
 
 /* =========================
@@ -1939,7 +1981,7 @@ function blankLine(){
   return {
     form: {
       contractType:"", contractHolder:"self",
-      userRelation:"",
+      userRelation:"self",
       carrier:"",
       chk_id_confirmed:false, chk_homeNet_asked:false,
       chk_tradein:false, tradeinResult:"",
@@ -1947,13 +1989,23 @@ function blankLine(){
       dataUsage:"",
       talkUsage:""
     },
-    consult: { payType:"", needDataTransfer:"no", needTradeInReception:"no",toCarrier:"",
-    toPlanKey:"" },
-    flow:   { started:false, stepId:"S1" },
-    s3:     { chk_s3sim_mnp:false, chk_s3sim_docs:false, chk_s3sim_input:false, chk_s3sim_notice:false },
-    s3n:    { chk_s3n_mnp:false, chk_s3n_apply:false, chk_s3n_prepare:false, chk_s3n_input:false, chk_s3n_video:false, chk_s3n_result:false },
-    s4:     { chk_done_return:false, chk_done_open:false, chk_done_datatransfer:false, chk_done_point:false, chk_done_consent:false, chk_done_tradein:false, chk_done_car:false },
-    attn:   {}
+    consult: {
+      payType:"",
+      needDataTransfer:"no",
+      needTradeInReception:"no",
+      toCarrier:"",
+      toPlanKey:""
+    },
+    flow: { started:false, stepId:"S1" },
+
+    s3:  { chk_s3sim_mnp:false, chk_s3sim_docs:false, chk_s3sim_input:false, chk_s3sim_notice:false },
+    s3n: { chk_s3n_mnp:false, chk_s3n_apply:false, chk_s3n_prepare:false, chk_s3n_input:false, chk_s3n_video:false, chk_s3n_result:false },
+    s3c: { chk_s3c_mnp:false, chk_s3c_prepare:false, chk_s3c_credit:false, chk_s3c_input:false, chk_s3c_video:false, chk_s3c_result:false },
+    s3s: { chk_s3s_mnp:false, chk_s3s_docs:false, chk_s3s_esim:false, chk_s3s_input:false, chk_s3s_notice:false, chk_s3s_open:false },
+    s3l: { chk_s3l_mnp:false, chk_s3l_prepare:false, chk_s3l_input:false, chk_s3l_video:false, chk_s3l_fix:false },
+
+    s4:  { chk_done_return:false, chk_done_open:false, chk_done_datatransfer:false, chk_done_point:false, chk_done_consent:false, chk_done_tradein:false, chk_done_car:false },
+    attn:{}
   };
 }
 
@@ -2016,10 +2068,11 @@ function ensureLines(){
 }
 
   if (!shared.flowGlobal){
-    shared.flowGlobal = { started:false, stepId:"S1" };
+    shared.flowGlobal = { started:false, stepId:"S1", reachedS5:false };
   } else {
     if (shared.flowGlobal.started == null) shared.flowGlobal.started = false;
     if (!shared.flowGlobal.stepId) shared.flowGlobal.stepId = "S1";
+    if (shared.flowGlobal.reachedS5 == null) shared.flowGlobal.reachedS5 = false;
   }
 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(shared));
@@ -2118,8 +2171,25 @@ function updateS2UI(){
   el("s2TransferWrap")?.classList.toggle("hidden", !showDeviceOps);
   el("s2TradeWrap")?.classList.toggle("hidden", !showDeviceOps);
 
-  // 値を反映
-  if (el("s2PayType")) el("s2PayType").value = line.consult.payType || "";
+  const paySel = el("s2PayType");
+  if (paySel){
+    const nojimaOpt = paySel.querySelector('option[value="nojimaInstall"]');
+    const forbidNojima = (ct === "deviceChange");
+
+    if (nojimaOpt){
+      nojimaOpt.disabled = forbidNojima;
+      nojimaOpt.hidden = false;
+    }
+
+    // 機種変更なのに保存値が分リセだった場合はクリア
+    if (forbidNojima && line.consult.payType === "nojimaInstall"){
+      line.consult.payType = "";
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(shared));
+    }
+
+    paySel.value = line.consult.payType || "";
+  }
+
   if (el("s2NeedDataTransfer")) el("s2NeedDataTransfer").value = line.consult.needDataTransfer || "no";
   if (el("s2NeedTradeInReception")) el("s2NeedTradeInReception").value = line.consult.needTradeInReception || "no";
 
@@ -2142,6 +2212,14 @@ function updateS2UI(){
       ? "【注意】購入方法が「キャリア分割／一括」かつ「下取りなし」の場合、ポイント付与ができません（下取り受付の有無を再確認）"
       : "";
   }
+
+  if (el("s2ToCarrier")) el("s2ToCarrier").required = showToPlan;
+  if (el("s2ToPlanKey")) el("s2ToPlanKey").required = showToPlan;
+  if (el("s2PayType")) el("s2PayType").required = showDeviceOps;
+
+  refreshSelectVisual();
+  syncUserIdBlock();
+  updateTradeInVisibility();
 }
 
 function saveS2ConsultPatch(patch){
@@ -2192,6 +2270,7 @@ function updateTradeInVisibility(){
     block.classList.add("hidden");
   }
   updateBadges();
+  refreshSelectVisual();
 }
 function sectionDone(ids){
   return ids.every(id => {
@@ -2222,101 +2301,40 @@ function updateBadges(){
   setDone("badge_check", baseChecksOk && tradeOk);
 }
 
-function updatePreAlert(){
-  const box = el("preAlert");
-  if (!box) return;
-
-  const missing = [];
-
-  // 必須選択
-  const req = [
-    ["contractType", "契約タイプ"],
-    ["contractHolder", "契約者（名義）"],
-    ["carrier", "現在のスマホキャリア"],
-    ["homeNetType", "ご自宅のインターネット回線"],
+function allSelected(){
+  const requiredSelects = [
+    "contractType",
+    "contractHolder",
+    "userRelation",
+    "carrier",
+    "homeNetType"
   ];
-  req.forEach(([id, name])=>{
-    if (!el(id) || ((el(id).value || "").trim() === "")) missing.push(name);
+
+  const okSel = requiredSelects.every(id => {
+    const node = el(id);
+    return node && ((node.value || "").trim() !== "");
   });
 
-  // チェック
-  if (!el("chk_id_confirmed")?.checked) missing.push("ご本人確認書類の確認（チェック）");
-  if (!el("chk_homeNet_asked")?.checked) missing.push("キャリア/光回線の利用年数確認（チェック）");
-
-  // 端末あり＆下取り必須のとき
-  const ct = el("contractType")?.value || "";
-  if (needsTradeInChecklist(ct)){
-    if (!el("chk_tradein")?.checked) missing.push("下取り可否の確認（チェック）");
-    const v = el("tradeinResult") ? (el("tradeinResult").value || "").trim() : "";
-    if (!v) missing.push("下取りOK/NG の選択");
-  }
-
-  if (missing.length === 0){
-    box.classList.add("hidden");
-    box.textContent = "";
-    return;
-  }
-
-  box.classList.remove("hidden");
-  box.innerHTML = `まだ不足があります：<br>・${missing.join("<br>・")}`;
-}
-
-function allSelected(){
-  const requiredSelects = ["contractType","contractHolder","carrier","homeNetType"];
-  const okSel = requiredSelects.every(id => (el(id).value || "").trim() !== "");
-  if (!okSel) return false;
-
-  if (el("userRelation")?.value !== "self"){
-  if (!el("chk_user_id_confirmed")?.checked) return false;
-  }
-
-  if (!el("chk_id_confirmed").checked) return false;
-  if (!el("chk_homeNet_asked").checked) return false;
-
-  const ct = el("contractType").value;
-  if (needsTradeInChecklist(ct)){
-    if (!el("chk_tradein").checked) return false;
-    if (!el("tradeinResult") || (el("tradeinResult").value || "").trim() === "") return false;
-  }
-  return true;
+  return okSel;
 }
 
 function allSelectedForLine(line){
   const f = line.form || {};
   const shared = ensureLines();
 
-  // S1で揃っててほしい項目（必要なら増減して）
   const required = [
     ["contractType","契約タイプ"],
     ["contractHolder","契約者（名義）"],
-    ["userRelation","利用者"], 
+    ["userRelation","利用者"],
     ["carrier","現在のスマホキャリア"],
-    ["dataUsage","データ使用量"],
-    ["talkUsage","通話頻度"],
   ];
 
-  // 世帯共通
   const homeNetOk = ((shared.houseNet?.homeNetType || "").trim() !== "");
-
-  // 必須 select / hidden 値
   const okReq = required.every(([k]) => ((f[k] || "").trim() !== ""));
+
   if (!okReq) return false;
   if (!homeNetOk) return false;
 
-  // チェック
-  if (!f.chk_id_confirmed) return false;
-  if (!f.chk_homeNet_asked) return false;
-
-  if ((f.userRelation || "self") !== "self"){
-  if (!f.chk_user_id_confirmed) return false;
-  }
-
-  // 端末あり＆下取り確認が必要なとき
-  const ct = f.contractType || "";
-  if (needsTradeInChecklist(ct)){
-    if (!f.chk_tradein) return false;
-    if (!String(f.tradeinResult || "").trim()) return false;
-  }
   return true;
 }
 
@@ -2334,7 +2352,6 @@ function firstIncompleteLineIndexS1(){
 }
 
 let prevCarrier = "";
-let prevUsageYears = "";
 
 // 純新規ならばキャリアは新規で固定
 function ensureCarrierNewOption(){
@@ -2358,25 +2375,31 @@ function removeCarrierNewOption(){
   if (opt) opt.remove();
 }
 
-function ensureUsageYearsNewOption(){
-  const yearsEl = el("usageYears");
-  if (!yearsEl) return null;
+function syncNewDeviceLocks(){
+  const ct = el("contractType")?.value || "";
+  const carrierEl = el("carrier");
+  if (!carrierEl) return;
 
-  let opt = yearsEl.querySelector('option[value="new"]');
-  if (!opt){
-    opt = document.createElement("option");
-    opt.value = "new";
-    opt.textContent = "新規";
-    yearsEl.appendChild(opt);
+  const lock = (ct === "new");
+
+  if (lock){
+    ensureCarrierNewOption();
+
+    if (!prevCarrier) prevCarrier = carrierEl.value || "";
+
+    carrierEl.value = "new";
+    carrierEl.disabled = true;
+
+  } else {
+    carrierEl.disabled = false;
+
+    if (carrierEl.value === "new"){
+      carrierEl.value = prevCarrier || "";
+    }
+
+    removeCarrierNewOption();
+    prevCarrier = "";
   }
-  return opt;
-}
-
-function removeUsageYearsNewOption(){
-  const yearsEl = el("usageYears");
-  if (!yearsEl) return;
-  const opt = yearsEl.querySelector('option[value="new"]');
-  if (opt) opt.remove();
 }
 
 function showPanel(which){
@@ -2384,42 +2407,6 @@ function showPanel(which){
   el("panelS2")?.classList.add("hidden");
   el("panelS3")?.classList.add("hidden");
   el(which)?.classList.remove("hidden");
-}
-
-function syncNewDeviceLocks(){
-  const ct = el("contractType")?.value;
-  const carrierEl = el("carrier");
-  const yearsEl   = el("usageYears");
-  if (!carrierEl || !yearsEl) return;
-
-  const lock = (ct === "new");
-
-  if (lock){
-    ensureCarrierNewOption();
-    ensureUsageYearsNewOption();
-
-    if (!prevCarrier) prevCarrier = carrierEl.value || "";
-    if (!prevUsageYears) prevUsageYears = yearsEl.value || "";
-
-    // 強制固定
-    carrierEl.value = "new";
-    yearsEl.value   = "new";
-    carrierEl.disabled = true;
-    yearsEl.disabled   = true;
-
-  } else {
-    carrierEl.disabled = false;
-    yearsEl.disabled   = false;
-
-    if (carrierEl.value === "new") carrierEl.value = prevCarrier || "";
-    if (yearsEl.value === "new")   yearsEl.value   = prevUsageYears || "";
-
-    removeCarrierNewOption();
-    removeUsageYearsNewOption();
-
-    prevCarrier = "";
-    prevUsageYears = "";
-  }
 }
 
 function syncUserRelationLock(){
@@ -2435,7 +2422,6 @@ function updateStartEnabled(){
   const ok = multi ? allLinesSelectedS1() : allSelected();
   el("startBtn").disabled = !ok;
 
-  updatePreAlert();
   updateBadges();
 }
 function updateContractHolderOptions(){
@@ -2538,22 +2524,37 @@ function isLineS3Complete(line){
   const c = line.consult || {};
   const ct = f.contractType || "";
 
-  // SIMのみ（スタンプUI）
+  // SIMのみ
   if (ct === "mnpSim"){
-    const s3 = line.s3 || {};
-    return ["chk_s3sim_mnp","chk_s3sim_docs","chk_s3sim_input","chk_s3sim_notice"].every(k => !!s3[k]);
+    const s3s = line.s3s || {};
+    return ["chk_s3s_mnp","chk_s3s_docs","chk_s3s_esim","chk_s3s_input","chk_s3s_notice","chk_s3s_open"]
+      .every(k => !!s3s[k]);
   }
 
-  // 端末フローありで分リセ
-  if (needsDeviceFlow(ct) && (c.payType === "nojimaInstall")){
+  // 分リセ
+  if (needsDeviceFlow(ct) && c.payType === "nojimaInstall"){
     const s3n = line.s3n || {};
     const keys = ["chk_s3n_apply","chk_s3n_prepare","chk_s3n_input","chk_s3n_video","chk_s3n_result"];
     if (isMnp(ct)) keys.unshift("chk_s3n_mnp");
     return keys.every(k => !!s3n[k]);
   }
 
-  // それ以外（通常S3チェック項目があるならここに追加）
-  // いまS3の通常チェックが未実装なら、とりあえず true で通す
+  // キャリア分割
+  if (needsDeviceFlow(ct) && c.payType === "carrierInstall"){
+    const s3c = line.s3c || {};
+    const keys = ["chk_s3c_prepare","chk_s3c_credit","chk_s3c_input","chk_s3c_video","chk_s3c_result"];
+    if (isMnp(ct)) keys.unshift("chk_s3c_mnp");
+    return keys.every(k => !!s3c[k]);
+  }
+
+  // 一括
+  if (needsDeviceFlow(ct) && c.payType === "lump"){
+    const s3l = line.s3l || {};
+    const keys = ["chk_s3l_prepare","chk_s3l_input","chk_s3l_video","chk_s3l_fix"];
+    if (isMnp(ct)) keys.unshift("chk_s3l_mnp");
+    return keys.every(k => !!s3l[k]);
+  }
+
   return true;
 }
 function areAllLinesS3Complete(){
@@ -2665,13 +2666,29 @@ function defaultLine1OnStep(stepId){
     setActiveLine(0);
   }
 }
+
+function syncContractTypeAttention(){
+  const sel = el("contractType");
+  const box = el("contractTypeIcons");
+  if (!sel || !box) return;
+
+  const invalid = !String(sel.value || "").trim();
+  box.classList.toggle("isInvalid", invalid);
+}
 /* =========================
    Render
    ========================= */
 function render(){
   const navRow = el("navRow");
-  el("s3SimChecklist")?.classList.add("hidden");
   el("s3nChecklist")?.classList.add("hidden");
+  el("s3cChecklist")?.classList.add("hidden");
+  el("s3sChecklist")?.classList.add("hidden");
+  el("s3lChecklist")?.classList.add("hidden");
+  el("doneChecklist")?.classList.add("hidden");
+
+  el("panelS1")?.classList.add("hidden");
+  el("panelS2")?.classList.add("hidden");
+  el("panelS3")?.classList.add("hidden");
 
   el("panelS1")?.classList.add("hidden");
   el("panelS2")?.classList.add("hidden");
@@ -2699,14 +2716,24 @@ function render(){
   const step = steps[idx];
   el("stepTitle").textContent = step.name;
 
+  syncMnpChecklistVisibility();
+  el("lineCommonCard")?.classList.remove("hidden");
+  el("finishResetBtn")?.classList.add("hidden");
+  el("navRow")?.classList.remove("hidden");
+
   if (navRow){
     navRow.classList.toggle("hidden", step.id === "S1");
   }
 
-  const STEPBAR_VISIBLE_IDS = ["S1","S2","S3","S3N","S3C","S4"];
-
   const isS1 = (step.id === "S1");
-  const visibleIds = isS1 ? ["S1"] : STEPBAR_VISIBLE_IDS;
+  const reachedS5 = hasReachedS5();
+
+  const visibleIds = reachedS5
+    ? steps.map(s => s.id)
+    : steps
+        .slice(0, idx + 1)
+        .map(s => s.id)
+        .filter(id => id !== "S5");
 
   steps.forEach((s, i) => {
     if (!visibleIds.includes(s.id)) return;
@@ -2715,14 +2742,28 @@ function render(){
     d.className = "step" + (i === idx ? " current" : (i < idx ? " done" : ""));
     d.textContent = s.name;
 
-    // S1中はクリック遷移も意味ないので無効化（事故防止）
-    if (!isS1){
+    const sharedNow = ensureLines();
+    const clickable = (
+      step.id !== "S1" ||
+      !!sharedNow.flowGlobal?.started ||
+      !!sharedNow.flowGlobal?.reachedS5
+    );
+
+    if (clickable){
       d.onclick = () => {
-      idx = i;
-      saveFlowState();
-      defaultLine1OnStep(steps[idx].id);
-      syncFromStorage(); // ← render() ではなくこれで統一
-    };
+        idx = i;
+
+        const shared = ensureLines();
+        shared.flowGlobal = shared.flowGlobal || {};
+        shared.flowGlobal.started = true;
+        shared.flowGlobal.stepId = steps[idx].id;
+        if (shared.flowGlobal.reachedS5 == null) shared.flowGlobal.reachedS5 = false;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(shared));
+
+        saveFlowState();
+        defaultLine1OnStep(steps[idx].id);
+        syncFromStorage();
+      };
     } else {
       d.style.cursor = "default";
     }
@@ -2745,6 +2786,32 @@ if (step.id === "S1"){
   el("panelS3")?.classList.remove("hidden");
 }
 
+if (step.id === "S4"){
+  el("panelS3")?.classList.remove("hidden");
+
+  el("s3SimChecklist")?.classList.add("hidden");
+  el("s3nChecklist")?.classList.add("hidden");
+  el("s3cChecklist")?.classList.add("hidden");
+  el("s3sChecklist")?.classList.add("hidden");
+  el("s3lChecklist")?.classList.add("hidden");
+
+  el("finishBox")?.classList.add("hidden");
+  el("multiFinishBox")?.classList.add("hidden");
+  el("doneChecklist")?.classList.remove("hidden");
+
+  el("doneDataTransferItem").classList.toggle("hidden", ctx.needDataTransfer !== "yes");
+  el("doneTradeInItem").classList.toggle("hidden", ctx.needTradeInReception !== "yes");
+
+  const shared = ensureLines();
+  const isLastLine = (activeLine === shared.lines.length - 1);
+  const carItem = el("chk_done_car")?.closest(".checkitem");
+  if (carItem) carItem.classList.toggle("hidden", !isLastLine);
+
+  el("backBtn").disabled = (idx === 0);
+  el("nextBtn").disabled = !isDoneChecklistComplete(ctx);
+  return;
+}
+
   const editBtns = el("lineEditBtns");
   if (editBtns){
     editBtns.classList.toggle("hidden", step.id !== "S1");
@@ -2757,40 +2824,49 @@ if (step.id === "S1"){
 
 if (lineMiniRow) lineMiniRow.classList.remove("hidden");
 
-  // S5
 if (step.id === "S5"){
   if (el("warnBox")) el("warnBox").classList.add("hidden");
-  el("nextBox").classList.add("hidden");
-  el("doneChecklist").classList.add("hidden");
-  if (el("s3SimChecklist")) el("s3SimChecklist").classList.add("hidden");
-  if (el("s3nChecklist")) el("s3nChecklist").classList.add("hidden");
+  el("nextBox")?.classList.add("hidden");
+  el("doneChecklist")?.classList.add("hidden");
+  el("s3nChecklist")?.classList.add("hidden");
+  el("s3cChecklist")?.classList.add("hidden");
+  el("s3sChecklist")?.classList.add("hidden");
+  el("s3lChecklist")?.classList.add("hidden");
+
+  // S5では回線カード一覧は隠してよい
+  el("lineCommonCard")?.classList.add("hidden");
+
+  // ステップ移動は残す
+  el("lineMiniRow")?.classList.remove("hidden");
+  el("navRow")?.classList.remove("hidden");
+
+  // S5では右端に全体リセットを出す
+  el("finishResetBtn")?.classList.remove("hidden");
+
+  el("backBtn").disabled = false;
+  el("nextBtn").disabled = true;
 
   const nextIdx = findNextIncompleteLineIndex();
 
-  // 全回線完了 → 「お疲れさまでした」
+  // 全回線完了 → お疲れさま画面
   if (nextIdx < 0){
     el("multiFinishBox")?.classList.add("hidden");
-    el("finishBox").classList.remove("hidden");
-    el("backBtn").disabled = (idx === 0);
-    el("nextBtn").disabled = true;
+    el("finishBox")?.classList.remove("hidden");
     return;
   }
 
-  // 未完の回線が残ってる → 次の回線へ誘導
-  el("finishBox").classList.add("hidden");
+  // 未完があるなら次の回線へ誘導
+  el("finishBox")?.classList.add("hidden");
   el("multiFinishBox")?.classList.remove("hidden");
 
   if (el("multiFinishText")){
     el("multiFinishText").textContent = `まだ未完の回線があります。回線 ${nextIdx+1} の契約を進めてください。`;
   }
 
-  // ボタン動作
   if (el("gotoNextLineBtn")){
     el("gotoNextLineBtn").onclick = () => gotoLine(nextIdx);
   }
 
-  el("backBtn").disabled = (idx === 0);
-  el("nextBtn").disabled = true;
   return;
 }
 
@@ -2816,24 +2892,23 @@ if (step.id === "S5"){
       toPlanKey: consult.toPlanKey || ""
     };
 
-    // 分リセ → s3nChecklist（チェックボックス）
+    // 分リセ → S3N
     if (needsDeviceFlow(curCtx.contractType) && curCtx.payType === "nojimaInstall"){
       el("s3nChecklist")?.classList.remove("hidden");
       el("backBtn").disabled = (idx === 0);
-      el("nextBtn").disabled = !areAllLinesS3Complete();
+      el("nextBtn").disabled = !isLineS3Complete(shared.lines[activeLine]);
       return;
     }
-    // --- ここから追加：S3C/S3L/S3S ---
+
     el("s3cChecklist")?.classList.add("hidden");
     el("s3sChecklist")?.classList.add("hidden");
     el("s3lChecklist")?.classList.add("hidden");
 
-    // SIMのみ（S3Sを使うならこちらを優先）
+    // simのみ → S3S
     if (curCtx.contractType === "mnpSim"){
       el("s3sChecklist")?.classList.remove("hidden");
       el("backBtn").disabled = (idx === 0);
-      // “次へ”の活性はとりあえず全チェック必須（後で好みで調整）
-      el("nextBtn").disabled = !isS3SChecklistComplete(curCtx);
+      el("nextBtn").disabled = !isLineS3Complete(shared.lines[activeLine]);
       return;
     }
 
@@ -2841,7 +2916,7 @@ if (step.id === "S5"){
     if (needsDeviceFlow(curCtx.contractType) && curCtx.payType === "carrierInstall"){
       el("s3cChecklist")?.classList.remove("hidden");
       el("backBtn").disabled = (idx === 0);
-      el("nextBtn").disabled = !isS3CChecklistComplete(curCtx);
+      el("nextBtn").disabled = !isLineS3Complete(shared.lines[activeLine]);
       return;
     }
 
@@ -2849,7 +2924,7 @@ if (step.id === "S5"){
     if (needsDeviceFlow(curCtx.contractType) && curCtx.payType === "lump"){
       el("s3lChecklist")?.classList.remove("hidden");
       el("backBtn").disabled = (idx === 0);
-      el("nextBtn").disabled = !isS3LChecklistComplete(curCtx);
+      el("nextBtn").disabled = !isLineS3Complete(shared.lines[activeLine]);
       return;
     }
         el("backBtn").disabled = (idx === 0);
@@ -2885,6 +2960,12 @@ if (el("attnBox")) el("attnBox").classList.add("hidden");
 if (el("nextBox")) el("nextBox").classList.add("hidden");
 
 updateS2UI();
+if (step.id === "S2"){
+  const shared = ensureLines();
+  el("backBtn").disabled = (idx === 0);
+  el("nextBtn").disabled = !isS2CompleteForLine(shared.lines[activeLine]);
+  return;
+}
 el("backBtn").disabled = (idx === 0);
 el("nextBtn").disabled = (idx === steps.length - 1);
 
@@ -2972,8 +3053,11 @@ function loadDraft(){
   updateTradeInVisibility();
   setVal("contractHolder", data.contractHolder ?? "self");
   syncUserRelationLock();
-  setVal("userRelation", data.userRelation ?? "self");
-  setVal("userRelation", data.userRelation);
+  syncUserRelationRequired();
+
+  const isMulti = shared.lines.length >= 2;
+  setVal("userRelation", isMulti ? (data.userRelation ?? "") : (data.userRelation || "self"));
+
   if (el("chk_user_id_confirmed")) el("chk_user_id_confirmed").checked = !!data.chk_user_id_confirmed;
   setVal("carrier", data.carrier);
   setVal("homeNetType",  shared.houseNet.homeNetType  || "");
@@ -2990,10 +3074,12 @@ function loadDraft(){
   refreshSelectVisual();
 
   syncContractTypeIcons();
+  syncContractTypeAttention();
   syncDataDotsUI();
   syncTalkDotsUI();
   syncUserIdBlock();
   syncUserRelationRequired();
+  syncMnpChecklistVisibility();
 }
 
 function setDataUsage(val){
@@ -3001,6 +3087,8 @@ function setDataUsage(val){
   if (!sel) return;
   sel.value = val || "";
   sel.dispatchEvent(new Event("change", { bubbles:true }));
+  saveDraft();
+  updateStartEnabled();
   syncDataDotsUI();
 }
 
@@ -3008,8 +3096,8 @@ function setTalkUsage(val){
   const hid = el("talkUsage");
   if (!hid) return;
   hid.value = val || "";
-  updateStartEnabled();
   saveDraft();
+  updateStartEnabled();
   syncTalkDotsUI();
 }
 
@@ -3077,11 +3165,12 @@ function saveFlowState(){
   const stepId = (steps[idx] ? steps[idx].id : "S1");
 
   // global
-  shared.flowGlobal = shared.flowGlobal || { started:false, stepId:"S1" };
+  shared.flowGlobal = shared.flowGlobal || { started:false, stepId:"S1", reachedS5:false };
   shared.flowGlobal.started = true;
   shared.flowGlobal.stepId  = stepId;
+  if (stepId === "S5") shared.flowGlobal.reachedS5 = true;
 
-  // per-line（これがないと「未完」判定が永遠に残る）
+  // per-line
   shared.lines[activeLine].flow = shared.lines[activeLine].flow || { started:false, stepId:"S1" };
   shared.lines[activeLine].flow.started = true;
   shared.lines[activeLine].flow.stepId  = stepId;
@@ -3100,12 +3189,26 @@ function restoreCheckStatesFromLine(line){
     if (el(id)) el(id).checked = !!s3n[id];
   });
 
+  const s3c = line.s3c || {};
+  ["chk_s3c_mnp","chk_s3c_prepare","chk_s3c_credit","chk_s3c_input","chk_s3c_video","chk_s3c_result"].forEach(id=>{
+    if (el(id)) el(id).checked = !!s3c[id];
+  });
+
+  const s3s = line.s3s || {};
+  ["chk_s3s_mnp","chk_s3s_docs","chk_s3s_esim","chk_s3s_input","chk_s3s_notice","chk_s3s_open"].forEach(id=>{
+    if (el(id)) el(id).checked = !!s3s[id];
+  });
+
+  const s3l = line.s3l || {};
+  ["chk_s3l_mnp","chk_s3l_prepare","chk_s3l_input","chk_s3l_video","chk_s3l_fix"].forEach(id=>{
+    if (el(id)) el(id).checked = !!s3l[id];
+  });
+
   const s4 = line.s4 || {};
   ["chk_done_return","chk_done_open","chk_done_datatransfer","chk_done_point","chk_done_consent","chk_done_tradein","chk_done_car"].forEach(id=>{
     if (el(id)) el(id).checked = !!s4[id];
   });
 }
-
 function saveChecklistToLine(){
   const shared = ensureLines();
   const line = shared.lines[activeLine];
@@ -3118,6 +3221,21 @@ function saveChecklistToLine(){
   line.s3n = line.s3n || {};
   ["chk_s3n_mnp","chk_s3n_apply","chk_s3n_prepare","chk_s3n_input","chk_s3n_video","chk_s3n_result"].forEach(id=>{
     if (el(id)) line.s3n[id] = !!el(id).checked;
+  });
+
+  line.s3c = line.s3c || {};
+  ["chk_s3c_mnp","chk_s3c_prepare","chk_s3c_credit","chk_s3c_input","chk_s3c_video","chk_s3c_result"].forEach(id=>{
+    if (el(id)) line.s3c[id] = !!el(id).checked;
+  });
+
+  line.s3s = line.s3s || {};
+  ["chk_s3s_mnp","chk_s3s_docs","chk_s3s_esim","chk_s3s_input","chk_s3s_notice","chk_s3s_open"].forEach(id=>{
+    if (el(id)) line.s3s[id] = !!el(id).checked;
+  });
+
+  line.s3l = line.s3l || {};
+  ["chk_s3l_mnp","chk_s3l_prepare","chk_s3l_input","chk_s3l_video","chk_s3l_fix"].forEach(id=>{
+    if (el(id)) line.s3l[id] = !!el(id).checked;
   });
 
   line.s4 = line.s4 || {};
@@ -3150,11 +3268,16 @@ function isAttnComplete(stepId, keys){
 
 function findNextIncompleteLineIndex(){
   const shared = ensureLines();
+
   for (let i = 0; i < shared.lines.length; i++){
-    const flow = shared.lines[i].flow || {};
-    if (!flow.started) return i;
-    if ((flow.stepId || "S1") !== "S5") return i;
+    const line = shared.lines[i];
+
+    if (!allSelectedForLine(line)) return i;
+    if (!isS2CompleteForLine(line)) return i;
+    if (!isLineS3Complete(line)) return i;
+    if (!isLineS4Complete(line, i === shared.lines.length - 1)) return i;
   }
+
   return -1;
 }
 
@@ -3162,17 +3285,30 @@ function isS2CompleteForLine(line){
   const f = line.form || {};
   const c = line.consult || {};
 
-  // 端末フロー必要 → payType必須
-  if (needsDeviceFlow(f.contractType)){
-    if (!String(c.payType || "").trim()) return false;
-  }
-
-  // 乗り換え先が必要な契約 → toCarrier/toPlanKey必須
   const needsTo = (f.contractType === "mnpDevice" || f.contractType === "mnpSim" || f.contractType === "new");
+  const deviceOps = needsDeviceFlow(f.contractType);
+
   if (needsTo){
     if (!String(c.toCarrier || "").trim()) return false;
     if (!String(c.toPlanKey || "").trim()) return false;
   }
+
+  if (deviceOps){
+    if (!String(c.payType || "").trim()) return false;
+  }
+
+  if (!f.chk_id_confirmed) return false;
+  if (!f.chk_homeNet_asked) return false;
+
+  if ((f.userRelation || "self") !== "self"){
+    if (!f.chk_user_id_confirmed) return false;
+  }
+
+  if (needsTradeInChecklist(f.contractType)){
+    if (!f.chk_tradein) return false;
+    if (!String(f.tradeinResult || "").trim()) return false;
+  }
+
   return true;
 }
 
@@ -3184,10 +3320,31 @@ function firstIncompleteLineIndexS2(){
   return -1;
 }
 
+function isStepCompleteForLine(stepId, line, lineIndex){
+  if (stepId === "S2") return isS2CompleteForLine(line);
+  if (stepId === "S3") return isLineS3Complete(line);
+  if (stepId === "S4") return isLineS4Complete(line, lineIndex === ensureLines().lines.length - 1);
+  return true;
+}
+
+function findNextIncompleteLineInStep(stepId, startIndex){
+  const shared = ensureLines();
+  for (let i = startIndex; i < shared.lines.length; i++){
+    if (!isStepCompleteForLine(stepId, shared.lines[i], i)) return i;
+  }
+  return -1;
+}
+
 function gotoLine(i){
+  const shared = ensureLines();
+
   saveDraft();
-  saveFlowState();
-  saveChecklistToLine();
+
+  if (shared.flowGlobal?.started){
+    saveFlowState();
+    saveChecklistToLine();
+  }
+
   setActiveLine(i);
   syncFromStorage();
 }
@@ -3241,6 +3398,43 @@ function getLineSummary(i, line){
     lineNo: i+1,
     text: parts.filter(Boolean).join(" / "),
   };
+}
+
+function hasReachedS5(){
+  const shared = ensureLines();
+  return !!shared.flowGlobal?.reachedS5;
+}
+
+function getS2MissingForLine(line){
+  const f = line.form || {};
+  const c = line.consult || {};
+  const missing = [];
+
+  const needsTo = (f.contractType === "mnpDevice" || f.contractType === "mnpSim" || f.contractType === "new");
+  const deviceOps = needsDeviceFlow(f.contractType);
+
+  if (needsTo){
+    if (!String(c.toCarrier || "").trim()) missing.push("乗り換え先");
+    if (!String(c.toPlanKey || "").trim()) missing.push("乗り換え先プラン");
+  }
+
+  if (deviceOps){
+    if (!String(c.payType || "").trim()) missing.push("端末購入方法");
+  }
+
+  if (!f.chk_id_confirmed) missing.push("【契約者】確認書類チェック");
+  if (!f.chk_homeNet_asked) missing.push("キャリア/光回線の利用年数確認");
+
+  if ((f.userRelation || "self") !== "self" && !f.chk_user_id_confirmed){
+    missing.push("【利用者】確認書類チェック");
+  }
+
+  if (needsTradeInChecklist(f.contractType)){
+    if (!f.chk_tradein) missing.push("端末下取り可否チェック");
+    if (!String(f.tradeinResult || "").trim()) missing.push("下取りOK/NG");
+  }
+
+  return missing;
 }
 
 function renderLineCards(){
@@ -3300,6 +3494,43 @@ function refreshSelectVisual(){
   document.querySelectorAll("select").forEach(node=>{
     const empty = ((node.value || "").trim() === "");
     node.classList.toggle("isSelected", !empty);
+    node.classList.remove("isInvalid");
+  });
+
+  const ct = el("contractType")?.value || "";
+  const tradeSel = el("tradeinResult");
+
+  if (tradeSel && needsTradeInChecklist(ct)){
+    const invalid = !String(tradeSel.value || "").trim();
+    tradeSel.classList.toggle("isInvalid", invalid);
+  }
+}
+
+function isMnpContractType(ct){
+  return ct === "mnpDevice" || ct === "mnpSim";
+}
+
+function syncMnpChecklistVisibility(){
+  const ct = el("contractType")?.value || "";
+  const show = isMnpContractType(ct);
+
+  const pairs = [
+    ["s3nMnpItem", "chk_s3n_mnp"],
+    ["s3cMnpItem", "chk_s3c_mnp"],
+    ["s3sMnpItem", "chk_s3s_mnp"],
+    ["s3lMnpItem", "chk_s3l_mnp"],
+  ];
+
+  pairs.forEach(([wrapId, chkId])=>{
+    const wrap = el(wrapId);
+    const chk  = el(chkId);
+    if (!wrap) return;
+
+    wrap.classList.toggle("hidden", !show);
+
+    if (!show && chk){
+      chk.checked = false;
+    }
   });
 }
 
@@ -3392,23 +3623,26 @@ watchIds.forEach(id => {
     if (id === "contractType") updateTradeInVisibility();
 
     syncUserRelationLock();
-    syncUserIdBlock(); 
+    syncUserIdBlock();
     syncNewDeviceLocks();
-    updateStartEnabled();
+
     saveDraft();
+    updateStartEnabled();
     renderLinebar();
+
     node.classList.add("pop");
     setTimeout(() => node.classList.remove("pop"), 220);
     if ((node.value || "").trim() === "") node.classList.remove("isSelected");
   });
 });
 
-["chk_id_confirmed","chk_homeNet_asked","chk_tradein"].forEach(id => {
+["chk_id_confirmed","chk_homeNet_asked","chk_tradein","chk_user_id_confirmed"].forEach(id => {
   const node = el(id);
   if (!node) return;
   node.addEventListener("change", () => {
-    updateStartEnabled();
     saveDraft();
+    updateStartEnabled();
+    updateS2UI();
   });
 });
 
@@ -3460,6 +3694,33 @@ el("s2ToPlanKey")?.addEventListener("change", ()=>{
   });
 });
 
+["chk_s3c_mnp","chk_s3c_prepare","chk_s3c_credit","chk_s3c_input","chk_s3c_video","chk_s3c_result"].forEach(id => {
+  const node = el(id);
+  if (!node) return;
+  node.addEventListener("change", () => {
+    saveChecklistToLine();
+    if (steps[idx] && steps[idx].id === "S3") render();
+  });
+});
+
+["chk_s3s_mnp","chk_s3s_docs","chk_s3s_esim","chk_s3s_input","chk_s3s_notice","chk_s3s_open"].forEach(id => {
+  const node = el(id);
+  if (!node) return;
+  node.addEventListener("change", () => {
+    saveChecklistToLine();
+    if (steps[idx] && steps[idx].id === "S3") render();
+  });
+});
+
+["chk_s3l_mnp","chk_s3l_prepare","chk_s3l_input","chk_s3l_video","chk_s3l_fix"].forEach(id => {
+  const node = el(id);
+  if (!node) return;
+  node.addEventListener("change", () => {
+    saveChecklistToLine();
+    if (steps[idx] && steps[idx].id === "S3") render();
+  });
+});
+
 ["chk_done_return","chk_done_open","chk_done_datatransfer","chk_done_point","chk_done_consent","chk_done_tradein","chk_done_car"]
   .forEach(id => {
     const node = el(id);
@@ -3472,30 +3733,29 @@ el("s2ToPlanKey")?.addEventListener("change", ()=>{
 
 if (el("tradeinResult")){
   el("tradeinResult").addEventListener("change", () => {
-    updateStartEnabled();
     saveDraft();
+    updateStartEnabled();
+    updateS2UI();
   });
 }
 
 if (el("addLineBtn")){
   el("addLineBtn").onclick = () => {
-    saveDraft(); saveFlowState(); saveChecklistToLine();
-
     const shared = ensureLines();
-    const keep = shared.activeLine;
-    shared.lines.push(blankLine());
-        if (shared.lines.length >= 2){
-      shared.lines.forEach(line=>{
-        line.form = line.form || {};
-        if ((line.form.userRelation == null) || (line.form.userRelation === "self")){
-          line.form.userRelation = "";
-        }
-      });
-    }
-    shared.lines[shared.lines.length-1].ui = { closed:false };
-    shared.activeLine = keep; 
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(shared));
 
+    saveDraft();
+
+    const keep = shared.activeLine;
+
+    const newLine = blankLine();
+    newLine.form = newLine.form || {};
+    newLine.form.userRelation = "";
+    newLine.ui = { closed:false };
+
+    shared.lines.push(newLine);
+    shared.activeLine = keep;
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(shared));
     syncFromStorage();
   };
 }
@@ -3515,6 +3775,10 @@ if (el("removeLineBtn")){
 
 // start/reset
 el("startBtn").onclick = () => {
+  // まず現在表示中の回線を必ず保存
+  saveDraft();
+
+  // saveDraft後の最新状態を取り直す
   const shared = ensureLines();
   const multi = (shared.lines.length >= 2);
 
@@ -3526,45 +3790,49 @@ el("startBtn").onclick = () => {
   }
   if (!multi && !allSelected()) return;
 
-  const line = shared.lines[activeLine];
+  // S2開始時は必ず回線1から
+  shared.activeLine = 0;
+  activeLine = 0;
 
-// 開始時：この回線の購入方法だけリセット
-  line.consult = { payType:"", needDataTransfer:"no", needTradeInReception:"no" };
+  shared.lines.forEach(line=>{
+    line.consult = {
+      payType: line.consult?.payType || "",
+      needDataTransfer: line.consult?.needDataTransfer || "no",
+      needTradeInReception: line.consult?.needTradeInReception || "no",
+      toCarrier: line.consult?.toCarrier || "",
+      toPlanKey: line.consult?.toPlanKey || ""
+    };
 
-  ctx = {
-    ...collectForm(),
-    payType: "",
-    needDataTransfer: "no",
-    needTradeInReception: "no",
-  };
+    line.flow = line.flow || { started:false, stepId:"S1" };
+    line.flow.started = true;
+    line.flow.stepId = "S2";
+  });
 
-  steps = buildSteps();
-  idx = Math.max(0, steps.findIndex(s => s.id === "S2"));
   shared.flowGlobal = { started:true, stepId:"S2" };
-
-  line.flow = line.flow || { started:false, stepId:"S1" };
-  line.flow.started = true;
-  line.flow.stepId  = "S2";
-
   localStorage.setItem(STORAGE_KEY, JSON.stringify(shared));
-  render();
-  renderLinebar();
+
+  syncFromStorage();
 };
 
 el("resetBtn").onclick = () => {
   const shared = ensureLines();
 
   shared.lines[activeLine] = blankLine();
-  shared.houseNet = { homeNetType:""};
+  shared.houseNet = { homeNetType:"" };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(shared));
 
-  ctx = null; steps = []; idx = -1;
+  if (el("chk_user_id_confirmed")) el("chk_user_id_confirmed").checked = false;
+  if (el("userRelation")) el("userRelation").value = "self";
+
+  ctx = null;
+  steps = [];
+  idx = -1;
   syncFromStorage();
 };
 
 el("wipeAllBtn").onclick = () => {
   // 確認
-  if (!confirm("全回線・世帯共通を含め、入力と進捗をすべて消去します。よろしいですか？")) return;
+  if (!confirm("全回線の入力と進捗をすべて消去します。よろしいですか？")) return;
 
   localStorage.removeItem(STORAGE_KEY);
   ctx = null; steps = []; idx = -1;
@@ -3574,6 +3842,20 @@ el("wipeAllBtn").onclick = () => {
   syncFromStorage();
 };
 
+if (el("finishResetBtn")){
+  el("finishResetBtn").onclick = () => {
+    if (!confirm("全回線の入力と進捗をすべて消去します。よろしいですか？")) return;
+
+    localStorage.removeItem(STORAGE_KEY);
+    ctx = null;
+    steps = [];
+    idx = -1;
+    activeLine = 0;
+
+    syncFromStorage();
+  };
+}
+
 // nav
 el("backBtn").onclick = () => {
   if (idx <= 0) return;
@@ -3582,20 +3864,48 @@ el("backBtn").onclick = () => {
   defaultLine1OnStep(steps[idx].id);
   syncFromStorage();
 };
-el("nextBtn").onclick = () => {
-  // S2で端末あり系なのに購入方法が未選択なら、理由を出して止める
-  if (steps[idx] && steps[idx].id === "S2") {
-    const shared = ensureLines();
-    const multi = (shared.lines.length >= 2);
 
-    if (multi){
-      const ng = firstIncompleteLineIndexS2();
-      if (ng >= 0){
-        alert(`S2の入力がまだ揃っていません。回線 ${ng+1} の「乗り換え先/プラン/購入方法」を入力してください。`);
-        gotoLine(ng);   // ←未完の回線へ飛ばす（S2のまま編集できる）
-        return;
+el("nextBtn").onclick = () => {
+  const stepId = steps[idx]?.id || "";
+
+  saveDraft();
+  if (stepId === "S3" || stepId === "S4") {
+    saveChecklistToLine();
+  }
+
+  // S2 / S3 / S4 は「今の回線が終わったら次の回線へ」
+  if (stepId === "S2" || stepId === "S3" || stepId === "S4") {
+    const shared = ensureLines();
+
+    // まず今の回線が完了しているか確認
+    if (!isStepCompleteForLine(stepId, shared.lines[activeLine], activeLine)) {
+      if (stepId === "S2") {
+        alert("この回線の「乗り換え先 / プラン / 購入方法」を入力してください。");
+      } else if (stepId === "S3") {
+        alert("この回線の契約チェックを完了してください。");
+      } else if (stepId === "S4") {
+        alert("この回線の契約後対応を完了してください。");
       }
+      return;
     }
+
+    // 後ろの回線に未完があれば、同じステップのまま次の回線へ
+    const nextLine = findNextIncompleteLineInStep(stepId, activeLine + 1);
+    if (nextLine >= 0) {
+      shared.activeLine = nextLine;
+      shared.flowGlobal = shared.flowGlobal || {};
+      shared.flowGlobal.started = true;
+      shared.flowGlobal.stepId = steps[idx].id;
+      if (steps[idx].id === "S5") shared.flowGlobal.reachedS5 = true;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(shared));
+      syncFromStorage();
+      return;
+    }
+  }
+
+  // S2専用の最終チェック
+  if (stepId === "S2") {
+    const shared = ensureLines();
     const line = shared.lines[activeLine];
     const ct = (line.form?.contractType || el("contractType")?.value || "");
     const deviceOps = needsDeviceFlow(ct);
@@ -3603,16 +3913,27 @@ el("nextBtn").onclick = () => {
     if (deviceOps) {
       const pay = (line.consult?.payType || "");
       if (!pay) {
-        alert("S2：端末購入方法（分リセ／キャリア分割／一括）を選択してください");
+        alert("端末購入方法（分リセ／キャリア分割／一括）を選択してください");
         return;
       }
     }
   }
 
-  if (idx < steps.length - 1) {
+    if (idx < steps.length - 1) {
     idx++;
+
+    const shared = ensureLines();
+    if (steps[idx].id !== "S1" && shared.lines.length >= 2){
+      shared.activeLine = 0;
+      activeLine = 0;
+    }
+
+    shared.flowGlobal = shared.flowGlobal || {};
+    shared.flowGlobal.started = true;
+    shared.flowGlobal.stepId = steps[idx].id;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(shared));
+
     saveFlowState();
-    defaultLine1OnStep(steps[idx].id);
     syncFromStorage();
   }
 };
