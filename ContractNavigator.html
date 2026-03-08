@@ -336,37 +336,39 @@ select:required:invalid{
 }
 
 .appSwitch{
-  position:fixed;
-  right:18px;
-  bottom:18px;
+  position:absolute;
+  top:50%;
+  right:16px;
+  transform:translateY(-50%);
   display:flex;
-  gap:14px;
-  z-index:9999;
+  gap:10px;
+  z-index:20;
 }
 
 .appSwitch a{
-  width:64px;
-  height:64px;
+  width:54px;
+  height:54px;
   display:grid;
   place-items:center;
-  border-radius:22px;
-  border:1px solid #d9dde3;
-  background:#fff;
+  border-radius:18px;
+  border:1px solid var(--border2);
+  background:var(--panel);
   text-decoration:none;
-  box-shadow: 0 10px 26px rgba(0,0,0,0.18);
-  font-size:30px;   /* ← アイコン大きく */
+  box-shadow: 0 6px 16px rgba(0,0,0,0.14);
+  font-size:32px;
+  line-height:1;
   user-select:none;
   -webkit-tap-highlight-color: transparent;
   transition: all 120ms ease;
 }
 
 .appSwitch a.on{
-  border-color:#111;
-  box-shadow: 0 12px 30px rgba(0,0,0,0.22);
+  border-color:var(--text);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.18);
 }
 
 .appSwitch a:active{
-  transform: translateY(2px) scale(0.97);
+  transform: translateY(1px) scale(0.97);
 }
 
 :root{
@@ -1143,8 +1145,13 @@ html[data-theme="dark"] .lineEditTag{
 <header>
   <div class="title">契約ナビ</div>
   <div class="sub">ヒアリング・契約フロー確認</div>
-  <button id="helpBtn" class="helpBtn">i</button>
   <!-- <div class="devBadge">⚠ 開発中 ⚠</div> -->
+
+  <nav class="appSwitch" aria-label="アプリ切替">
+    <a href="ContractNavigator.html" class="on" title="契約ナビ">📋</a>
+    <a href="CarrierPalette.html" title="キャリアパレット">📱</a>
+    <a href="BBNavigator.html" title="BBナビ">🏠</a>
+  </nav>
 </header>
 
 <div class="wrap">
@@ -3973,10 +3980,5 @@ document.querySelectorAll(".checkitem").forEach(item=>{
 });
 
 </script>
-<nav class="appSwitch" aria-label="アプリ切替">
-  <a href="ContractNavigator.html" class="on" title="契約ナビ">📋</a>
-  <a href="CarrierPalette.html" title="キャリアパレット">📱</a>
-  <a href="BBNavigator.html" title="BBナビ">🏠</a>
-</nav>
 </body>
 </html>

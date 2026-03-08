@@ -7,10 +7,12 @@
 
 <style>
 body{
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans JP",sans-serif;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",sans-serif;
   margin:0;
   background: transparent;
-  color:#111;
+  color:var(--text);
+  font-size:16px;
+  position:relative;
 }
 
 html, body{
@@ -41,9 +43,12 @@ html[data-theme="dark"]::before{
 header{
   padding: var(--header-pad-top) var(--header-pad-x) var(--header-pad-bottom);
   background:var(--panel);
-  border-bottom:1px solid #e6e8eb;
+  border-bottom:1px solid var(--border);
   position:relative;
+  min-height:74px;
+  box-sizing:border-box;
 }
+
 .title{font-size:24px;font-weight:800;}
 .sub{font-size:15px;color:#555;margin-top:4px;}
 .devBadge{
@@ -69,6 +74,7 @@ header{
   max-width: var(--maxw);
   margin: 0 auto;
   padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+  box-sizing: border-box;
 }
 
 html::before{
@@ -281,26 +287,40 @@ select{
 .moreBtn:active{ transform:translateY(1px) scale(0.99); }
 
 .appSwitch{
-  position:fixed;
-  right:18px;
-  bottom:18px;
+  position:absolute;
+  top:50%;
+  right:16px;
+  transform:translateY(-50%);
   display:flex;
-  gap:14px;
-  z-index:9999;
+  gap:10px;
+  z-index:20;
 }
+
 .appSwitch a{
-  width:64px;
-  height:64px;
+  width:54px;
+  height:54px;
   display:grid;
   place-items:center;
-  border-radius:22px;
-  border:1px solid #d9dde3;
-  background:#fff;
+  border-radius:18px;
+  border:1px solid var(--border2);
+  background:var(--panel);
   text-decoration:none;
-  box-shadow:0 10px 26px rgba(0,0,0,0.18);
-  font-size:30px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.14);
+  font-size:32px;
+  line-height:1;
+  user-select:none;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 120ms ease;
 }
-.appSwitch a.on{ border-color:#111; }
+
+.appSwitch a.on{
+  border-color:var(--text);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+}
+
+.appSwitch a:active{
+  transform: translateY(1px) scale(0.97);
+}
 
 /* ===== 契約ナビと同じチェックリスト見た目 ===== */
 .donebox{
@@ -522,6 +542,12 @@ html[data-theme="dark"] .typeCard.on{
   <div class="title">BBナビ</div>
   <div class="sub">光回線の見積もり</div>
   <div class="devBadge">⚠ 開発中につき使用不可 ⚠</div>
+
+  <nav class="appSwitch" aria-label="アプリ切替">
+    <a href="ContractNavigator.html" title="契約ナビ">📋</a>
+    <a href="CarrierPalette.html" title="キャリアパレット">📱</a>
+    <a href="BBNavigator.html"class="on" title="BBナビ">🏠</a>
+  </nav>
 </header>
 
 <div class="wrap">
@@ -610,13 +636,6 @@ html[data-theme="dark"] .typeCard.on{
     </div>
   </div>
 </div>
-
-<nav class="appSwitch">
-  <a href="ContractNavigator.html">📋</a>
-  <a href="CarrierPalette.html">📱</a>
-  <a href="BBNavigator.html" class="on">🏠</a>
-</nav>
-
 <script>
 const APP_THEME_KEY = "APP_THEME_V1";
 
