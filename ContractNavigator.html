@@ -1724,6 +1724,13 @@ html[data-theme="dark"] .lineEditTag{
             </div>
           </div>
           <div class="checkitem">
+            <input type="checkbox" id="chk_business_card" />
+            <div>
+              <div class="ctitle">名刺のお渡し</div>
+              <div class="csub">行動クレド④　使用後の満足まで責任を！</div>
+            </div>
+          </div>
+          <div class="checkitem">
             <input type="checkbox" id="chk_done_car" />
             <div>
               <div class="ctitle">お車のご利用を確認</div>
@@ -2484,6 +2491,7 @@ function requiredDoneIds(curCtx){
   const shared = ensureLines();
   const isLastLine = (activeLine === shared.lines.length - 1);
   if (isLastLine) ids.push("chk_done_car");
+  if (isLastLine) ids.push("chk_business_card");
   return ids;
 }
 function isS3SimChecklistComplete(curCtx){
@@ -2578,8 +2586,8 @@ function isLineS4Complete(line, isLast){
   const deviceFlow = needsDeviceFlow(f.contractType);
   if (deviceFlow && (c.needDataTransfer === "yes")) ids.push("chk_done_datatransfer");
   if (deviceFlow && (c.needTradeInReception === "yes")) ids.push("chk_done_tradein");
-  if (isLast) ids.push("chk_done_car"); // 最後の回線だけ
-
+  if (isLast) ids.push("chk_done_car");
+  if (isLast) ids.push("chk_business_card");
   return ids.every(k => !!s4[k]);
 }
 
@@ -2812,7 +2820,9 @@ if (step.id === "S4"){
   const shared = ensureLines();
   const isLastLine = (activeLine === shared.lines.length - 1);
   const carItem = el("chk_done_car")?.closest(".checkitem");
+  const biscard = el("chk_business_card")?.closest(".checkitem");
   if (carItem) carItem.classList.toggle("hidden", !isLastLine);
+  if (biscard) biscard.classList.toggle("hidden", !isLastLine);
 
   el("backBtn").disabled = (idx === 0);
   el("nextBtn").disabled = !isDoneChecklistComplete(ctx);
@@ -2953,6 +2963,8 @@ if (step.id === "S5"){
     const isLastLine = (activeLine === shared.lines.length - 1);
     const carItem = el("chk_done_car")?.closest(".checkitem");
     if (carItem) carItem.classList.toggle("hidden", !isLastLine);
+    const biscard = el("chk_business_card")?.closest(".checkitem");
+    if (biscard) biscard.classList.toggle("hidden", !isLastLine);
 
     el("backBtn").disabled = (idx === 0);
     el("nextBtn").disabled = !isDoneChecklistComplete(ctx);
@@ -3212,7 +3224,7 @@ function restoreCheckStatesFromLine(line){
   });
 
   const s4 = line.s4 || {};
-  ["chk_done_return","chk_done_open","chk_done_datatransfer","chk_done_point","chk_done_consent","chk_done_tradein","chk_done_car"].forEach(id=>{
+  ["chk_done_return","chk_done_open","chk_done_datatransfer","chk_done_point","chk_done_consent","chk_done_tradein","chk_done_car","chk_business_card"].forEach(id=>{
     if (el(id)) el(id).checked = !!s4[id];
   });
 }
@@ -3246,7 +3258,7 @@ function saveChecklistToLine(){
   });
 
   line.s4 = line.s4 || {};
-  ["chk_done_return","chk_done_open","chk_done_datatransfer","chk_done_point","chk_done_consent","chk_done_tradein","chk_done_car"].forEach(id=>{
+  ["chk_done_return","chk_done_open","chk_done_datatransfer","chk_done_point","chk_done_consent","chk_done_tradein","chk_done_car","chk_business_card"].forEach(id=>{
     if (el(id)) line.s4[id] = !!el(id).checked;
   });
 
@@ -3728,7 +3740,7 @@ el("s2ToPlanKey")?.addEventListener("change", ()=>{
   });
 });
 
-["chk_done_return","chk_done_open","chk_done_datatransfer","chk_done_point","chk_done_consent","chk_done_tradein","chk_done_car"]
+["chk_done_return","chk_done_open","chk_done_datatransfer","chk_done_point","chk_done_consent","chk_done_tradein","chk_done_car","chk_business_card"]
   .forEach(id => {
     const node = el(id);
     if (!node) return;
