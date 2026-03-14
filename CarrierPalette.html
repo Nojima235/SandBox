@@ -1088,6 +1088,8 @@ details.compact summary{
    =============================== */
 const APP_THEME_KEY = "APP_THEME_V1";
 const CP_CTX_KEY = "carrier_palette_ctx_v1";
+const CP_DEFAULT_DATA_USAGE = "lte30";
+const makeDefaultCpCtx = () => ({ form:{ dataUsage: CP_DEFAULT_DATA_USAGE }, consult:{} });
 
 const el = (id) => document.getElementById(id);
 const on = (id, ev, fn) => { const x = el(id); if (x) x.addEventListener(ev, fn); };
@@ -1095,15 +1097,15 @@ const click = (id, fn) => { const x = el(id); if (x) x.onclick = fn; };
 
 function readCpCtx(){
   const raw = localStorage.getItem(CP_CTX_KEY);
-  if (!raw) return { form:{ dataUsage:"lte30" }, consult:{} };
+  if (!raw) return makeDefaultCpCtx();
   try{
     const obj = JSON.parse(raw) || {};
-    obj.form = obj.form || { dataUsage:"lte30" };
+    obj.form = obj.form || { dataUsage: CP_DEFAULT_DATA_USAGE };
     obj.consult = obj.consult || {};
-    if (!obj.form.dataUsage) obj.form.dataUsage = "lte30";
+    if (!obj.form.dataUsage) obj.form.dataUsage = CP_DEFAULT_DATA_USAGE;
     return obj;
   }catch(e){
-    return { form:{ dataUsage:"lte30" }, consult:{} };
+    return makeDefaultCpCtx();
   }
 }
 function writeCpCtx(obj){
@@ -1448,57 +1450,62 @@ function applyFamilyCountUI(side, carrier, consult){
   }
 }
 
-/* dカード UI */
-function applyDcardUI(side, carrier, consult){
-  const pill = el(side + "_dcardPill");
-  const wrap = el(side + "_dcardWrap");
-  const sel  = el(side + "_dcard");
+function applyScopedDiscountSelectUI(side, carrier, consult, cfg){
+  const pill = el(side + "_" + cfg.pillId);
+  const wrap = el(side + "_" + cfg.wrapId);
+  const sel  = el(side + "_" + cfg.selectId);
   if (!pill || !wrap || !sel) return;
 
-  const onV = !!getConsult(consult, side, "discDcard", false);
+  const onValue = !!getConsult(consult, side, cfg.discountKey, false);
+  const visible = cfg.allowedCarriers.includes(carrier);
 
-  if (carrier !== "docomo"){
+  if (!visible){
     pill.classList.add("hidden");
     wrap.classList.add("hidden");
-    if (onV) setConsultPatch(side, { discDcard:false, dcardKind:"silver" });
+    if (onValue){
+      setConsultPatch(side, {
+        [cfg.discountKey]: false,
+        [cfg.valueKey]: cfg.defaultValue
+      });
+    }
     return;
   }
 
   pill.classList.remove("hidden");
-  pillSet(pill, onV);
+  pillSet(pill, onValue);
+  wrap.classList.toggle("hidden", !onValue);
+  sel.disabled = !onValue;
 
-  wrap.classList.toggle("hidden", !onV);
-  sel.disabled = !onV;
+  const currentValue = getConsult(consult, side, cfg.valueKey, cfg.defaultValue) || cfg.defaultValue;
+  sel.value = cfg.normalize(currentValue);
+}
 
-  const kind = getConsult(consult, side, "dcardKind", "silver") || "silver";
-  sel.value = (kind === "gold") ? "gold" : "silver";
+/* dカード UI */
+function applyDcardUI(side, carrier, consult){
+  applyScopedDiscountSelectUI(side, carrier, consult, {
+    pillId: "dcardPill",
+    wrapId: "dcardWrap",
+    selectId: "dcard",
+    discountKey: "discDcard",
+    valueKey: "dcardKind",
+    defaultValue: "silver",
+    allowedCarriers: ["docomo"],
+    normalize: (kind) => (kind === "gold" ? "gold" : "silver")
+  });
 }
 
 /* PayPay UI */
 function applyPaypayUI(side, carrier, consult){
-  const pill = el(side + "_paypayPill");
-  const wrap = el(side + "_paypayWrap");
-  const sel  = el(side + "_paypay");
-  if (!pill || !wrap || !sel) return;
-
-  const onV = !!getConsult(consult, side, "discPaypay", false);
-  const okCarrier = (carrier === "ymobile" || carrier === "softbank");
-
-  if (!okCarrier){
-    pill.classList.add("hidden");
-    wrap.classList.add("hidden");
-    if (onV) setConsultPatch(side, { discPaypay:false, paypayKind:"normal" });
-    return;
-  }
-
-  pill.classList.remove("hidden");
-  pillSet(pill, onV);
-
-  wrap.classList.toggle("hidden", !onV);
-  sel.disabled = !onV;
-
-  const kind = getConsult(consult, side, "paypayKind", "normal") || "normal";
-  sel.value = (kind === "gold") ? "gold" : "normal";
+  applyScopedDiscountSelectUI(side, carrier, consult, {
+    pillId: "paypayPill",
+    wrapId: "paypayWrap",
+    selectId: "paypay",
+    discountKey: "discPaypay",
+    valueKey: "paypayKind",
+    defaultValue: "normal",
+    allowedCarriers: ["ymobile", "softbank"],
+    normalize: (kind) => (kind === "gold" ? "gold" : "normal")
+  });
 }
 
 /* 任意調整（au/SoftBankのみ） */

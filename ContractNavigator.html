@@ -2036,6 +2036,26 @@ function readSharedSafe(){
   }
 }
 
+function writeShared(shared){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(shared));
+}
+
+function lineConsultDefaults(){
+  return { payType:"", needDataTransfer:"no", needTradeInReception:"no" };
+}
+
+function buildLineContext(line){
+  const consult = line?.consult || lineConsultDefaults();
+  return {
+    ...collectForm(),
+    payType: consult.payType || "",
+    needDataTransfer: consult.needDataTransfer || "no",
+    needTradeInReception: consult.needTradeInReception || "no",
+    toCarrier: consult.toCarrier || "",
+    toPlanKey: consult.toPlanKey || ""
+  };
+}
+
 function renderS2ToPlanOptions(selectedCarrier, selectedPlanKey){
   const planSel = el("s2ToPlanKey");
   if (!planSel) return;
@@ -2072,7 +2092,7 @@ function ensureLines(){
   if (shared.lines.length === 0){
     shared.lines.push(blankLine());
     shared.activeLine = 0;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(shared));
+    writeShared(shared);
   }
   // 自宅回線は基本世帯共通
   if (!shared.houseNet){
@@ -2089,7 +2109,7 @@ function ensureLines(){
     if (shared.flowGlobal.reachedS5 == null) shared.flowGlobal.reachedS5 = false;
   }
 
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(shared));
+  writeShared(shared);
   return shared;
 }
 
@@ -2099,7 +2119,7 @@ function setActiveLine(i){
   const shared = ensureLines();
   const clamped = Math.max(0, Math.min(i, shared.lines.length - 1));
   shared.activeLine = clamped;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(shared));
+  writeShared(shared);
   activeLine = clamped;
 }
 
@@ -2239,9 +2259,9 @@ function updateS2UI(){
 function saveS2ConsultPatch(patch){
   const shared = ensureLines();
   const line = shared.lines[activeLine];
-  line.consult = line.consult || { payType:"", needDataTransfer:"no", needTradeInReception:"no" };
+  line.consult = line.consult || lineConsultDefaults();
   line.consult = { ...line.consult, ...patch };
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(shared));
+  writeShared(shared);
 }
 
 /* =========================
@@ -2421,6 +2441,10 @@ function showPanel(which){
   el("panelS2")?.classList.add("hidden");
   el("panelS3")?.classList.add("hidden");
   el(which)?.classList.remove("hidden");
+}
+
+function hideElements(ids){
+  ids.forEach(id => el(id)?.classList.add("hidden"));
 }
 
 function syncUserRelationLock(){
@@ -2695,38 +2719,18 @@ function syncContractTypeAttention(){
    ========================= */
 function render(){
   const navRow = el("navRow");
-  el("s3nChecklist")?.classList.add("hidden");
-  el("s3cChecklist")?.classList.add("hidden");
-  el("s3sChecklist")?.classList.add("hidden");
-  el("s3lChecklist")?.classList.add("hidden");
-  el("doneChecklist")?.classList.add("hidden");
-
-  el("panelS1")?.classList.add("hidden");
-  el("panelS2")?.classList.add("hidden");
-  el("panelS3")?.classList.add("hidden");
-
-  el("panelS1")?.classList.add("hidden");
-  el("panelS2")?.classList.add("hidden");
-  el("panelS3")?.classList.add("hidden");
+  hideElements([
+    "s3nChecklist","s3cChecklist","s3sChecklist","s3lChecklist","doneChecklist",
+    "panelS1","panelS2","panelS3","finishBox","multiFinishBox",
+    "s2Box","s2PointAlert","attnBox","nextBox","warnBox"
+  ]);
 
   const lineMiniRow = el("lineMiniRow");
-
-  if (el("finishBox")) el("finishBox").classList.add("hidden");
-  if (el("multiFinishBox")) el("multiFinishBox").classList.add("hidden");
-
-  el("s2Box")?.classList.add("hidden");
-  el("s2PointAlert")?.classList.add("hidden");
-
-  if (el("finishBox")) el("finishBox").classList.add("hidden");
-  if (el("multiFinishBox")) el("multiFinishBox").classList.add("hidden");
   const bar = el("stepbar");
   bar.innerHTML = "";
 
-  if (el("attnBox")) el("attnBox").classList.add("hidden");
   if (el("attnList")) el("attnList").innerHTML = "";
-  if (el("nextBox")) el("nextBox").classList.add("hidden");
   if (el("nextAction")) el("nextAction").textContent = "";
-  if (el("warnBox")) el("warnBox").classList.add("hidden");
 
   const step = steps[idx];
   el("stepTitle").textContent = step.name;
@@ -2740,7 +2744,6 @@ function render(){
     navRow.classList.toggle("hidden", step.id === "S1");
   }
 
-  const isS1 = (step.id === "S1");
   const reachedS5 = hasReachedS5();
 
   const visibleIds = reachedS5
@@ -2773,7 +2776,10 @@ function render(){
         shared.flowGlobal.started = true;
         shared.flowGlobal.stepId = steps[idx].id;
         if (shared.flowGlobal.reachedS5 == null) shared.flowGlobal.reachedS5 = false;
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(shared));
+        if (steps[idx].id !== "S1" && shared.lines.length >= 2){
+          syncAllLinesToStep(shared, steps[idx].id);
+        }
+        writeShared(shared);
 
         saveFlowState();
         defaultLine1OnStep(steps[idx].id);
@@ -2898,16 +2904,7 @@ if (step.id === "S5"){
 
     const shared = ensureLines();
     const line = shared.lines[activeLine];
-    const consult = line.consult || {};
-
-    const curCtx = {
-      ...collectForm(),
-      payType: consult.payType || "",
-      needDataTransfer: consult.needDataTransfer || "no",
-      needTradeInReception: consult.needTradeInReception || "no",
-      toCarrier: consult.toCarrier || "",
-      toPlanKey: consult.toPlanKey || ""
-    };
+    const curCtx = buildLineContext(line);
 
     // 分リセ → S3N
     if (needsDeviceFlow(curCtx.contractType) && curCtx.payType === "nojimaInstall"){
@@ -2991,16 +2988,7 @@ el("nextBtn").disabled = (idx === steps.length - 1);
   // ====== 注意(attn) / 次(next) 表示 ======
   const shared = ensureLines();
   const line = shared.lines[activeLine];
-  const consult = line.consult || {};
-
-  const curCtx = {
-    ...collectForm(),
-    payType: consult.payType || "",
-    needDataTransfer: consult.needDataTransfer || "no",
-    needTradeInReception: consult.needTradeInReception || "no",
-    toCarrier: consult.toCarrier || "",
-    toPlanKey: consult.toPlanKey || ""
-  };
+  const curCtx = buildLineContext(line);
 
   const pack = contentFor(step.id, curCtx);
   const attnBox = el("attnBox");
@@ -3194,7 +3182,15 @@ function saveFlowState(){
   shared.lines[activeLine].flow.started = true;
   shared.lines[activeLine].flow.stepId  = stepId;
 
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(shared));
+  writeShared(shared);
+}
+
+function syncAllLinesToStep(shared, stepId){
+  (shared.lines || []).forEach(line => {
+    line.flow = line.flow || { started:false, stepId:"S1" };
+    line.flow.started = true;
+    line.flow.stepId = stepId;
+  });
 }
 
 function restoreCheckStatesFromLine(line){
@@ -3564,16 +3560,11 @@ function syncFromStorage(){
   loadDraft();
   restoreCheckStatesFromLine(line);
 
-  const consult = line.consult || { payType:"", needDataTransfer:"no", needTradeInReception:"no" };
+  const consult = line.consult || lineConsultDefaults();
   const started = !!(shared.flowGlobal && shared.flowGlobal.started);
 
   if (!started){
-    ctx = {
-      ...collectForm(),
-      payType: consult.payType || "",
-      needDataTransfer: consult.needDataTransfer || "no",
-      needTradeInReception: consult.needTradeInReception || "no",
-    };
+    ctx = buildLineContext(line);
     steps = buildSteps();
     idx = 0;
     render();
@@ -3581,12 +3572,7 @@ function syncFromStorage(){
     return;
   }
 
-  ctx = {
-    ...collectForm(),
-    payType: consult.payType || "",
-    needDataTransfer: consult.needDataTransfer || "no",
-    needTradeInReception: consult.needTradeInReception || "no",
-  };
+  ctx = buildLineContext(line);
 
   steps = buildSteps();
 
@@ -3604,7 +3590,7 @@ function syncFromStorage(){
       const startIdx = steps.findIndex(s => s.id === startId);
       if (startIdx >= 0){
         sharedNow.lines[activeLine].flow.stepId = "S2";
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(sharedNow));
+        writeShared(sharedNow);
       }
     }
   }
@@ -3916,7 +3902,10 @@ el("nextBtn").onclick = () => {
       shared.flowGlobal.started = true;
       shared.flowGlobal.stepId = steps[idx].id;
       if (steps[idx].id === "S5") shared.flowGlobal.reachedS5 = true;
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(shared));
+      shared.lines[nextLine].flow = shared.lines[nextLine].flow || { started:false, stepId:"S1" };
+      shared.lines[nextLine].flow.started = true;
+      shared.lines[nextLine].flow.stepId = stepId;
+      writeShared(shared);
       syncFromStorage();
       return;
     }
@@ -3950,7 +3939,10 @@ el("nextBtn").onclick = () => {
     shared.flowGlobal = shared.flowGlobal || {};
     shared.flowGlobal.started = true;
     shared.flowGlobal.stepId = steps[idx].id;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(shared));
+    if (steps[idx].id !== "S1" && shared.lines.length >= 2){
+      syncAllLinesToStep(shared, steps[idx].id);
+    }
+    writeShared(shared);
 
     saveFlowState();
     syncFromStorage();
