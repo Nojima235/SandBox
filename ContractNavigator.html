@@ -1795,7 +1795,7 @@ function applyTheme(theme){
 
 function loadTheme(){
   const saved = localStorage.getItem(APP_THEME_KEY);
-  applyTheme(saved || getSystemTheme());
+  applyTheme(saved || "light");
 }
 
 function toggleTheme(){
@@ -1813,7 +1813,7 @@ if (window.matchMedia){
   const mq = window.matchMedia("(prefers-color-scheme: dark)");
   const onChange = () => {
     const saved = localStorage.getItem(APP_THEME_KEY);
-    if (!saved) applyTheme(getSystemTheme());
+    if (!saved) applyTheme("light");
   };
   if (mq.addEventListener) mq.addEventListener("change", onChange);
   else if (mq.addListener) mq.addListener(onChange);

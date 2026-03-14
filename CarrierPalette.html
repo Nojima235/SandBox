@@ -1125,8 +1125,7 @@ function loadCtx(){
 function readTheme(){
   const saved = localStorage.getItem(APP_THEME_KEY);
   if (saved === "dark" || saved === "light") return saved;
-  return (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches)
-    ? "dark" : "light";
+  return "light";
 }
 function setTheme(t){
   const theme = (t === "dark") ? "dark" : "light";
@@ -1276,7 +1275,7 @@ function setConsultPatch(side, patch){
 
 function readMode(){
   const { consult } = loadCtx();
-  return consult.viewMode === "compare" ? "compare" : "single";
+  return consult.viewMode === "single" ? "single" : "compare";
 }
 function setMode(mode){
   saveConsultPatch({ viewMode: (mode === "compare" ? "compare" : "single") });
@@ -2486,7 +2485,7 @@ function init(){
   const { consult } = loadCtx();
 
   setTheme(readTheme());
-  if (!consult.viewMode) saveConsultPatch({ viewMode:"single" });
+  if (!consult.viewMode) saveConsultPatch({ viewMode:"compare" });
 
   if (!("A_talkEnabled" in consult)) setConsultPatch("A", { talkEnabled:false, talkKind:"short" });
   if (!("B_talkEnabled" in consult)) setConsultPatch("B", { talkEnabled:false, talkKind:"short" });
