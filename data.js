@@ -7,13 +7,23 @@
 // プラン
   C.plans = {
     docomo: {
-      map: { lte5: "mini_4", lte30: "mini_10", unlimited: "max_unlimited" },
+      map: { lte5: "mini_4", lte30: "mini_10", unlimited: "max" },
       items: {
         mini_4:  { label:"ドコモ mini（4GB）",  price: 2750 },
         mini_10: { label: "ドコモ mini（10GB）", price: 3850 },
-        max_28: { label: "【U22】ドコモ MAX（28GB）", price: 5698 },
-        max_30:     { label:"【U22】ドコモ MAX（30GB）", price: 6798 },
-        max_unlimited:     { label:"ドコモ MAX（無制限）", price: 8448 }
+        max: {
+          selectLabel: "ドコモ MAX",
+          defaultStage: "max_unlimited",
+          variableStages: {
+            max_28: { stageLabel: "【U22】~28GB", ref: "max_28" },
+            max_30: { stageLabel: "【U22】28~30GB", ref: "max_30" },
+            max_unlimited: { stageLabel: "無制限", ref: "max_unlimited" }
+          }
+        },
+        max_28: { label: "【U22】ドコモ MAX（28GB）", price: 5698, hidden: true },
+        max_30: { label:"【U22】ドコモ MAX（30GB）", price: 6798, hidden: true },
+        max_unlimited: { label:"ドコモ MAX（無制限）", price: 8448, hidden: true },
+        poikatsu_max:      { label:"ドコモ ポイ活 MAX（無制限）", price: 11748 }
       }
     },
 
@@ -21,14 +31,23 @@
       map: { lte5:"30gb", lte30:"30gb", unlimited:"110gb" },
       items:{
         "30gb":  { label:"ahamo（30GB）",  price: 2970, includes:{ callShort:true } },
-        "110gb": { label:"ahamo大盛り（110GB）", price: 4950, includes:{ callShort:true } }
+        "110gb": { label:"ahamo大盛り（110GB）", price: 4950, includes:{ callShort:true } },
+        ahamo_poikatsu: { label:"ahamoポイ活（110GB）", price: 7150, includes:{ callShort:true } }
       }
     },
 
     au: {
-      map: { lte5:null, lte30:null, unlimited:"value_link" },
+      map: { lte5:"value_link", lte30:"value_link", unlimited:"value_link" },
       items:{
-        value_link: { label:"auバリューリンクプラン（無制限）", price: 8008 }
+        value_link: { label:"auバリューリンクプラン（無制限）", price: 8008 },
+        u18_value: {
+          selectLabel: "U18バリュープラン",
+          defaultStage: "u18_over10",
+          variableStages: {
+            u18_under10: { stageLabel: "~10GB", label:"U18バリュープラン（~10GB）", price: 2398 },
+            u18_over10: { stageLabel: "10GB~20GB", label:"U18バリュープラン（10GB~20GB）", price: 4048 }
+          }
+        }
       }
     },
 
@@ -98,6 +117,11 @@
     any: { label:"メール持ち運び", price: 330 }
   };
 
+  C.dataBoost = {
+    uq: { label:"増量オプション", price: 550 },
+    ymobile: { label:"増量オプション", price: 550 }
+  };
+
 // 割引
   C.discounts = {
     docomo: {
@@ -110,6 +134,9 @@
       }
     },
       hikari: { label: "ドコモ光セット割", amount: -1210 },
+      longterm: { label:"長期利用割" },
+      longterm_10: { label:"長期利用割（10年以上）", amount: -110 },
+      longterm_20: { label:"長期利用割（20年以上）", amount: -220 },
       dcard_silver: { label:"dカード割（シルバー）", amount: -220 },
       dcard_gold:   { label:"dカード割（ゴールド）", amount: -550 },
       denki:        { label:"ドコモでんきセット割", amount: -110 }
@@ -169,10 +196,59 @@
   };
 
   // キャリア情報
+  function resolvePlanItem(cc, key, stageKey){
+    if (!cc?.items?.[key]) return null;
+
+    const raw = cc.items[key];
+    if (!raw?.variableStages){
+      return { ...raw, resolvedPlanKey: key };
+    }
+
+    const effectiveStage = raw.variableStages[stageKey] ? stageKey : (raw.defaultStage || Object.keys(raw.variableStages)[0]);
+    const tier = raw.variableStages[effectiveStage] || {};
+    const base = tier.ref ? cc.items[tier.ref] || null : null;
+
+    return {
+      ...(base || {}),
+      ...raw,
+      ...tier,
+      label: raw.selectLabel || tier.label || base?.label || raw.label || "",
+      selectedStageKey: effectiveStage,
+      resolvedPlanKey: tier.ref || key
+    };
+  }
+
   C.getCarrier = function(carrier){
     const cc = C.plans[carrier];
     if (!cc) return null;
-    return { plans: cc.items };
+
+    const plans = {};
+    Object.keys(cc.items).forEach((key) => {
+      const item = cc.items[key];
+      if (item?.hidden) return;
+      const resolved = resolvePlanItem(cc, key);
+      if (resolved) plans[key] = resolved;
+    });
+
+    return { plans };
+  };
+
+  C.getPlanStageOptions = function(carrier, planKey){
+    const cc = C.plans[carrier];
+    const raw = cc?.items?.[planKey];
+    if (!raw?.variableStages) return [];
+
+    return Object.keys(raw.variableStages).map((key) => ({
+      key,
+      label: raw.variableStages[key].stageLabel || raw.variableStages[key].label || key
+    }));
+  };
+
+  C.getDefaultPlanStage = function(carrier, planKey){
+    const cc = C.plans[carrier];
+    const raw = cc?.items?.[planKey];
+    if (!raw?.variableStages) return "";
+    return raw.defaultStage || Object.keys(raw.variableStages)[0] || "";
   };
 
   // 通話オプション
@@ -185,15 +261,28 @@
 C.getDiscount = function(carrier, kind, ctx){
   const d = C.discounts?.[carrier]?.[kind];
   if (!d) return null;
+  const planKey = String(ctx?.planKey || "");
 
   if (kind === "family" && d.tiers){
+    if (carrier === "au" && planKey === "u18_value"){
+      const n = Number(ctx?.discFamilyCount || 2) || 2;
+      const key = (n >= 3) ? 3 : 2;
+      const amount = (key >= 3) ? -550 : -220;
+      return { label: `${d.label}（${key === 2 ? "2回線" : "3回線以上"}）`, amount };
+    }
+
     const n = Number(ctx?.discFamilyCount || 2) || 2; // 2 or 3
     const key = (n >= 3) ? 3 : 2;
     return { label: `${d.label}（${key === 2 ? "2回線" : "3回線以上"}）`, amount: d.tiers[key] };
   }
 
+  if (carrier === "au" && planKey === "u18_value"){
+    if (kind === "hikari") return { ...d, amount: -550 };
+    if (kind === "aupay") return { ...d, amount: -220 };
+  }
+
   if (carrier === "docomo" && kind === "u22"){
-  const pk = String(ctx?.planKey || "");
+  const pk = planKey;
   const amount =
     (pk === "max_unlimited") ? -550 :
     (pk === "max_30")        ? -3828 :
@@ -211,19 +300,23 @@ C.getDiscount = function(carrier, kind, ctx){
     return cc.map?.[dataUsage] || "";
   };
 
-  C.getPlan = function(carrier, keyOrUsage){
+  C.getPlan = function(carrier, keyOrUsage, stageKey){
     const cc = C.plans[carrier];
     if (!cc) return null;
 
-    if (cc.items && cc.items[keyOrUsage]) return cc.items[keyOrUsage];
+    if (cc.items && cc.items[keyOrUsage]) return resolvePlanItem(cc, keyOrUsage, stageKey);
 
     const key = cc.map?.[keyOrUsage];
     if (!key) return null;
-    return cc.items[key] || null;
+    return resolvePlanItem(cc, key) || null;
   };
 
   C.getMailCarry = function(carrier){
     return C.mailCarry.any;
+  };
+
+  C.getDataBoost = function(carrier){
+    return C.dataBoost?.[carrier] || null;
   };
 
 C.isDiscountEligible = function(carrier, kind, planKey, ctx){
@@ -242,6 +335,15 @@ C.isDiscountEligible = function(carrier, kind, planKey, ctx){
   // U22割はMAXのみ
   if (carrier === "docomo" && kind === "u22"){
     return (planKey === "max_28" || planKey === "max_30" || planKey === "max_unlimited");
+  }
+
+  if (carrier === "docomo" && kind === "longterm"){
+    return (
+      planKey === "max_28" ||
+      planKey === "max_30" ||
+      planKey === "max_unlimited" ||
+      planKey === "poikatsu_max"
+    );
   }
 
   //【UQ】

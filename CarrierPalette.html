@@ -848,6 +848,10 @@ details.compact summary{
           <div style="margin-top:8px;">
             <div class="mini" style="margin:0;font-weight:1000;">プラン</div>
             <select id="A_planSelect"></select>
+            <div id="A_planStageWrap" class="hidden" style="margin-top:8px;">
+              <div class="mini" style="margin:0 0 4px;font-weight:1000;">データ容量</div>
+              <select id="A_planStageSelect"></select>
+            </div>
           </div>
           <div class="talkBox">
             <div class="talkBoxTitle">
@@ -871,6 +875,7 @@ details.compact summary{
 
           <div class="pillRow" style="margin-top:6px;">
             <div class="pill" id="A_mail">メール持ち運び</div>
+            <div class="pill" id="A_dataBoost">増量OP</div>
           </div>
 
           <div class="divider" style="margin:10px 0;"></div>
@@ -893,6 +898,13 @@ details.compact summary{
 
             <div class="pill disc" id="A_hikari">光割</div>
             <div class="pill disc" id="A_denki">でんき割</div>
+            <div class="pill disc" id="A_longTermPill">長期利用割</div>
+            <span class="pillSelectWrap hidden" id="A_longTermWrap">
+              <select id="A_longTerm" class="pillSelect">
+                <option value="10">10年以上</option>
+                <option value="20">20年以上</option>
+              </select>
+            </span>
 
             <div class="pill disc" id="A_dcardPill">dカード割</div>
             <span class="pillSelectWrap hidden" id="A_dcardWrap">
@@ -962,6 +974,10 @@ details.compact summary{
           <div style="margin-top:8px;">
             <div class="mini" style="margin:0;font-weight:1000;">プラン</div>
             <select id="B_planSelect"></select>
+            <div id="B_planStageWrap" class="hidden" style="margin-top:8px;">
+              <div class="mini" style="margin:0 0 4px;font-weight:1000;">データ容量</div>
+              <select id="B_planStageSelect"></select>
+            </div>
           </div>
           <div class="talkBox">
             <div class="talkBoxTitle">
@@ -985,6 +1001,7 @@ details.compact summary{
 
           <div class="pillRow" style="margin-top:6px;">
             <div class="pill" id="B_mail">メール持ち運び</div>
+            <div class="pill" id="B_dataBoost">増量OP</div>
           </div>
 
           <div class="divider" style="margin:10px 0;"></div>
@@ -1007,6 +1024,13 @@ details.compact summary{
 
             <div class="pill disc" id="B_hikari">光割</div>
             <div class="pill disc" id="B_denki">でんき割</div>
+            <div class="pill disc" id="B_longTermPill">長期利用割</div>
+            <span class="pillSelectWrap hidden" id="B_longTermWrap">
+              <select id="B_longTerm" class="pillSelect">
+                <option value="10">10年以上</option>
+                <option value="20">20年以上</option>
+              </select>
+            </span>
 
             <div class="pill disc" id="B_dcardPill">dカード割</div>
             <span class="pillSelectWrap hidden" id="B_dcardWrap">
@@ -1088,8 +1112,7 @@ details.compact summary{
    =============================== */
 const APP_THEME_KEY = "APP_THEME_V1";
 const CP_CTX_KEY = "carrier_palette_ctx_v1";
-const CP_DEFAULT_DATA_USAGE = "lte30";
-const makeDefaultCpCtx = () => ({ form:{ dataUsage: CP_DEFAULT_DATA_USAGE }, consult:{} });
+const makeDefaultCpCtx = () => ({ form:{}, consult:{} });
 
 const el = (id) => document.getElementById(id);
 const on = (id, ev, fn) => { const x = el(id); if (x) x.addEventListener(ev, fn); };
@@ -1100,9 +1123,8 @@ function readCpCtx(){
   if (!raw) return makeDefaultCpCtx();
   try{
     const obj = JSON.parse(raw) || {};
-    obj.form = obj.form || { dataUsage: CP_DEFAULT_DATA_USAGE };
+    obj.form = obj.form || {};
     obj.consult = obj.consult || {};
-    if (!obj.form.dataUsage) obj.form.dataUsage = CP_DEFAULT_DATA_USAGE;
     return obj;
   }catch(e){
     return makeDefaultCpCtx();
@@ -1359,8 +1381,10 @@ function renderCarrierCards(side){
         discPaypay:false, paypayKind:"normal",
         discDcard:false, dcardKind:"silver",
         discDenki:false, discU22:false,
+        discLongTerm:false, longTermYears:"10",
         optUpgradeUqToAu:false, optUpgradeYToSb:false,
         optMailCarry:false,
+        optDataBoost:false,
         talkEnabled:isAhamo ? true : false,
         talkKind:"short",
         discFamilyCount: 2,
@@ -1435,7 +1459,7 @@ function applyFamilyCountUI(side, carrier, consult){
   if (!wrap || !sel) return;
 
   const need = needsFamilyCount(carrier, planKey);
-  wrap.classList.toggle("hidden", !need);
+  wrap.classList.toggle("hidden", !(need && famOn));
   if (!need) return;
 
   sel.disabled = !famOn;
@@ -1493,6 +1517,39 @@ function applyDcardUI(side, carrier, consult){
   });
 }
 
+/* 長期利用割UI */
+function applyLongTermUI(side, carrier, consult){
+  const planKey = getResolvedPlanKey(side, carrier, consult);
+  const eligible = !!window.PRICE_DB?.isDiscountEligible?.(carrier, "longterm", planKey);
+
+  const pill = el(side + "_longTermPill");
+  const wrap = el(side + "_longTermWrap");
+  const sel = el(side + "_longTerm");
+  if (!pill || !wrap || !sel) return;
+
+  if (!eligible){
+    pill.classList.add("hidden");
+    wrap.classList.add("hidden");
+    if (getConsult(consult, side, "discLongTerm", false) || getConsult(consult, side, "longTermYears", "10") !== "10"){
+      setConsultPatch(side, { discLongTerm:false, longTermYears:"10" });
+    }
+    return;
+  }
+
+  const onValue = !!getConsult(consult, side, "discLongTerm", false);
+  const years = (getConsult(consult, side, "longTermYears", "10") === "20") ? "20" : "10";
+
+  pill.classList.remove("hidden");
+  pillSet(pill, onValue);
+  wrap.classList.toggle("hidden", !onValue);
+  sel.disabled = !onValue;
+  sel.value = years;
+
+  if (getConsult(consult, side, "longTermYears", "10") !== years){
+    setConsultPatch(side, { longTermYears: years });
+  }
+}
+
 /* PayPay UI */
 function applyPaypayUI(side, carrier, consult){
   applyScopedDiscountSelectUI(side, carrier, consult, {
@@ -1512,7 +1569,8 @@ function applyCustomBoxVisibility(side, carrier, consult){
   const box = el(side + "_customBox");
   if (!box) return;
 
-  const ok = (carrier === "au" || carrier === "softbank");
+  const resolvedPlanKey = getResolvedPlanKey(side, carrier, consult);
+  const ok = (carrier === "softbank") || (carrier === "au" && resolvedPlanKey !== "u18_value");
   box.classList.toggle("hidden", !ok);
 
   if (!ok){
@@ -1524,16 +1582,82 @@ function applyCustomBoxVisibility(side, carrier, consult){
   }
 }
 
+function applyDataBoostUI(side, carrier, consult){
+  const pill = el(side + "_dataBoost");
+  if (!pill) return;
+
+  const visible = (carrier === "uq" || carrier === "ymobile");
+  pill.classList.toggle("hidden", !visible);
+
+  if (!visible){
+    if (getConsult(consult, side, "optDataBoost", false)){
+      setConsultPatch(side, { optDataBoost:false });
+    }
+    return;
+  }
+
+  pillSet(pill, !!getConsult(consult, side, "optDataBoost", false));
+}
+
 /* docomo U22：MAX以外は強制OFF */
 function enforceU22Policy(side, carrier, consult){
   if (carrier !== "docomo"){
     if (getConsult(consult, side, "discU22", false)) setConsultPatch(side, { discU22:false });
     return;
   }
-  const planKey = getConsult(consult, side, "planKey", "");
+  const planKey = getResolvedPlanKey(side, carrier, consult);
   const isMax = String(planKey || "").toLowerCase().includes("max");
   if (!isMax && getConsult(consult, side, "discU22", false)){
     setConsultPatch(side, { discU22:false });
+  }
+}
+
+function getSelectedPlanStage(side, carrier, consult, planKey){
+  if (!window.PRICE_DB?.getPlanStageOptions) return "";
+  const currentPlanKey = planKey || getConsult(consult, side, "planKey", "");
+  const options = window.PRICE_DB.getPlanStageOptions(carrier, currentPlanKey);
+  if (!options.length) return "";
+
+  const saved = getConsult(consult, side, "planStage", "");
+  if (saved && options.some((opt) => opt.key === saved)) return saved;
+  return window.PRICE_DB.getDefaultPlanStage?.(carrier, currentPlanKey) || options[0].key;
+}
+
+function getResolvedPlanKey(side, carrier, consult, planKey){
+  const currentPlanKey = planKey || getConsult(consult, side, "planKey", "");
+  const stageKey = getSelectedPlanStage(side, carrier, consult, currentPlanKey);
+  const plan = window.PRICE_DB?.getPlan ? window.PRICE_DB.getPlan(carrier, currentPlanKey, stageKey) : null;
+  return plan?.resolvedPlanKey || currentPlanKey;
+}
+
+function syncPlanStageSelect(side, carrier, consult){
+  const wrap = el(side + "_planStageWrap");
+  const sel = el(side + "_planStageSelect");
+  if (!wrap || !sel || !window.PRICE_DB?.getPlanStageOptions) return;
+
+  const planKey = getConsult(consult, side, "planKey", "");
+  const options = window.PRICE_DB.getPlanStageOptions(carrier, planKey);
+  sel.innerHTML = "";
+
+  if (!options.length){
+    wrap.classList.add("hidden");
+    if (getConsult(consult, side, "planStage", "")) setConsultPatch(side, { planStage:"" });
+    return;
+  }
+
+  options.forEach((opt) => {
+    const node = document.createElement("option");
+    node.value = opt.key;
+    node.textContent = opt.label;
+    sel.appendChild(node);
+  });
+
+  const currentStage = getSelectedPlanStage(side, carrier, consult, planKey);
+  sel.value = currentStage;
+  wrap.classList.remove("hidden");
+
+  if (getConsult(consult, side, "planStage", "") !== currentStage){
+    setConsultPatch(side, { planStage: currentStage });
   }
 }
 
@@ -1566,7 +1690,7 @@ function syncPlanSelect(side, carrier, form, consult){
 
   const savedKey = getConsult(consult, side, "planKey", "");
   const fallback = window.PRICE_DB.getDefaultPlanKey
-    ? window.PRICE_DB.getDefaultPlanKey(carrier, form.dataUsage || "lte30")
+    ? window.PRICE_DB.getDefaultPlanKey(carrier, "unlimited")
     : "";
   const currentKey =
     (savedKey && c.plans[savedKey]) ? savedKey :
@@ -1587,7 +1711,12 @@ function syncPlanSelect(side, carrier, form, consult){
 function applyDiscountEligibilityUI(side, carrier, consult){
   if (!window.PRICE_DB) return;
 
-  const planKey = getConsult(consult, side, "planKey", "");
+  const rawPlanKey = getConsult(consult, side, "planKey", "");
+  const planStage = getSelectedPlanStage(side, carrier, consult, rawPlanKey);
+  const plan = window.PRICE_DB.getPlan
+    ? window.PRICE_DB.getPlan(carrier, rawPlanKey, planStage)
+    : null;
+  const planKey = plan?.resolvedPlanKey || rawPlanKey;
 
   const u22Btn = el(side + "_u22");
   const famBtn = el(side + "_family");
@@ -1596,6 +1725,7 @@ function applyDiscountEligibilityUI(side, carrier, consult){
   const oyaBtn = el(side + "_oyako");
   const s39Btn = el(side + "_support39");
   const denBtn = el(side + "_denki");
+  const longBtn = el(side + "_longTermPill");
 
   const applyOne = (btn, kind, stateKey) => {
     if (!btn) return;
@@ -1634,12 +1764,13 @@ function applyDiscountEligibilityUI(side, carrier, consult){
   applyOne(oyaBtn, "oyako",  "discOyako");
   applyOne(s39Btn, "support39", "discSupport39");
   applyOne(denBtn, "denki", "discDenki");
+  applyOne(longBtn, "longterm", "discLongTerm");
 
   // アプグレ割：au / softbank のみ
   const upUqAu = el(side + "_upgradeUqToAu");
   const upYSb  = el(side + "_upgradeYToSb");
   if (upUqAu){
-    const ok = (carrier === "au");
+    const ok = (carrier === "au" && planKey !== "u18_value");
     upUqAu.classList.toggle("hidden", !ok);
     if (!ok && getConsult(consult, side, "optUpgradeUqToAu", false)) setConsultPatch(side, { optUpgradeUqToAu:false });
   }
@@ -1687,11 +1818,9 @@ function calcMonthly(carrier, form, consult, side){
   if (!carrier) return { total: NaN, lines: [] };
   if (!window.PRICE_DB) return { total: NaN, lines: [] };
 
-  const dataUsage = form.dataUsage || "lte30";
-
   const chosenKey = getConsult(consult, side, "planKey", "");
   const fallbackKey = window.PRICE_DB.getDefaultPlanKey
-    ? window.PRICE_DB.getDefaultPlanKey(carrier, dataUsage)
+    ? window.PRICE_DB.getDefaultPlanKey(carrier, "unlimited")
     : "";
 
   const carrierObj = window.PRICE_DB.getCarrier ? window.PRICE_DB.getCarrier(carrier) : null;
@@ -1705,7 +1834,9 @@ function calcMonthly(carrier, form, consult, side){
     fallbackOk ? fallbackKey :
     (Object.keys(plans)[0] || "");
 
-  const plan = window.PRICE_DB.getPlan ? window.PRICE_DB.getPlan(carrier, planKey) : null;
+  const planStage = getSelectedPlanStage(side, carrier, consult, planKey);
+  const plan = window.PRICE_DB.getPlan ? window.PRICE_DB.getPlan(carrier, planKey, planStage) : null;
+  const effectivePlanKey = plan?.resolvedPlanKey || planKey;
   const base = plan ? plan.price : 0;
 
   const talkEnabled = !!getConsult(consult, side, "talkEnabled", false);
@@ -1736,13 +1867,13 @@ function calcMonthly(carrier, form, consult, side){
   let family = 0;
   if (getConsult(consult, side, "discFamily", false) &&
       window.PRICE_DB.isDiscountEligible &&
-      window.PRICE_DB.isDiscountEligible(carrier, "family", planKey, {
+      window.PRICE_DB.isDiscountEligible(carrier, "family", effectivePlanKey, {
         discHikari: getConsult(consult, side, "discHikari", false)
       })) {
     const d = window.PRICE_DB.getDiscount
       ? window.PRICE_DB.getDiscount(carrier, "family", {
           discFamilyCount: getConsult(consult, side, "discFamilyCount", 2),
-          planKey
+          planKey: effectivePlanKey
         })
       : null;
     family = d ? d.amount : 0;
@@ -1751,8 +1882,8 @@ function calcMonthly(carrier, form, consult, side){
   let hikari = 0;
   if (getConsult(consult, side, "discHikari", false) &&
       window.PRICE_DB.isDiscountEligible &&
-      window.PRICE_DB.isDiscountEligible(carrier, "hikari", planKey)){
-    const d = window.PRICE_DB.getDiscount ? window.PRICE_DB.getDiscount(carrier, "hikari") : null;
+      window.PRICE_DB.isDiscountEligible(carrier, "hikari", effectivePlanKey)){
+    const d = window.PRICE_DB.getDiscount ? window.PRICE_DB.getDiscount(carrier, "hikari", { planKey: effectivePlanKey }) : null;
     hikari = d ? d.amount : 0;
   }
 
@@ -1776,8 +1907,8 @@ function calcMonthly(carrier, form, consult, side){
   let support39 = 0;
   const support39On = !!getConsult(consult, side, "discSupport39", false);
   if (support39On){
-    const uqKomikomi = (carrier === "uq" && planKey === "komikomi_value");
-    const eligible = uqKomikomi || !window.PRICE_DB?.isDiscountEligible || window.PRICE_DB.isDiscountEligible(carrier, "support39", planKey);
+    const uqKomikomi = (carrier === "uq" && effectivePlanKey === "komikomi_value");
+    const eligible = uqKomikomi || !window.PRICE_DB?.isDiscountEligible || window.PRICE_DB.isDiscountEligible(carrier, "support39", effectivePlanKey);
     if (eligible){
       const d = window.PRICE_DB?.getDiscount?.(carrier, "support39");
       support39 = d ? d.amount : 0;
@@ -1787,9 +1918,18 @@ function calcMonthly(carrier, form, consult, side){
   let aupay = 0;
   if (getConsult(consult, side, "discAupay", false) &&
       window.PRICE_DB.isDiscountEligible &&
-      window.PRICE_DB.isDiscountEligible(carrier, "aupay", planKey)){
-    const d = window.PRICE_DB.getDiscount ? window.PRICE_DB.getDiscount(carrier, "aupay") : null;
+      window.PRICE_DB.isDiscountEligible(carrier, "aupay", effectivePlanKey)){
+    const d = window.PRICE_DB.getDiscount ? window.PRICE_DB.getDiscount(carrier, "aupay", { planKey: effectivePlanKey }) : null;
     aupay = d ? d.amount : 0;
+  }
+
+  let longterm = 0;
+  if (getConsult(consult, side, "discLongTerm", false) &&
+      window.PRICE_DB.isDiscountEligible &&
+      window.PRICE_DB.isDiscountEligible(carrier, "longterm", effectivePlanKey)){
+    const years = (getConsult(consult, side, "longTermYears", "10") === "20") ? "20" : "10";
+    const d = window.PRICE_DB.getDiscount ? window.PRICE_DB.getDiscount(carrier, `longterm_${years}`) : null;
+    longterm = d ? d.amount : 0;
   }
 
   let dcard = 0;
@@ -1812,7 +1952,7 @@ function calcMonthly(carrier, form, consult, side){
   if (carrier === "docomo" &&
       getConsult(consult, side, "discDenki", false) &&
       window.PRICE_DB.isDiscountEligible &&
-      window.PRICE_DB.isDiscountEligible(carrier, "denki", planKey)){
+      window.PRICE_DB.isDiscountEligible(carrier, "denki", effectivePlanKey)){
     const d = window.PRICE_DB.getDiscount ? window.PRICE_DB.getDiscount("docomo", "denki") : null;
     denki = d ? d.amount : 0;
   }
@@ -1821,26 +1961,28 @@ function calcMonthly(carrier, form, consult, side){
   if (carrier === "docomo" &&
       getConsult(consult, side, "discU22", false) &&
       window.PRICE_DB.isDiscountEligible &&
-      window.PRICE_DB.isDiscountEligible(carrier, "u22", planKey)){
+      window.PRICE_DB.isDiscountEligible(carrier, "u22", effectivePlanKey)){
     const d = window.PRICE_DB.getDiscount
-      ? window.PRICE_DB.getDiscount("docomo", "u22", { dataUsage, planKey })
+      ? window.PRICE_DB.getDiscount("docomo", "u22", { planKey: effectivePlanKey })
       : null;
     u22 = d ? d.amount : 0;
   }
 
   let upgradeAdd = 0;
-  if (carrier === "au" && !!getConsult(consult, side, "optUpgradeUqToAu", false)) upgradeAdd -= 2640;
+  if (carrier === "au" && effectivePlanKey !== "u18_value" && !!getConsult(consult, side, "optUpgradeUqToAu", false)) upgradeAdd -= 2640;
   if (carrier === "softbank" && !!getConsult(consult, side, "optUpgradeYToSb", false)) upgradeAdd -= 2750;
 
   const mailOn = !!getConsult(consult, side, "optMailCarry", false);
   const mail = mailOn ? (window.PRICE_DB.getMailCarry ? (window.PRICE_DB.getMailCarry(carrier)?.price || 0) : 0) : 0;
+  const dataBoostOn = !!getConsult(consult, side, "optDataBoost", false);
+  const dataBoost = dataBoostOn ? (window.PRICE_DB.getDataBoost ? (window.PRICE_DB.getDataBoost(carrier)?.price || 0) : 0) : 0;
 
   const custom = Number(getConsult(consult, side, "customDiscountYen", 0) || 0) || 0;
 
   const device = Number(getConsult(consult, side, "deviceMonthlyYen", 0) || 0) || 0;
 
-  const total = base + talkYen + mail + family + hikari + aupay + oyako_now
-  + support39 + dcard + paypay + denki + u22 + upgradeAdd + custom + device;
+  const total = base + talkYen + mail + dataBoost + family + hikari + aupay + oyako_now
+  + support39 + longterm + dcard + paypay + denki + u22 + upgradeAdd + custom + device;
 
   const lines = [];
   lines.push({ k:"基本料金", v: base });
@@ -1861,6 +2003,8 @@ function calcMonthly(carrier, form, consult, side){
 
   if (mail !== 0) lines.push({ k:"メール持ち運び", v: mail });
   if (u22 !== 0) lines.push({ k:"U22割（7か月）", v: u22 });
+
+  if (dataBoost !== 0) lines.push({ k:"増量オプション", v: dataBoost });
 
   if (upgradeAdd !== 0){
     const label =
@@ -1892,6 +2036,10 @@ function calcMonthly(carrier, form, consult, side){
 
   if (denki !== 0) lines.push({ k:"でんき割", v: denki });
   if (aupay !== 0) lines.push({ k:"auPAYカード割", v: aupay });
+  if (longterm !== 0){
+    const years = (getConsult(consult, side, "longTermYears", "10") === "20") ? "20年以上" : "10年以上";
+    lines.push({ k:`長期利用割（${years}）`, v: longterm });
+  }
 
   if (dcard !== 0){
     const kind = (getConsult(consult, side, "dcardKind", "silver") === "gold") ? "ゴールド" : "シルバー";
@@ -1906,7 +2054,7 @@ function calcMonthly(carrier, form, consult, side){
   if (device !== 0) lines.push({ k:"端末料金", v: device });
   if (custom !== 0) lines.push({ k:"任意調整", v: custom });
 
-  return { total, lines, planKey };
+  return { total, lines, planKey: effectivePlanKey, selectedPlanKey: planKey };
 }
 
 function hydrateManualInputs(){
@@ -1977,6 +2125,8 @@ function renderAll(){
 
   syncPlanSelect("A", a, form, consult);
   syncPlanSelect("B", b, form, consult);
+  syncPlanStageSelect("A", a, consult);
+  syncPlanStageSelect("B", b, consult);
 
   ({ form, consult } = loadCtx());
 
@@ -1993,8 +2143,14 @@ function renderAll(){
   applyDcardUI("A", a, consult);
   applyDcardUI("B", b, consult);
 
+  applyLongTermUI("A", a, consult);
+  applyLongTermUI("B", b, consult);
+
   applyPaypayUI("A", a, consult);
   applyPaypayUI("B", b, consult);
+
+  applyDataBoostUI("A", a, consult);
+  applyDataBoostUI("B", b, consult);
 
   applyCustomBoxVisibility("A", a, consult);
   applyCustomBoxVisibility("B", b, consult);
@@ -2031,7 +2187,8 @@ function renderAll(){
     const btn = el(side + "_kind_short");
     if (!btn) return;
 
-    const plan = window.PRICE_DB?.getPlan ? window.PRICE_DB.getPlan(carrier, planKey) : null;
+    const stageKey = getSelectedPlanStage(side, carrier, consult, planKey);
+    const plan = window.PRICE_DB?.getPlan ? window.PRICE_DB.getPlan(carrier, planKey, stageKey) : null;
     const includes = !!plan?.includes?.callShort;
     const mins = Number(plan?.includes?.callShortMinutes || 0) || 0;
 
@@ -2084,23 +2241,27 @@ function renderAll(){
 
   // pill on/off
   pillSet(el("A_mail"),   !!getConsult(consult,"A","optMailCarry",false));
+  pillSet(el("A_dataBoost"), !!getConsult(consult,"A","optDataBoost",false));
   pillSet(el("A_family"), !!getConsult(consult,"A","discFamily",false));
   pillSet(el("A_hikari"), !!getConsult(consult,"A","discHikari",false));
   pillSet(el("A_oyako"),  !!getConsult(consult,"A","discOyako",false));
   pillSet(el("A_support39"), !!getConsult(consult,"A","discSupport39",false));
   pillSet(el("A_aupay"),  !!getConsult(consult,"A","discAupay",false));
   pillSet(el("A_denki"),  !!getConsult(consult,"A","discDenki",false));
+  pillSet(el("A_longTermPill"), !!getConsult(consult,"A","discLongTerm",false));
   pillSet(el("A_u22"),    !!getConsult(consult,"A","discU22",false));
   pillSet(el("A_upgradeUqToAu"), !!getConsult(consult,"A","optUpgradeUqToAu",false));
   pillSet(el("A_upgradeYToSb"),  !!getConsult(consult,"A","optUpgradeYToSb",false));
 
   pillSet(el("B_mail"),   !!getConsult(consult,"B","optMailCarry",false));
+  pillSet(el("B_dataBoost"), !!getConsult(consult,"B","optDataBoost",false));
   pillSet(el("B_family"), !!getConsult(consult,"B","discFamily",false));
   pillSet(el("B_hikari"), !!getConsult(consult,"B","discHikari",false));
   pillSet(el("B_oyako"),  !!getConsult(consult,"B","discOyako",false));
   pillSet(el("B_support39"), !!getConsult(consult,"B","discSupport39",false));
   pillSet(el("B_aupay"),  !!getConsult(consult,"B","discAupay",false));
   pillSet(el("B_denki"),  !!getConsult(consult,"B","discDenki",false));
+  pillSet(el("B_longTermPill"), !!getConsult(consult,"B","discLongTerm",false));
   pillSet(el("B_u22"),    !!getConsult(consult,"B","discU22",false));
   pillSet(el("B_upgradeUqToAu"), !!getConsult(consult,"B","optUpgradeUqToAu",false));
   pillSet(el("B_upgradeYToSb"),  !!getConsult(consult,"B","optUpgradeYToSb",false));
@@ -2160,26 +2321,59 @@ function bind(){
 
   on("A_planSelect", "change", ()=>{
     const v = el("A_planSelect")?.value || "";
-    setConsultPatch("A", { planKey:v });
     const { consult } = loadCtx();
     const carrier = el("carrierA")?.value || consult.carrierA || "";
-    if (carrier === "docomo" && (v === "max_28" || v === "max_30")){
+    const defaultStage = window.PRICE_DB?.getDefaultPlanStage?.(carrier, v) || "";
+    setConsultPatch("A", { planKey:v, planStage: defaultStage });
+    const stageKey = window.PRICE_DB?.getDefaultPlanStage?.(carrier, v) || "";
+    const resolved = window.PRICE_DB?.getPlan ? window.PRICE_DB.getPlan(carrier, v, stageKey) : null;
+    const resolvedPlanKey = resolved?.resolvedPlanKey || v;
+    if (carrier === "docomo" && (resolvedPlanKey === "max_28" || resolvedPlanKey === "max_30")){
       setConsultPatch("A", { discU22:true });
-    } else if (v === "max_unlimited"){
+    } else if (resolvedPlanKey === "max_unlimited"){
       setConsultPatch("A", { discU22:false });
     }
     renderAll();
   });
   on("B_planSelect", "change", ()=>{
     const v = el("B_planSelect")?.value || "";
-    setConsultPatch("B", { planKey:v });
     const { consult } = loadCtx();
     const carrier = el("carrierB")?.value || consult.carrierB || "";
-    if (carrier === "docomo" && (v === "max_28" || v === "max_30")){
+    const defaultStage = window.PRICE_DB?.getDefaultPlanStage?.(carrier, v) || "";
+    setConsultPatch("B", { planKey:v, planStage: defaultStage });
+    const stageKey = window.PRICE_DB?.getDefaultPlanStage?.(carrier, v) || "";
+    const resolved = window.PRICE_DB?.getPlan ? window.PRICE_DB.getPlan(carrier, v, stageKey) : null;
+    const resolvedPlanKey = resolved?.resolvedPlanKey || v;
+    if (carrier === "docomo" && (resolvedPlanKey === "max_28" || resolvedPlanKey === "max_30")){
       setConsultPatch("B", { discU22:true });
-    } else if (v === "max_unlimited"){
+    } else if (resolvedPlanKey === "max_unlimited"){
       setConsultPatch("B", { discU22:false });
     }
+    renderAll();
+  });
+
+  on("A_planStageSelect", "change", ()=>{
+    const v = el("A_planStageSelect")?.value || "";
+    setConsultPatch("A", { planStage:v });
+    const { consult } = loadCtx();
+    const carrier = el("carrierA")?.value || consult.carrierA || "";
+    const planKey = getConsult(consult, "A", "planKey", "");
+    const resolved = window.PRICE_DB?.getPlan ? window.PRICE_DB.getPlan(carrier, planKey, v) : null;
+    const resolvedPlanKey = resolved?.resolvedPlanKey || planKey;
+    if (carrier === "docomo" && (resolvedPlanKey === "max_28" || resolvedPlanKey === "max_30")) setConsultPatch("A", { discU22:true });
+    if (carrier === "docomo" && resolvedPlanKey === "max_unlimited") setConsultPatch("A", { discU22:false });
+    renderAll();
+  });
+  on("B_planStageSelect", "change", ()=>{
+    const v = el("B_planStageSelect")?.value || "";
+    setConsultPatch("B", { planStage:v });
+    const { consult } = loadCtx();
+    const carrier = el("carrierB")?.value || consult.carrierB || "";
+    const planKey = getConsult(consult, "B", "planKey", "");
+    const resolved = window.PRICE_DB?.getPlan ? window.PRICE_DB.getPlan(carrier, planKey, v) : null;
+    const resolvedPlanKey = resolved?.resolvedPlanKey || planKey;
+    if (carrier === "docomo" && (resolvedPlanKey === "max_28" || resolvedPlanKey === "max_30")) setConsultPatch("B", { discU22:true });
+    if (carrier === "docomo" && resolvedPlanKey === "max_unlimited") setConsultPatch("B", { discU22:false });
     renderAll();
   });
 
@@ -2266,9 +2460,23 @@ function bind(){
     setConsultPatch("A", { optMailCarry: !getConsult(consult,"A","optMailCarry",false) });
     renderAll();
   });
+  click("A_dataBoost", () => {
+    const { consult } = loadCtx();
+    const carrier = el("carrierA")?.value || consult.carrierA || "";
+    if (!(carrier === "uq" || carrier === "ymobile")) return;
+    setConsultPatch("A", { optDataBoost: !getConsult(consult,"A","optDataBoost",false) });
+    renderAll();
+  });
   click("B_mail", () => {
     const { consult } = loadCtx();
     setConsultPatch("B", { optMailCarry: !getConsult(consult,"B","optMailCarry",false) });
+    renderAll();
+  });
+  click("B_dataBoost", () => {
+    const { consult } = loadCtx();
+    const carrier = el("carrierB")?.value || consult.carrierB || "";
+    if (!(carrier === "uq" || carrier === "ymobile")) return;
+    setConsultPatch("B", { optDataBoost: !getConsult(consult,"B","optDataBoost",false) });
     renderAll();
   });
 
@@ -2338,6 +2546,19 @@ function bind(){
     if (carrier !== "docomo") return;
     const cur = !!getConsult(consult, "A", "discDenki", false);
     setConsultPatch("A", { discDenki: !cur });
+    renderAll();
+  });
+  click("A_longTermPill", () => {
+    const { consult } = loadCtx();
+    const carrier = el("carrierA")?.value || consult.carrierA || "";
+    if (carrier !== "docomo") return;
+    const cur = !!getConsult(consult, "A", "discLongTerm", false);
+    setConsultPatch("A", { discLongTerm: !cur });
+    renderAll();
+  });
+  on("A_longTerm", "change", () => {
+    const v = (el("A_longTerm")?.value === "20") ? "20" : "10";
+    setConsultPatch("A", { longTermYears: v, discLongTerm:true });
     renderAll();
   });
   click("A_u22", () => {
@@ -2437,6 +2658,19 @@ function bind(){
     setConsultPatch("B", { discDenki: !cur });
     renderAll();
   });
+  click("B_longTermPill", () => {
+    const { consult } = loadCtx();
+    const carrier = el("carrierB")?.value || consult.carrierB || "";
+    if (carrier !== "docomo") return;
+    const cur = !!getConsult(consult, "B", "discLongTerm", false);
+    setConsultPatch("B", { discLongTerm: !cur });
+    renderAll();
+  });
+  on("B_longTerm", "change", () => {
+    const v = (el("B_longTerm")?.value === "20") ? "20" : "10";
+    setConsultPatch("B", { longTermYears: v, discLongTerm:true });
+    renderAll();
+  });
   click("B_u22", () => {
     const { consult } = loadCtx();
     const carrier = el("carrierB")?.value || consult.carrierB || "";
@@ -2489,6 +2723,10 @@ function init(){
 
   if (!("A_talkEnabled" in consult)) setConsultPatch("A", { talkEnabled:false, talkKind:"short" });
   if (!("B_talkEnabled" in consult)) setConsultPatch("B", { talkEnabled:false, talkKind:"short" });
+  if (!("A_discLongTerm" in consult)) setConsultPatch("A", { discLongTerm:false, longTermYears:"10" });
+  if (!("B_discLongTerm" in consult)) setConsultPatch("B", { discLongTerm:false, longTermYears:"10" });
+  if (!("A_optDataBoost" in consult)) setConsultPatch("A", { optDataBoost:false });
+  if (!("B_optDataBoost" in consult)) setConsultPatch("B", { optDataBoost:false });
 
   bind();
   bindSecretThemeToggle();
