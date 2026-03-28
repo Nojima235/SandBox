@@ -2191,7 +2191,14 @@ function updateS2UI(){
 
   // --- S2 編集対象（選択中の回線） ---
   const line = shared.lines[activeLine];
-  line.consult = line.consult || { payType:"", needDataTransfer:"no", needTradeInReception:"no" };
+  const normalizedConsult = { ...lineConsultDefaults(), ...(line.consult || {}) };
+  const consultChanged =
+    !line.consult ||
+    line.consult.payType !== normalizedConsult.payType ||
+    line.consult.needDataTransfer !== normalizedConsult.needDataTransfer ||
+    line.consult.needTradeInReception !== normalizedConsult.needTradeInReception;
+  line.consult = normalizedConsult;
+  if (consultChanged) writeShared(shared);
 
   const ct = (line.form?.contractType || el("contractType")?.value || "");
   const showDeviceOps = isDeviceContractType(ct);
@@ -3298,7 +3305,7 @@ function findNextIncompleteLineIndex(){
 
 function isS2CompleteForLine(line){
   const f = line.form || {};
-  const c = line.consult || {};
+  const c = { ...lineConsultDefaults(), ...(line.consult || {}) };
 
   const needsTo = (f.contractType === "mnpDevice" || f.contractType === "mnpSim" || f.contractType === "new");
   const deviceOps = needsDeviceFlow(f.contractType);

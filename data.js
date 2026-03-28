@@ -28,7 +28,7 @@
     },
 
     ahamo: {
-      map: { lte5:"30gb", lte30:"30gb", unlimited:"110gb" },
+      map: { lte5:"30gb", lte30:"30gb", unlimited:"30gb" },
       items:{
         "30gb":  { label:"ahamo（30GB）",  price: 2970, includes:{ callShort:true } },
         "110gb": { label:"ahamo大盛り（110GB）", price: 4950, includes:{ callShort:true } },
@@ -52,7 +52,7 @@
     },
 
     uq: {
-      map: { lte5:"tokutoku_le5", lte30:"tokutoku_gt5", unlimited:"komikomi_value" },
+      map: { lte5:"tokutoku_le5", lte30:"tokutoku_gt5", unlimited:"tokutoku_gt5" },
       items:{
         tokutoku_le5: { label:"トクトクプラン2（5GB）", price: 2948 },
         tokutoku_gt5: { label:"トクトクプラン2（30GB）", price: 4048 },
@@ -72,7 +72,7 @@
     },
 
     ymobile: {
-      map: { lte5:"simple3_s", lte30:"simple3_m", unlimited:"simple3_l" },
+      map: { lte5:"simple3_s", lte30:"simple3_m", unlimited:"simple3_m" },
       items:{
         simple3_s: { label:"シンプル3 S（5GB）",  price: 3058 },
         simple3_m: { label:"シンプル3 M（30GB）", price: 4158 },
