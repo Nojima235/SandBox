@@ -22,8 +22,32 @@ html, body{
   overflow: hidden;
 }
 
+:root{
+  --app-vh: 100dvh;
+  --design-width: 1024;
+  --ui-scale: 1;
+}
+
+body.scale-active{
+  overflow-x:hidden;
+  overflow-y:auto;
+}
+
+body.scale-active .appScaleStage{
+  width:100%;
+  display:flex;
+  justify-content:center;
+}
+
+body.scale-active .appScaleRoot{
+  width:calc(var(--design-width) * 1px);
+  transform:scale(var(--ui-scale));
+  transform-origin:top center;
+  will-change:transform;
+}
+
 .wrap{
-  height: calc(100dvh - var(--header-h));
+  height: calc(var(--app-vh) - var(--header-h));
   overflow: auto;
   -webkit-overflow-scrolling: touch;
   max-width: var(--maxw);
@@ -94,6 +118,8 @@ html, body{
       background:#fff;
       border-bottom:1px solid #e6e8eb;
       position:relative;
+      min-height:74px;
+      box-sizing:border-box;
     }
 
     .helpBtn{
@@ -136,8 +162,8 @@ html, body{
 }
 
 .iconBtn .ico img{
-  width:64px;
-  height:64px;
+  width:clamp(32px, 8vw, 56px);
+  height:clamp(32px, 8vw, 56px);
   object-fit:contain;
 }
 
@@ -237,12 +263,12 @@ html, body{
       color:#1b5e20;
       font-weight:800;
     }
-    .finishWrap{
-      position: relative;
-      max-width: 300px;
-      margin: 0 auto;
-      padding: 14px;
-      background: #67abec;
+.finishWrap{
+  position: relative;
+  max-width: min(300px, 100%);
+  margin: 0 auto;
+  padding: 14px;
+  background: #67abec;
       border-radius: 14px;
       border: 1px solid #67abec;
     }
@@ -252,13 +278,13 @@ html, body{
       display: block;
       border-radius: 12px;
     }
-    .finishText{
+.finishText{
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
       color: #ffffff;
-      font-size: 40px;
+      font-size: clamp(24px, 7vw, 40px);
       font-weight: 900;
       letter-spacing: 0.08em;
       text-shadow:
@@ -369,6 +395,263 @@ select:required:invalid{
 
 .appSwitch a:active{
   transform: translateY(1px) scale(0.97);
+}
+
+@media (max-width: 560px){
+  header{
+    display:grid;
+    grid-template-columns: minmax(0, 1fr) 86px 92px;
+    grid-template-areas:
+      "title mode apps"
+      "sub sub sub";
+    align-items:center;
+    gap:2px 4px;
+    min-height:auto;
+    padding-left:8px;
+    padding-right:8px;
+    padding-top:10px;
+    padding-bottom:6px;
+  }
+
+  header::before{
+    content:"";
+    grid-area:mode;
+    display:block;
+    width:100%;
+    height:1px;
+    align-self:center;
+  }
+
+  .title{ grid-area:title; min-width:0; font-size:18px; line-height:1.1; margin:0; }
+  .sub{ grid-area:sub; min-width:0; font-size:11px; line-height:1.15; margin-top:1px; }
+
+  .appSwitch{
+    grid-area:apps;
+    position:static;
+    transform:none;
+    align-self:center;
+    justify-self:stretch;
+    margin-top:0;
+    margin-left:0;
+    gap:4px;
+    justify-content:flex-end;
+  }
+
+  .appSwitch a{
+    width:44px;
+    height:44px;
+    border-radius:14px;
+    font-size:25px;
+  }
+}
+
+@media (max-width: 430px){
+  header{
+    grid-template-columns: minmax(0, 1fr) 74px 84px;
+    padding-left:4px;
+    padding-right:4px;
+    padding-top:8px;
+    padding-bottom:4px;
+  }
+
+  .title{
+    font-size:17px;
+  }
+
+  .sub{
+    font-size:10px;
+    margin-top:0;
+  }
+
+  .appSwitch a{
+    width:40px;
+    height:40px;
+    border-radius:12px;
+    font-size:22px;
+  }
+}
+
+@media (max-width: 430px) and (orientation: portrait){
+  header{
+    grid-template-columns:minmax(0, 1fr) 76px 84px;
+    grid-template-areas:
+      "title mode apps"
+      "sub sub sub";
+    gap:2px;
+    padding-left:6px;
+    padding-right:6px;
+    padding-top:8px;
+    padding-bottom:4px;
+  }
+
+  header::before{
+    content:"";
+    grid-area:mode;
+    display:block;
+    width:76px;
+    height:1px;
+    align-self:center;
+    justify-self:stretch;
+  }
+
+  .title{
+    font-size:17px;
+    line-height:1.05;
+  }
+
+  .sub{
+    font-size:10px;
+    line-height:1.1;
+    margin-top:0;
+  }
+
+  .appSwitch{
+    position:static;
+    transform:none;
+    width:84px;
+    justify-self:stretch;
+    justify-content:flex-end;
+    gap:4px;
+  }
+
+  .appSwitch a{
+    width:40px;
+    height:40px;
+    border-radius:12px;
+    font-size:22px;
+  }
+}
+
+@media (max-width: 560px){
+  .carrierRow{
+    flex-wrap:wrap;
+  }
+
+  .carrierSel,
+  .upgradeSel{
+    flex:1 1 100%;
+  }
+
+  .btn,
+  .btn2,
+  .btnDanger{
+    width:100%;
+  }
+
+  .lineCards{
+    display:grid;
+    gap:10px;
+  }
+
+  .iconChoice{
+    gap:8px;
+  }
+
+  .iconBtn{
+    border-radius:12px;
+  }
+
+  #lineCommonCard > .row:first-child{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    align-items:start;
+    gap:8px;
+  }
+
+  #lineCommonCard > .row:first-child > div[style*="flex:1"]{
+    display:none;
+  }
+
+  #lineEditBtns:not(.hidden){
+    display:grid !important;
+    grid-template-columns:1fr 1fr;
+    gap:6px !important;
+    width:100%;
+  }
+
+  #lineEditBtns .btn2,
+  #s1OnlyOps .btnDanger{
+    width:100%;
+    font-size:12px;
+    padding:10px 8px;
+  }
+
+  #s1OnlyOps:not(.hidden){
+    display:grid !important;
+    grid-template-columns:1fr;
+    gap:6px !important;
+    width:100%;
+  }
+
+  #navRow{
+    gap:8px;
+  }
+
+  #navRow > .row:first-child{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    width:100%;
+  }
+
+  #navRow > .row:first-child .btn,
+  #navRow > .row:first-child .btn2{
+    width:100%;
+  }
+
+  #panelS1 .grid{
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+  }
+
+  #panelS1 .grid > .span2{
+    grid-column:1 / -1;
+  }
+
+  #panelS1 .grid > :nth-child(n+4){
+    grid-column:1 / -1;
+  }
+
+  #panelS2 .grid{
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+  }
+
+  #s2TransferWrap,
+  #s2TradeWrap{
+    grid-column:auto;
+  }
+
+  #contractTypeIcons .iconBtn .ico img{
+    width:40px;
+    height:40px;
+  }
+
+  #contractTypeIcons .iconBtn .lbl{
+    font-size:12px;
+  }
+
+  #contractTypeIcons .iconBtn{
+    min-height:104px;
+  }
+}
+
+@media (max-width: 430px){
+  .iconChoice{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .iconBtn .ico img{
+    width:32px;
+    height:32px;
+  }
+
+  .iconBtn .lbl{
+    font-size:11px;
+  }
+
+  .iconBtn{
+    min-height:92px;
+    padding:10px 8px;
+  }
 }
 
 :root{
@@ -951,19 +1234,17 @@ html[data-theme="dark"] .lineEditTag{
 
 .iconChoice{
   display:grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 132px), 1fr));
   gap:10px;
   margin-top:6px;
-}
-@media (max-width: 520px){
-  .iconChoice{ grid-template-columns: repeat(2, 1fr); }
 }
 .iconBtn{
   border:2px solid var(--border2);
   background: var(--panel);
   color: var(--text);
   border-radius:14px;
-  padding:12px 10px;
+  padding:clamp(10px, 2.4vw, 12px) clamp(8px, 2vw, 10px);
+  min-height:clamp(96px, 22vw, 128px);
   text-align:center;
   cursor:pointer;
   user-select:none;
@@ -977,8 +1258,14 @@ html[data-theme="dark"] .lineEditTag{
   box-shadow: 0 0 0 4px var(--focus);
 }
 .iconBtn:active{ transform: translateY(1px) scale(0.99); }
-.iconBtn .ico{ font-size:26px; line-height:1; display:block; }
-.iconBtn .lbl{ font-size:13px; font-weight:900; margin-top:6px; opacity:.92; }
+.iconBtn .ico{
+  font-size:26px;
+  line-height:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.iconBtn .lbl{ font-size:clamp(11px, 2.8vw, 13px); font-weight:900; margin-top:6px; opacity:.92; }
 
 /* ===== Survey bar (data/talk usage) ===== */
 .surveyWrap{
@@ -1141,7 +1428,7 @@ html[data-theme="dark"] .lineEditTag{
   </style>
   <script src="data.js"></script>
 </head>
-<body>
+<body class="proportionalScale">
 <header>
   <div class="title">契約ナビ</div>
   <div class="sub">ヒアリング・契約フロー確認</div>
@@ -1150,10 +1437,10 @@ html[data-theme="dark"] .lineEditTag{
   <nav class="appSwitch" aria-label="アプリ切替">
     <a href="ContractNavigator.html" class="on" title="契約ナビ">📋</a>
     <a href="CarrierPalette.html" title="キャリアパレット">📱</a>
-    <a href="BBNavigator.html" title="BBナビ">🏠</a>
   </nav>
 </header>
-
+<div class="appScaleStage" id="appScaleStage">
+<div class="appScaleRoot" id="appScaleRoot">
 <div class="wrap">
   <div class="card" id="stepCard">
     <div class="row" id="lineMiniRow" style="gap:8px; align-items:center">
@@ -1170,7 +1457,7 @@ html[data-theme="dark"] .lineEditTag{
     <div class="card" id="lineCommonCard" style="margin-top:10px;">
       <div class="row" style="gap:8px; align-items:center;">
       <div class="row" id="lineEditBtns" style="gap:8px;">
-        <button class="btn2" id="addLineBtn">＋回線追加</button>
+        <button class="btn2" id="addLineBtn">＋追加</button>
         <button class="btn2" id="removeLineBtn">－削除</button>
       </div>
 
@@ -1178,8 +1465,7 @@ html[data-theme="dark"] .lineEditTag{
 
       <!-- S1でしか使わない操作はここにまとめる -->
       <div class="row resetGroup" id="s1OnlyOps" style="gap:10px;">
-        <button class="btn2" id="resetBtn">この回線をリセット</button>
-        <button class="btnDanger" id="wipeAllBtn">全ての回線をリセット</button>
+        <button class="btnDanger" id="wipeAllBtn">リセット</button>
       </div>
     </div>
 
@@ -1774,11 +2060,48 @@ html[data-theme="dark"] .lineEditTag{
         <button class="btn" id="nextBtn">次へ →</button>
       </div>
       <div style="flex:1;"></div>
-      <button class="btnDanger hidden" id="finishResetBtn">全ての回線をリセット</button>
+      <button class="btnDanger hidden" id="finishResetBtn">リセット</button>
     </div>
   </div><!-- /stepCard -->
 
 </div><!-- /wrap -->
+</div>
+</div>
+<script>
+(function(){
+  const stage = document.getElementById("appScaleStage");
+  const root = document.getElementById("appScaleRoot");
+  if (!stage || !root) return;
+
+  function updateScale(){
+    const designWidth = 430;
+    const enableScale = window.innerWidth < 680;
+    const scale = enableScale ? Math.min(1, window.innerWidth / designWidth) : 1;
+
+    document.body.classList.toggle("scale-active", enableScale);
+    document.documentElement.style.setProperty("--design-width", designWidth);
+    document.documentElement.style.setProperty("--ui-scale", scale.toFixed(4));
+    document.documentElement.style.setProperty("--app-vh", `${window.innerHeight / scale}px`);
+    stage.style.height = enableScale ? `${root.scrollHeight * scale}px` : "";
+  }
+
+  let rafId = 0;
+  const schedule = () => {
+    cancelAnimationFrame(rafId);
+    rafId = requestAnimationFrame(updateScale);
+  };
+
+  window.addEventListener("resize", schedule, { passive:true });
+  window.addEventListener("orientationchange", schedule, { passive:true });
+
+  if ("ResizeObserver" in window){
+    const ro = new ResizeObserver(schedule);
+    ro.observe(root);
+  }
+
+  schedule();
+})();
+</script>
 <script>
 
 const APP_THEME_KEY = "APP_THEME_V1";
@@ -2277,6 +2600,63 @@ function saveS2ConsultPatch(patch){
 let ctx = null;
 let steps = [];
 let idx = -1;
+
+/* =========================
+   S3 / S4 checklist text
+   この定義だけ編集すれば、チェックリスト文言を差し替えできます
+   ========================= */
+const CHECKLIST_TEXT = {
+  chk_s3n_mnp: { title:"MNP予約番号の取得", sub:"基本はWebで、複雑な場合は電話で取得" },
+  chk_s3n_prepare: { title:"ご本人確認書類・カードのお預かり", sub:"分リセ月額補償なしの場合はキャッシュカードのみ" },
+  chk_s3n_apply: { title:"分リセの申請", sub:"モバイル → 内容確認 → QRコードから同意と情報入力" },
+  chk_s3n_input: { title:"契約情報の入力", sub:"氏名や生年月日、住所などの入力ミス、オプションの追加漏れに注意。審査結果が出るまでは確定しない" },
+  chk_s3n_video: { title:"重要事項説明動画のご案内", sub:"審査中や契約情報入力中にご覧いただくとスムーズ" },
+  chk_s3n_result: { title:"お支払先の登録", sub:"承認なら口座orクレカを登録し、契約を確定／NGなら代替案へ" },
+
+  chk_s3c_mnp: { title:"MNP予約番号の取得", sub:"基本はWebで、複雑な場合は電話で取得" },
+  chk_s3c_prepare: { title:"本人確認書類・支払い手段の確認", sub:"免許証、マイナンバー、クレカ等の期限などを確認" },
+  chk_s3c_credit: { title:"分割審査の導線へ案内", sub:"必要事項をご記入いただき、キャリア分割の審査へ" },
+  chk_s3c_input: { title:"契約情報の入力", sub:"氏名、生年月日、住所などの入力ミスに注意" },
+  chk_s3c_video: { title:"重要事項説明のご案内", sub:"契約情報入力中にご覧いただくとスムーズ" },
+  chk_s3c_result: { title:"審査結果の確認と契約確定", sub:"承認なら確定、NGなら代替案へ" },
+
+  chk_s3s_mnp: { title:"MNP予約番号の取得", sub:"基本はWebで、複雑な場合は電話で取得" },
+  chk_s3s_docs: { title:"ご本人確認書類・カードのお預かり", sub:"契約情報入力の準備" },
+  chk_s3s_esim: { title:"SIM種別の確認", sub:"物理SIMかeSIMか、端末対応状況も確認" },
+  chk_s3s_input: { title:"契約情報の入力", sub:"氏名や生年月日、住所などの入力ミスに注意" },
+  chk_s3s_notice: { title:"重要事項説明のご案内", sub:"契約情報入力中にご覧いただくとスムーズ" },
+  chk_s3s_open: { title:"契約確定", sub:"最終確認をして確定" },
+
+  chk_s3l_mnp: { title:"MNP予約番号の取得", sub:"基本はWebで、複雑な場合は電話で取得" },
+  chk_s3l_prepare: { title:"ご本人確認書類・カードのお預かり", sub:"契約情報入力の準備" },
+  chk_s3l_input: { title:"契約情報の入力", sub:"氏名や生年月日、住所などの入力ミスに注意" },
+  chk_s3l_video: { title:"重要事項説明のご案内", sub:"契約情報入力中にご覧いただくとスムーズ" },
+  chk_s3l_fix: { title:"契約確定", sub:"最終確認をして確定" },
+
+  chk_done_return: { title:"ご本人確認書類・カードの返却", sub:"免許証、マイナンバー、クレカ等を確実に返却" },
+  chk_done_open: { title:"開通確認", sub:"インターネット通信と発着信を確認" },
+  chk_done_datatransfer: { title:"データ移行", sub:"新端末のアップデートと旧端末の再起動、LINEのバックアップなど" },
+  chk_done_point: { title:"POSでのポイント付与と会計処理", sub:"モバイルQRコードの有効時間や誤紐づけに注意" },
+  chk_done_consent: { title:"データ移行同意書の記入", sub:"確認事項のチェックと署名" },
+  chk_done_tradein: { title:"古物下取り受付", sub:"当日受付、後日受付は2週間以内" },
+  chk_business_card: { title:"名刺のお渡し", sub:"行動クレド④：使用後の満足まで責任を持つ案内に" },
+  chk_done_car: { title:"お車のご利用を確認", sub:"2時間駐車券のお渡し。超過時は1Fマルエツのサービスカウンターへ" }
+};
+
+function applyChecklistTextDefinitions(){
+  Object.entries(CHECKLIST_TEXT).forEach(([inputId, textDef]) => {
+    const input = el(inputId);
+    if (!input) return;
+    const item = input.closest(".checkitem");
+    if (!item) return;
+
+    const title = item.querySelector(".ctitle");
+    const sub = item.querySelector(".csub");
+
+    if (title) title.textContent = textDef.title;
+    if (sub) sub.textContent = textDef.sub;
+  });
+}
 
 /* =========================
    Steps
@@ -2850,6 +3230,11 @@ if (step.id === "S4"){
   const s1OnlyOps = el("s1OnlyOps");
   if (s1OnlyOps){
     s1OnlyOps.classList.toggle("hidden", step.id !== "S1");
+  }
+
+  const lineEditBtns = el("lineEditBtns");
+  if (lineEditBtns){
+    lineEditBtns.classList.toggle("hidden", step.id !== "S1");
   }
 
 if (lineMiniRow) lineMiniRow.classList.remove("hidden");
@@ -3625,6 +4010,8 @@ const watchIds = [
   "homeNetType"
 ]
 
+applyChecklistTextDefinitions();
+
 /* =========================
    Events
    ========================= */
@@ -3826,7 +4213,7 @@ el("startBtn").onclick = () => {
   syncFromStorage();
 };
 
-el("resetBtn").onclick = () => {
+if (el("resetBtn")) el("resetBtn").onclick = () => {
   const shared = ensureLines();
 
   shared.lines[activeLine] = blankLine();
@@ -3842,7 +4229,7 @@ el("resetBtn").onclick = () => {
   syncFromStorage();
 };
 
-el("wipeAllBtn").onclick = () => {
+if (el("wipeAllBtn")) el("wipeAllBtn").onclick = () => {
   // 確認
   if (!confirm("全回線の入力と進捗をすべて消去します。よろしいですか？")) return;
 

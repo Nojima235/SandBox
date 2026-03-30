@@ -103,6 +103,31 @@ html, body{
   overflow: hidden;
   overflow-x: hidden;
 }
+
+:root{
+  --app-vh: 100dvh;
+  --design-width: 1024;
+  --ui-scale: 1;
+}
+
+body.scale-active{
+  overflow-x:hidden;
+  overflow-y:auto;
+}
+
+body.scale-active .appScaleStage{
+  width:100%;
+  display:flex;
+  justify-content:center;
+}
+
+body.scale-active .appScaleRoot{
+  width:calc(var(--design-width) * 1px);
+  transform:scale(var(--ui-scale));
+  transform-origin:top center;
+  will-change:transform;
+}
+
 body{
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",sans-serif;
   margin:0;
@@ -132,7 +157,7 @@ html[data-theme="dark"]::before{
 .hidden{display:none !important;}
 
 .wrap{
-  height: calc(100dvh - var(--header-h));
+  height: calc(var(--app-vh) - var(--header-h));
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
@@ -221,12 +246,12 @@ header{
 .grid2{
   display:grid;
   gap:10px;
-  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
 }
 .resultGrid{
   display:grid;
   gap:10px;
-  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
 }
 body[data-mode="single"] .grid2{ grid-template-columns: 1fr; }
 body[data-mode="single"] .resultGrid{ grid-template-columns: 1fr; }
@@ -241,10 +266,11 @@ body[data-mode="single"] .resultGrid{ grid-template-columns: 1fr; }
   align-items:center;
   gap:10px;
   user-select:none;
-  padding:10px 12px;
-  border:1px solid var(--border2);
-  border-radius:14px;
-  background:var(--panel);
+  padding:0;
+  border:none;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
   cursor:pointer;
   z-index:20;
 }
@@ -294,7 +320,7 @@ body[data-mode="compare"] .modeTrack{
 }
 
 .carrierGrid{ display:grid; gap:10px; grid-template-columns:1fr; }
-.carrierGrid.compare{ grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); }
+.carrierGrid.compare{ grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); }
 
 .carrierList{
   display:grid;
@@ -302,11 +328,11 @@ body[data-mode="compare"] .modeTrack{
   gap:8px;
 }
 @media (max-width: 640px){
-  .carrierList{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .carrierList{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
 .carrierCard{
-  padding:8px;
+  padding:clamp(6px, 1.6vw, 8px);
   border:1px solid var(--border);
   border-radius:12px;
   background:var(--panel);
@@ -322,7 +348,7 @@ body[data-mode="compare"] .modeTrack{
 }
 .carrierHeroImg{
   width:100%;
-  height:96px;
+  height:clamp(48px, 14vw, 88px);
   border-radius:10px;
   object-fit:cover;
   display:block;
@@ -353,6 +379,8 @@ body[data-mode="compare"] .modeTrack{
 .carrierGrid.compare .carrierCompareImg{
   width:100%;
   height:100%;
+  max-width:clamp(72px, 22vw, 140px);
+  max-height:clamp(72px, 22vw, 140px);
   object-fit:contain;
   display:block;
 }
@@ -377,7 +405,30 @@ body[data-mode="compare"] .modeTrack{
   background:var(--panel);
 }
 .resultTop{display:flex;align-items:center;justify-content:space-between;gap:10px;}
-.brand{font-size:14px;font-weight:1000;}
+.brand,
+.feeHeading{
+  font-size:14px;
+  font-weight:1000;
+  letter-spacing:0.01em;
+}
+.priceInputRow{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex-wrap:nowrap;
+}
+.priceInput{
+  flex:1 1 auto;
+  min-width:0;
+  max-width:72px !important;
+}
+.inlineUnit{
+  flex:0 0 auto;
+  font-size:13px;
+  color:var(--muted);
+  font-weight:900;
+  white-space:nowrap;
+}
 .price{
   font-size:28px;
   font-weight:1100;
@@ -430,8 +481,8 @@ body[data-mode="compare"] .modeTrack{
   top:50%;
   right:0;
   transform:translateY(-50%);
-  width:200px;
-  height:100px;
+  width:clamp(72px, 18vw, 160px);
+  height:clamp(48px, 10vw, 88px);
   border-radius:5px;
   overflow:hidden;
   display:flex;
@@ -442,10 +493,10 @@ body[data-mode="compare"] .modeTrack{
 }
 
 .priceLogo{
-  width:50%;
-  height:50%;
+  width:clamp(36px, 9vw, 72px);
+  height:clamp(36px, 9vw, 72px);
   display:block;
-  object-fit:cover;
+  object-fit:contain;
   border-radius:10px;
 }
 
@@ -644,7 +695,7 @@ details.compact summary{
 
 /* =============== Small screens =============== */
 @media (max-width: 640px){
-  .grid2, .resultGrid, .carrierGrid.compare{ grid-template-columns: 1fr 1fr; }
+  .grid2, .resultGrid, .carrierGrid.compare{ grid-template-columns: 1fr; }
   label{ font-size:11px; }
   .price{ font-size:20px; }
   .pill{ padding:6px 11px; font-size:11px; }
@@ -780,10 +831,380 @@ details.compact summary{
     padding:6px 8px;
   }
 }
+
+@media (max-width: 560px){
+  header{
+    display:grid;
+    grid-template-columns: minmax(0, 1fr) 94px 92px;
+    grid-template-areas:
+      "title mode apps"
+      "sub sub sub";
+    align-items:center;
+    gap:2px 4px;
+    min-height:auto;
+    padding-left:8px;
+    padding-right:8px;
+    padding-top:10px;
+    padding-bottom:6px;
+  }
+
+  .title{ grid-area:title; min-width:0; font-size:18px; line-height:1.1; margin:0; }
+  .sub{ grid-area:sub; min-width:0; font-size:11px; line-height:1.15; margin-top:1px; }
+
+  .modeSwitch,
+  .appSwitch{
+    position:static;
+    transform:none;
+    align-self:center;
+  }
+
+  .modeSwitch{
+    grid-area:mode;
+    justify-self:stretch;
+    margin-top:0;
+    padding:4px 7px;
+    gap:4px;
+    border-radius:12px;
+    margin-right:0;
+  }
+
+  .appSwitch{
+    grid-area:apps;
+    justify-self:stretch;
+    margin-top:0;
+    margin-left:0;
+    gap:4px;
+    justify-content:flex-end;
+  }
+
+  .appSwitch a{
+    width:44px;
+    height:44px;
+    border-radius:14px;
+    font-size:25px;
+  }
+
+  .modeLabel{
+    font-size:11px;
+    display:inline-block;
+    line-height:1;
+    white-space:nowrap;
+  }
+}
+
+@media (max-width: 430px){
+  header{
+    grid-template-columns: minmax(0, 1fr) 74px 84px;
+    padding-left:4px;
+    padding-right:4px;
+    padding-top:8px;
+    padding-bottom:4px;
+  }
+
+  .title{
+    font-size:17px;
+  }
+
+  .sub{
+    font-size:10px;
+    margin-top:0;
+  }
+
+  .modeSwitch{
+    padding:3px 4px;
+    gap:2px;
+  }
+
+  .modeTrack{
+    width:38px;
+    height:22px;
+  }
+
+  .modeThumb{
+    width:18px;
+    height:18px;
+  }
+
+  body[data-mode="compare"] .modeThumb{
+    transform: translate(16px, -50%);
+  }
+
+  .modeLabel{
+    font-size:9px;
+  }
+
+  .appSwitch a{
+    width:40px;
+    height:40px;
+    border-radius:12px;
+    font-size:22px;
+  }
+}
+
+@media (max-width: 430px) and (orientation: portrait){
+  header{
+    grid-template-columns:minmax(0, 1fr) 96px 84px;
+    grid-template-areas:
+      "title mode apps"
+      "sub sub sub";
+    gap:2px;
+    padding-left:6px;
+    padding-right:6px;
+    padding-top:8px;
+    padding-bottom:4px;
+  }
+
+  .title{
+    font-size:17px;
+    line-height:1.05;
+  }
+
+  .sub{
+    font-size:10px;
+    line-height:1.1;
+    margin-top:0;
+  }
+
+  .modeSwitch{
+    position:static;
+    transform:none;
+    min-width:96px;
+    justify-self:stretch;
+    justify-content:center;
+    align-items:center;
+    padding:0;
+    gap:4px;
+    margin-right:0;
+    border:none;
+    background:transparent;
+    box-shadow:none;
+  }
+
+  .modeTrack{
+    width:36px;
+    height:20px;
+  }
+
+  .modeThumb{
+    width:16px;
+    height:16px;
+  }
+
+  body[data-mode="compare"] .modeThumb{
+    transform: translate(16px, -50%);
+  }
+
+  .modeLabel{
+    display:inline-block;
+    font-size:8px;
+    line-height:1;
+  }
+
+  .appSwitch{
+    position:static;
+    transform:none;
+    width:84px;
+    justify-self:stretch;
+    justify-content:flex-end;
+    gap:4px;
+  }
+
+  .appSwitch a{
+    width:40px;
+    height:40px;
+    border-radius:12px;
+    font-size:22px;
+  }
+
+  .carrierList{
+    grid-auto-flow:column;
+    grid-template-rows:repeat(2, minmax(0, 1fr));
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px){
+  :root{
+    --pad-x: 2px;
+    --pad-top: 6px;
+    --pad-bottom: 12px;
+    --header-pad-x: 4px;
+  }
+
+  .wrap{
+    max-width:100%;
+  }
+
+  .card,
+  .resultCard{
+    padding:5px;
+    border-radius:12px;
+  }
+
+  body[data-mode="compare"] .carrierGrid{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap:4px;
+  }
+
+  body[data-mode="compare"] .grid2{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap:4px;
+  }
+
+  .carrierList{
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap:4px;
+  }
+
+  body[data-mode="compare"] .resultGrid{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap:4px;
+  }
+
+  .resultTop{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .priceRow{
+    display:grid;
+    grid-template-columns:minmax(0, 1fr) auto;
+    align-items:center;
+    gap:10px;
+    padding-right:0;
+  }
+
+  .priceMeta,
+  .priceLogoFrame{
+    position:static;
+    transform:none;
+  }
+
+  .priceMeta{
+    min-width:0;
+    justify-content:flex-start;
+  }
+
+  .priceLine{
+    flex-wrap:wrap;
+    gap:8px;
+  }
+
+  .priceLogoFrame{
+    width:64px;
+    height:64px;
+  }
+
+  .priceLogo{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+  }
+
+  body[data-mode="compare"] .carrierGrid .carrierCard{
+    padding:3px;
+  }
+
+  body[data-mode="compare"] .carrierGrid .carrierCompareImg{
+    max-width:56px;
+    max-height:56px;
+  }
+
+  body[data-mode="compare"] .grid2 .resultCard{
+    padding:4px;
+  }
+
+  body[data-mode="compare"] .price{
+    font-size:16px;
+  }
+
+  body[data-mode="compare"] .priceRow{
+    grid-template-columns:minmax(0, 1fr) auto;
+    align-items:center;
+  }
+
+  body[data-mode="compare"] .mini,
+  body[data-mode="compare"] .brand,
+  body[data-mode="compare"] .feeHeading,
+  body[data-mode="compare"] .pill,
+  body[data-mode="compare"] label{
+    font-size:9px;
+  }
+
+  body[data-mode="compare"] select,
+  body[data-mode="compare"] input{
+    padding:6px 6px;
+    font-size:10px;
+  }
+
+  body[data-mode="compare"] .talkBoxTitle,
+  body[data-mode="compare"] .switchLabel,
+  body[data-mode="compare"] .inlineUnit{
+    font-size:9px;
+  }
+
+  body[data-mode="compare"] .breakdown,
+  body[data-mode="compare"] .breakdown .k{
+    font-size:9px;
+  }
+}
+
+@media (max-width: 430px){
+  .carrierList{
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap:3px;
+  }
+
+  .carrierHeroImg{
+    height:40px;
+  }
+
+  .priceLogoFrame{
+    width:50px;
+    height:50px;
+  }
+
+  .priceLogo{
+    width:100%;
+    height:100%;
+  }
+
+  body[data-mode="compare"] .carrierGrid,
+  body[data-mode="compare"] .resultGrid,
+  body[data-mode="compare"] .grid2{
+    gap:3px;
+  }
+
+  body[data-mode="compare"] .carrierGrid .carrierCompareImg{
+    max-width:48px;
+    max-height:48px;
+  }
+
+  body[data-mode="compare"] .grid2 .resultCard{
+    padding:3px;
+  }
+
+  body[data-mode="compare"] .priceInputRow{
+    gap:4px;
+  }
+
+  body[data-mode="compare"] .priceInput{
+    max-width:64px !important;
+  }
+
+  body[data-mode="compare"] .inlineUnit{
+    font-size:8px;
+  }
+
+  body[data-mode="compare"] .breakdown,
+  body[data-mode="compare"] .breakdown .k{
+    font-size:8px;
+  }
+}
   </style>
 </head>
 
-<body>
+<body class="proportionalScale">
 <header>
   <div class="title">キャリアパレット</div>
   <div class="sub">料金比較・見積り</div>
@@ -801,10 +1222,10 @@ details.compact summary{
   <nav class="appSwitch" aria-label="アプリ切替">
     <a href="ContractNavigator.html" title="契約ナビ">📋</a>
     <a href="CarrierPalette.html" class="on" title="キャリアパレット">📱</a>
-    <a href="BBNavigator.html" title="BBナビ">🏠</a>
   </nav>
 </header>
-
+<div class="appScaleStage" id="appScaleStage">
+<div class="appScaleRoot" id="appScaleRoot">
   <div class="wrap">
     <div class="card">
       <div class="sectionTitle"><b></b></div>
@@ -927,28 +1348,28 @@ details.compact summary{
 
           <div class="compact" id="A_deviceBox" style="margin-top:16px;">
           <div class="sectionTitle">
-            <b>端末料金</b>
+            <b class="feeHeading">端末料金</b>
           </div>
-          <div class="row tight" style="margin-top:8px;">
-            <input id="A_deviceMonthlyYen" type="number" step="1" style="max-width:180px;" placeholder="例）1">
-            <div style="font-size:13px;color:var(--muted);font-weight:900;">円 / 月</div>
+          <div class="priceInputRow" style="margin-top:8px;">
+            <input id="A_deviceMonthlyYen" class="priceInput" type="number" step="1" placeholder="例）1">
+            <div class="inlineUnit">円 / 月</div>
           </div>
         </div>
 
         <div class="compact" id="A_customBox" style="margin-top:16px;">
           <div class="sectionTitle">
-            <b>任意調整</b>
+            <b class="feeHeading">任意調整</b>
           </div>
-          <div class="row tight" style="margin-top:8px;">
-            <input id="A_customDiscountYen" type="number" step="10" style="max-width:180px;" placeholder="例）-1000 / +330">
-            <div style="font-size:13px;color:var(--muted);font-weight:900;">円 / 月</div>
+          <div class="priceInputRow" style="margin-top:8px;">
+            <input id="A_customDiscountYen" class="priceInput" type="number" step="10" placeholder="例）-1000 / +330">
+            <div class="inlineUnit">円 / 月</div>
           </div>
           <div class="mini">※マイナスで割引</div>
         </div>
 
         <div class="divider" style="margin:12px 0 10px;"></div>
         <div class="sectionTitle">
-          <b>月額料金</b>
+          <b class="feeHeading">月額料金</b>
         </div>
         <div class="priceRow">
           <div class="priceValue">
@@ -1053,28 +1474,28 @@ details.compact summary{
 
           <div class="compact" id="B_deviceBox" style="margin-top:16px;">
           <div class="sectionTitle">
-            <b>端末料金</b>
+            <b class="feeHeading">端末料金</b>
           </div>
-          <div class="row tight" style="margin-top:8px;">
-            <input id="B_deviceMonthlyYen" type="number" step="1" style="max-width:180px;" placeholder="例）1">
-            <div style="font-size:13px;color:var(--muted);font-weight:900;">円 / 月</div>
+          <div class="priceInputRow" style="margin-top:8px;">
+            <input id="B_deviceMonthlyYen" class="priceInput" type="number" step="1" placeholder="例）1">
+            <div class="inlineUnit">円 / 月</div>
           </div>
         </div>
 
         <div class="compact" id="B_customBox" style="margin-top:16px;">
           <div class="sectionTitle">
-            <b>任意調整</b>
+            <b class="feeHeading">任意調整</b>
           </div>
-          <div class="row tight" style="margin-top:8px;">
-            <input id="B_customDiscountYen" type="number" step="10" style="max-width:180px;" placeholder="例）-1000 / +330">
-            <div style="font-size:13px;color:var(--muted);font-weight:900;">円 / 月</div>
+          <div class="priceInputRow" style="margin-top:8px;">
+            <input id="B_customDiscountYen" class="priceInput" type="number" step="10" placeholder="例）-1000 / +330">
+            <div class="inlineUnit">円 / 月</div>
           </div>
           <div class="mini">※マイナスで割引</div>
         </div>
 
         <div class="divider" style="margin:12px 0 10px;"></div>
         <div class="sectionTitle">
-          <b>月額料金</b>
+          <b class="feeHeading">月額料金</b>
         </div>
         <div class="priceRow">
           <div class="priceValue">
@@ -1093,19 +1514,56 @@ details.compact summary{
       </div>
       <div class="compact currentMonthlyBox">
         <div class="sectionTitle">
-          <b>現在の月額料金</b>
+          <b class="feeHeading">現在の月額料金</b>
         </div>
-        <div class="row tight" style="margin-top:8px;">
-          <input id="currentMonthlyYen" type="number" step="1" style="max-width:180px;" placeholder="例）5280">
-          <div style="font-size:13px;color:var(--muted);font-weight:900;">円 / 月</div>
+        <div class="priceInputRow" style="margin-top:8px;">
+          <input id="currentMonthlyYen" class="priceInput" type="number" step="1" placeholder="例）5280">
+          <div class="inlineUnit">円 / 月</div>
         </div>
         <div class="mini">※比較用。入力すると各プランとの差額を表示します</div>
       </div>
       <div class="alert hidden" id="priceDbAlert" style="margin-top:10px;"></div>
     </div>
   </div>
-
   <script src="data.js"></script>
+  </div>
+</div>
+</div>
+  <script>
+(function(){
+  const stage = document.getElementById("appScaleStage");
+  const root = document.getElementById("appScaleRoot");
+  if (!stage || !root) return;
+
+  function updateScale(){
+    const designWidth = 430;
+    const enableScale = window.innerWidth < 680;
+    const scale = enableScale ? Math.min(1, window.innerWidth / designWidth) : 1;
+
+    document.body.classList.toggle("scale-active", enableScale);
+    document.documentElement.style.setProperty("--design-width", designWidth);
+    document.documentElement.style.setProperty("--ui-scale", scale.toFixed(4));
+    document.documentElement.style.setProperty("--app-vh", `${window.innerHeight / scale}px`);
+    stage.style.height = enableScale ? `${root.scrollHeight * scale}px` : "";
+  }
+
+  let rafId = 0;
+  const schedule = () => {
+    cancelAnimationFrame(rafId);
+    rafId = requestAnimationFrame(updateScale);
+  };
+
+  window.addEventListener("resize", schedule, { passive:true });
+  window.addEventListener("orientationchange", schedule, { passive:true });
+
+  if ("ResizeObserver" in window){
+    const ro = new ResizeObserver(schedule);
+    ro.observe(root);
+  }
+
+  schedule();
+})();
+</script>
   <script>
 /* ===============================
    State / Theme
