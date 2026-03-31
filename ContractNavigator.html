@@ -189,7 +189,31 @@ body.scale-active .appScaleRoot{
     .resetGroup button:hover{
       opacity:1;
     }
+    .titleGroup{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+    }
     .title{font-size:24px;font-weight:800;}
+    .feedbackIconBtn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+      padding:7px 12px;
+      border-radius:999px;
+      border:1px solid #d9dde3;
+      background:#fff;
+      color:#111;
+      text-decoration:none;
+      font-size:13px;
+      font-weight:900;
+      line-height:1;
+      box-shadow:0 3px 10px rgba(0,0,0,.08);
+      white-space:nowrap;
+    }
+    .feedbackIconBtn:active{transform:translateY(1px) scale(0.97);}
     .sub{font-size:15px;color:#555;margin-top:4px;}
     .card{
       background:#fff;border:1px solid #e6e8eb;border-radius:14px;padding:14px;
@@ -422,7 +446,8 @@ select:required:invalid{
     align-self:center;
   }
 
-  .title{ grid-area:title; min-width:0; font-size:18px; line-height:1.1; margin:0; }
+  .titleGroup{ grid-area:title; gap:6px; min-width:0; }
+  .title{ min-width:0; font-size:18px; line-height:1.1; margin:0; }
   .sub{ grid-area:sub; min-width:0; font-size:11px; line-height:1.15; margin-top:1px; }
 
   .appSwitch{
@@ -443,6 +468,8 @@ select:required:invalid{
     border-radius:14px;
     font-size:25px;
   }
+
+  .feedbackIconBtn{ padding:6px 10px; font-size:11px; }
 }
 
 @media (max-width: 430px){
@@ -458,6 +485,10 @@ select:required:invalid{
     font-size:17px;
   }
 
+  .titleGroup{
+    gap:4px;
+  }
+
   .sub{
     font-size:10px;
     margin-top:0;
@@ -469,6 +500,8 @@ select:required:invalid{
     border-radius:12px;
     font-size:22px;
   }
+
+  .feedbackIconBtn{ padding:5px 8px; font-size:10px; }
 }
 
 @media (max-width: 430px) and (orientation: portrait){
@@ -1427,6 +1460,7 @@ html[data-theme="dark"] .lineEditTag{
 }
   </style>
   <script src="data.js"></script>
+  <script src="feedback-config.js"></script>
 </head>
 <body class="proportionalScale">
 <header>
@@ -1439,6 +1473,41 @@ html[data-theme="dark"] .lineEditTag{
     <a href="CarrierPalette.html" title="キャリアパレット">📱</a>
   </nav>
 </header>
+<script>
+(() => {
+  const title = document.querySelector("header .title");
+  if (!title) return;
+  const href = (window.APP_FEEDBACK_URL || "").trim();
+
+  const link = document.createElement("a");
+  link.className = "feedbackIconBtn";
+  link.dataset.feedbackLink = "";
+  link.hidden = !href;
+  if (href) link.href = href;
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+  link.setAttribute("aria-label", "Open feedback form");
+  let openHandledAt = 0;
+  const openFeedback = (event) => {
+    if (!href) return;
+    const now = Date.now();
+    if (now - openHandledAt < 500) return;
+    openHandledAt = now;
+    event.preventDefault();
+    event.stopPropagation();
+    window.open(href, "_blank", "noopener,noreferrer");
+  };
+  link.addEventListener("pointerup", openFeedback);
+  link.addEventListener("click", openFeedback);
+  link.innerHTML = "&#9993; <span>お問い合わせはこちら</span>";
+
+  const group = document.createElement("div");
+  group.className = "titleGroup";
+  title.parentNode.insertBefore(group, title);
+  group.appendChild(title);
+  group.appendChild(link);
+})();
+</script>
 <div class="appScaleStage" id="appScaleStage">
 <div class="appScaleRoot" id="appScaleRoot">
 <div class="wrap">
