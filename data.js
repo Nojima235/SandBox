@@ -77,7 +77,7 @@
     },
     uq: {
       short:    { label:"10分かけ放題", price: 880 },
-      unlimited:{ label:"24時間かけ放題", price: 1980 },
+      unlimited:{ label:"24時間かけ放題", price: 1980, planPrices: { komikomi_value: 1100 } },
       min60:    { label:"1ヶ月60分まで", price: 660 },
       senior:   { label:"24時間かけ放題(60歳以上)", price: 880 }
     },
@@ -176,9 +176,13 @@
   };
 
   // 通話オプション
-  C.getVoice = function(carrier, kind){
+  C.getVoice = function(carrier, kind, planKey){
     const v = C.voiceOptions?.[carrier]?.[kind];
-    return v || null;
+    if (!v) return null;
+    if (planKey && v.planPrices?.[planKey] !== undefined) {
+      return Object.assign({}, v, { price: v.planPrices[planKey] });
+    }
+    return v;
   };
 
   // 割引

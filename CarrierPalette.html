@@ -1712,17 +1712,17 @@ function calcMonthly(carrier, form, consult, side){
   if (talkEnabled){
     if (talkKind === "short"){
       if (!includesCallShort){
-        const v = window.PRICE_DB.getVoice ? window.PRICE_DB.getVoice(carrier, "short") : null;
+        const v = window.PRICE_DB.getVoice ? window.PRICE_DB.getVoice(carrier, "short", planKey) : null;
         talkYen = v ? v.price : 0;
       }
     } else if (talkKind === "unlimited"){
-      const v = window.PRICE_DB.getVoice ? window.PRICE_DB.getVoice(carrier, "unlimited") : null;
+      const v = window.PRICE_DB.getVoice ? window.PRICE_DB.getVoice(carrier, "unlimited", planKey) : null;
       talkYen = v ? v.price : 0;
     } else if (talkKind === "min60"){
-      const v = window.PRICE_DB.getVoice ? window.PRICE_DB.getVoice(carrier, "min60") : null;
+      const v = window.PRICE_DB.getVoice ? window.PRICE_DB.getVoice(carrier, "min60", planKey) : null;
       talkYen = v ? v.price : 0;
     } else if (talkKind === "senior"){
-      const v = window.PRICE_DB.getVoice ? window.PRICE_DB.getVoice(carrier, "senior") : null;
+      const v = window.PRICE_DB.getVoice ? window.PRICE_DB.getVoice(carrier, "senior", planKey) : null;
       talkYen = v ? v.price : 0;
     }
   }
