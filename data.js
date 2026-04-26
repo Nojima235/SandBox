@@ -106,7 +106,7 @@
     },
     ymobile: {
       short:    { label:"だれとでも定額＋",       price: 880 },
-      unlimited: { label: "スーパーだれとでも定額＋", price: 1980 },
+      unlimited: { label: "スーパーだれとでも定額＋", price: 1980, planPrices: { simple3_l: 1100 } },
       senior:   { label:"24時間かけ放題(60歳以上)", price: 880 }
     }
   };
