@@ -74,9 +74,9 @@
     ymobile: {
       map: { lte5:"simple3_s", lte30:"simple3_m", unlimited:"simple3_m" },
       items:{
-        simple3_s: { label:"シンプル3 S（5GB）",  price: 3058 },
-        simple3_m: { label:"シンプル3 M（30GB）", price: 4158 },
-        simple3_l: { label:"シンプル3 L（35GB）", price: 5258, includes:{ callShort:true, callShortMinutes:10 } }
+        simple3_s: { label:"シンプル3 S（5GB）",  price: 3278 },
+        simple3_m: { label:"シンプル3 M（30GB）", price: 4378 },
+        simple3_l: { label:"シンプル3 L（35GB）", price: 5478, includes:{ callShort:true, callShortMinutes:10 } }
       }
     }
   };
@@ -158,13 +158,13 @@
       family: { label:"家族割", amount: -550 },
       hikari: { label: "光割", amount: -1100 },
       aupay: { label: "auPAYカード割", amount: -220 },
-      oyako: {
-        label: "親子割",
-        amount: -1650,
-        year1: -1650,
-        after_le5: -1100,
-        after_other: 0
-      },
+      // oyako: {
+      //   label: "親子割",
+      //   amount: -1650,
+      //   year1: -1650,
+      //   after_le5: -1100,
+      //   after_other: 0
+      // },
       support39: { label:"39割", amount: -550 }
     },
 
@@ -185,8 +185,8 @@
       family: { label:"家族割引（2回線目以降）", amount: -1100 },
       hikari: { label: "おうち割 光セット（A）", amount: -1650 },
       paypay_normal: { label:"paypayカード割（通常）", amount: -330 },
-      paypay_gold: { label: "paypayカード割（ゴールド）", amount: -550 },
-      oyako: { label:"ワイモバ親子割（13か月）", amount: -1100 }
+      paypay_gold: { label: "paypayカード割（ゴールド）", amount: -550 }
+      // oyako: { label:"ワイモバ親子割（13か月）", amount: -1100 }
     },
 
     ahamo: {
